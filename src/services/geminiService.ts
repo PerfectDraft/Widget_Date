@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { Combo } from '../data';
+import { Combo, REAL_LOCATIONS } from '../data';
 
 export interface Place {
   id: string;
@@ -19,9 +19,45 @@ export interface ExploreResult {
   places: Place[];
 }
 
+export type AILogEntry = {
+  id: string;
+  timestamp: string;
+  action: string;
+  status: 'loading' | 'success' | 'error';
+  details?: string;
+};
+
+let logListeners: ((logs: AILogEntry[]) => void)[] = [];
+export let aiLogs: AILogEntry[] = [];
+
+export const addAILog = (action: string, status: 'loading' | 'success' | 'error', details?: string) => {
+  const newLog: AILogEntry = {
+    id: Date.now().toString() + Math.random().toString(),
+    timestamp: new Date().toLocaleTimeString('vi-VN'),
+    action,
+    status,
+    details
+  };
+  aiLogs = [newLog, ...aiLogs].slice(0, 50); // Keep last 50 logs
+  logListeners.forEach(listener => listener([...aiLogs]));
+};
+
+export const subscribeToAILogs = (listener: (logs: AILogEntry[]) => void) => {
+  logListeners.push(listener);
+  listener([...aiLogs]);
+  return () => {
+    logListeners = logListeners.filter(l => l !== listener);
+  };
+};
+
 export const fetchNearbyPlaces = async (userLocation: string): Promise<ExploreResult> => {
   // @ts-ignore
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    addAILog("Lấy địa điểm (fetchNearbyPlaces)", "error", "Thiếu API Key (VITE_GEMINI_API_KEY)");
+  } else {
+    addAILog("Lấy địa điểm (fetchNearbyPlaces)", "loading", `Đang tìm vị trí: ${userLocation}`);
+  }
   const ai = new GoogleGenAI({ apiKey });
   
   const prompt = `
@@ -52,7 +88,7 @@ Do not include any other text outside the JSON block.
 `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-pro",
+    model: "gemini-2.5-flash",
     contents: prompt,
     config: {
       tools: [{ googleMaps: {} }, { googleSearch: {} }],
@@ -69,8 +105,10 @@ Do not include any other text outside the JSON block.
     } else {
       result = JSON.parse(text);
     }
+    addAILog("Lấy địa điểm (fetchNearbyPlaces)", "success", `Tìm thấy ${result.places?.length || 0} địa điểm.`);
   } catch (e) {
     console.error("Failed to parse response:", text);
+    addAILog("Lấy địa điểm (fetchNearbyPlaces)", "error", "Lỗi phân tích cú pháp (Parse Error)");
     throw new Error("Failed to parse response from Gemini");
   }
 
@@ -115,27 +153,34 @@ export interface ComboParams {
   startTime: string;
   endTime: string;
   preferences: string[];
-  selectedStyle: string;
 }
 
 export const generateCombos = async (params: ComboParams): Promise<Combo[]> => {
   // @ts-ignore
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    addAILog("Tạo Combo (generateCombos)", "error", "Thiếu API Key (VITE_GEMINI_API_KEY)");
+  } else {
+    addAILog("Tạo Combo (generateCombos)", "loading", `Đang tạo combo cho: ${params.location}, ${params.companion}`);
+  }
   const ai = new GoogleGenAI({ apiKey });
   
+  const availablePlaces = REAL_LOCATIONS.map((l: any) => `- ${l.name} (${l.category}, ${l.theme}) - Giá khoảng: ${l.price} - ${l.address}`).join('\n');
+
   const prompt = `
 I want to plan an authentic date/outing at: "${params.location}".
 Budget: "${params.budget}".
 Companion: "${params.companion}".
 Time available: from ${params.startTime} to ${params.endTime}.
 Preferences: ${params.preferences.join(', ')}.
-Fashion style: ${params.selectedStyle}.
 
 CRITICAL INSTRUCTIONS:
-1. ENSURE each place ACTUALLY EXISTS on Google Maps in precisely the selected location. Do NOT hallucinate names.
-2. Provide the EXACT real name and address so it can be queried directly on Maps.
-3. Prices must be highly accurate and realistic to the current menu prices or entry fees (e.g., 50k-100k for coffee, 100k-500k for meals in Vietnam).
-4. Do NOT suggest irrelevant places like primary schools for an outing.
+1. Here is a curated list of REAL places. YOU MUST PRIORITIZE picking places from this list whenever possible to build your combos:
+${availablePlaces}
+
+2. If the curated list doesn't fit well enough, you can find other REAL places on Google Maps, but ensure they ACTUALLY EXIST. Do NOT hallucinate names.
+3. Provide the EXACT real name and address so it can be queried directly on Maps.
+4. Prices must be highly accurate and realistic to the current menu prices or entry fees.
 
 Generate EXACTLY 5 distinct itinerary options (Combos) to give maximum variety. Each Combo should have a unique theme (e.g., Romantic, Fun, Mysterious, Active).
 For each Combo:
@@ -209,9 +254,11 @@ Do not include any other text outside the JSON block. Ensure the JSON is perfect
         combo.id = `live-combo-${idx}-${Date.now()}`;
       });
 
+      addAILog("Tạo Combo (generateCombos)", "success", `Đã tạo ${parsedResult.length} combo.`);
       return parsedResult as Combo[];
 
     } catch (e: any) {
+      addAILog("Tạo Combo (generateCombos)", "error", `Lỗi LLM: ${e.message} (Lần thử ${attempt + 1}/${MAX_RETRIES + 1})`);
       console.warn(`[API Retry ${attempt}/${MAX_RETRIES}] Gặp lỗi khi truy vấn LLM:`, e.message);
       
       if (attempt === MAX_RETRIES) {
@@ -232,6 +279,11 @@ Do not include any other text outside the JSON block. Ensure the JSON is perfect
 export const chatWithAI = async (history: {role: string, text: string}[], message: string): Promise<string> => {
   // @ts-ignore
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    addAILog("Chat AI (chatWithAI)", "error", "Thiếu API Key (VITE_GEMINI_API_KEY)");
+  } else {
+    addAILog("Chat AI (chatWithAI)", "loading", `Người dùng chat: ${message.substring(0, 30)}...`);
+  }
   const ai = new GoogleGenAI({ apiKey });
 
   const systemInstruction = "Bạn là AI Trợ lý Hẹn hò tinh tế và hài hước của Widget Date. Nhiệm vụ tư vấn chi tiết các điểm đi chơi, review quán xá ở Việt Nam. Rất thân thiện, dùng icon dễ thương và chia lịch trình ra từng gạch đầu dòng rõ ràng, mạch lạc.";
@@ -245,16 +297,18 @@ export const chatWithAI = async (history: {role: string, text: string}[], messag
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       contents: [...formattedHistory, { role: "user", parts: [{ text: message }] }],
       config: {
         systemInstruction: systemInstruction,
       }
     });
 
+    addAILog("Chat AI (chatWithAI)", "success", "Đã nhận phản hồi từ AI.");
     return response.text || "Mình bị rớt mạng rồi, bạn thử lại sau nhe!!";
   } catch (e: any) {
     console.error("Chat error:", e);
+    addAILog("Chat AI (chatWithAI)", "error", `Lỗi LLM: ${e.message || 'Unknown Error'}`);
     
     // 2. Chặn lỗi Rate Limit (429) và Trả lời tự động bằng Canned Responses
     const isRateLimit = e?.message?.includes('429') || e?.status === 429;

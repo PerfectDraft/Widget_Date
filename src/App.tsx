@@ -3,8 +3,8 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/re
 import { Home, Compass, Clock, Wallet, MapPin, Users, Heart, Coffee, Utensils, Gamepad2, Film, Footprints, Sparkles, CheckCircle2, CreditCard, ArrowRight, Zap, History, Map as MapIcon, TrendingUp, Plus, Navigation2, Shirt, CloudRain, Star, ShoppingBag, Car, Image as ImageIcon, X, Sun, CalendarHeart, HeartCrack, Send, Bot, Trophy, Award, Target, Flame } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from './lib/utils';
-import { SAMPLE_COMBOS, LOCATIONS, TRENDS, MOVIES, OUTFIT_STYLES, RENTAL_STYLES, Combo, MILESTONE_LEVELS, BADGES, UserReward, THEME_TO_OUTFIT_STYLE } from './data';
-import { fetchNearbyPlaces, calculateDistance, Place, generateCombos, chatWithAI, scrapeGoogleMapsImage } from './services/geminiService';
+import { SAMPLE_COMBOS, REAL_LOCATIONS, TRENDS, MOVIES, OUTFIT_STYLES, RENTAL_STYLES, Combo, MILESTONE_LEVELS, BADGES, UserReward, THEME_TO_OUTFIT_STYLE } from './data';
+import { fetchNearbyPlaces, calculateDistance, Place, generateCombos, chatWithAI, scrapeGoogleMapsImage, subscribeToAILogs, AILogEntry } from './services/geminiService';
 import { Toast } from './components/Toast';
 
 type Tab = 'home' | 'explore' | 'history' | 'wallet';
@@ -20,13 +20,17 @@ const SwipeCard = ({ loc, isTop, indexOffset, onSwipe, onViewImage }: any) => {
   useEffect(() => {
     let mounted = true;
     const fetchImg = async () => {
-      const uri = loc.mapsUri || `https://maps.google.com/maps?q=${encodeURIComponent(loc.name)}`;
+      if (loc.imageUrl) {
+        if(mounted) setImgUrl(loc.imageUrl);
+        return;
+      }
+      const uri = loc.mapsLink || loc.mapsUri || `https://maps.google.com/maps?q=${encodeURIComponent(loc.name)}`;
       const url = await scrapeGoogleMapsImage(uri);
       if(mounted && url) setImgUrl(url);
     };
     fetchImg();
     return () => { mounted = false; };
-  }, [loc.name, loc.mapsUri]);
+  }, [loc.name, loc.mapsUri, loc.mapsLink, loc.imageUrl]);
 
   const handleDragEnd = (event: any, info: any) => {
     if (info.offset.x > 100) {
@@ -65,16 +69,16 @@ const SwipeCard = ({ loc, isTop, indexOffset, onSwipe, onViewImage }: any) => {
           <h2 className="text-2xl font-bold text-white mb-1 drop-shadow-md">{loc.name}</h2>
           <div className="flex items-center gap-2 text-white/90 text-sm drop-shadow">
             <MapPin className="w-4 h-4 text-pink-400" />
-            <span className="line-clamp-1">{loc.desc || loc.address || 'Hà Nội'}</span>
+            <span className="line-clamp-1">{loc.desc || loc.theme || loc.address || 'Hà Nội'}</span>
           </div>
         </div>
       </div>
       <div className="flex-1 p-6 flex flex-col bg-white">
         <div className="flex items-center gap-2 mb-4">
           <span className="bg-yellow-100 text-yellow-700 px-2 py-1 flex items-center gap-1 rounded-lg text-xs font-bold"><Star className="w-3 h-3 fill-yellow-500 text-yellow-500"/> {loc.rating || 4.5}</span>
-          <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs font-bold">{loc.type || 'Hẹn hò cực chill'}</span>
+          <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-lg text-xs font-bold">{loc.type || loc.category || 'Hẹn hò cực chill'}</span>
         </div>
-        <p className="text-sm text-slate-600 line-clamp-2 flex-1">{loc.note || 'Địa điểm lý tưởng cho cặp đôi với không gian lãng mạn và đồ ăn cực ngon!'}</p>
+        <p className="text-sm text-slate-600 line-clamp-2 flex-1">{loc.note || loc.theme || 'Địa điểm lý tưởng cho cặp đôi với không gian lãng mạn và đồ ăn cực ngon!'}</p>
         
         <div className="flex justify-between items-center mt-4">
           <div className="w-12 h-12 rounded-full border border-red-200 text-red-500 flex items-center justify-center bg-red-50/50 shadow-sm">
@@ -92,6 +96,62 @@ const SwipeCard = ({ loc, isTop, indexOffset, onSwipe, onViewImage }: any) => {
 
 const formatVND = (amount: number) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+};
+
+const AIMonitor = () => {
+  const [logs, setLogs] = useState<AILogEntry[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    return subscribeToAILogs(setLogs);
+  }, []);
+
+  return (
+    <>
+      <button 
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-[130px] right-4 z-[90] bg-slate-900 text-emerald-400 rounded-full p-3 shadow-lg shadow-emerald-500/20 border border-emerald-500/30 transition-transform hover:scale-105 active:scale-95 flex items-center justify-center font-mono text-xs gap-2"
+      >
+        <Zap className="w-5 h-5" />
+        <span className="font-bold hidden sm:inline">AI STATUS</span>
+        {logs.length > 0 && logs[0].status === 'loading' && <span className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping" />}
+        {logs.length > 0 && logs[0].status === 'error' && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />}
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-md h-[70vh] flex flex-col overflow-hidden shadow-2xl">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <h3 className="text-emerald-400 font-mono font-bold flex items-center gap-2"><Zap className="w-4 h-4"/> AI Network Monitor</h3>
+                <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-[10px] sm:text-xs bg-[#0f172a]">
+                {logs.length === 0 ? (
+                  <div className="text-slate-500 text-center mt-10">Chưa có kết nối LLM nào...</div>
+                ) : (
+                  logs.map(log => (
+                    <div key={log.id} className="border-l-2 pl-3 py-1 border-slate-700">
+                      <div className="flex items-center gap-2 text-slate-400 mb-1">
+                        <span>[{log.timestamp}]</span>
+                        <span className="text-slate-300 font-bold">{log.action}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        {log.status === 'loading' && <span className="text-yellow-400 flex items-center gap-1 shrink-0"><div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"/> Loading...</span>}
+                        {log.status === 'success' && <span className="text-emerald-400 flex items-center gap-1 shrink-0"><div className="w-2 h-2 rounded-full bg-emerald-400"/> Success</span>}
+                        {log.status === 'error' && <span className="text-red-400 flex items-center gap-1 shrink-0"><div className="w-2 h-2 rounded-full bg-red-400"/> Error</span>}
+                        <span className={log.status === 'error' ? 'text-red-300' : 'text-slate-300'}>{log.details}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
+  );
 };
 
 export default function App() {
@@ -119,9 +179,16 @@ export default function App() {
   const [realImgUrl, setRealImgUrl] = useState<string | null>(null);
   const [isRealImgLoading, setIsRealImgLoading] = useState(false);
 
-  const handleOpenRealImage = async (name: string, mapsUri?: string, desc?: string) => {
+  const handleOpenRealImage = async (name: string, mapsUri?: string, desc?: string, imageUrl?: string) => {
     const finalUri = mapsUri || `https://maps.google.com/maps?q=${encodeURIComponent(name)}`;
     setRealImageLoc({ name, mapsUri: finalUri, desc });
+    
+    if (imageUrl) {
+      setIsRealImgLoading(false);
+      setRealImgUrl(imageUrl);
+      return;
+    }
+
     setIsRealImgLoading(true);
     setRealImgUrl(null);
     
@@ -180,56 +247,82 @@ export default function App() {
   const [companion, setCompanion] = useState('Người yêu');
   const [startTime, setStartTime] = useState('18:00');
   const [endTime, setEndTime] = useState('22:00');
-  const [preferences, setPreferences] = useState<string[]>(['Ăn uống', 'Cà phê']);
-  const [selectedStyle, setSelectedStyle] = useState('Minimalism');
+  const [preferences, setPreferences] = useState<string[]>(['Cafe']);
   
   // Display State
-  const [displayStyle, setDisplayStyle] = useState('Minimalism');
   const [mapFilter, setMapFilter] = useState('Tất cả');
-  const [outfitTab, setOutfitTab] = useState<'buy' | 'rent'>('buy');
-  const [rentModalData, setRentModalData] = useState<{ style: string, gender: 'male' | 'female', data: any } | null>(null);
-  const [rentDuration, setRentDuration] = useState<number>(1);
-  const [rentSize, setRentSize] = useState<string>('');
-  const [rentAddress, setRentAddress] = useState<string>('Cầu Giấy, Hà Nội');
-  const [rentSuccess, setRentSuccess] = useState(false);
+
+  // Weather state
+  const [weatherData, setWeatherData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Hanoi&units=metric&lang=vi&appid=7eb67699a868fd2f0b5be2741b92b5dd');
+        const data = await res.json();
+        setWeatherData(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchWeather();
+  }, []);
 
   // Dynamic Map State
   const [exploreLocationInput, setExploreLocationInput] = useState('Hồ Hoàn Kiếm, Hà Nội');
-  const [dynamicPlaces, setDynamicPlaces] = useState<Place[]>([]);
-  const [placesSort, setPlacesSort] = useState<'rating_desc' | 'rating_asc' | 'dist_asc' | 'dist_desc'>('rating_desc');
+  const [dynamicPlaces, setDynamicPlaces] = useState<any[]>(REAL_LOCATIONS);
+  const [placesSort, setPlacesSort] = useState<'rating_desc' | 'rating_asc' | 'dist_asc' | 'dist_desc' | 'best_choice'>('rating_desc');
   const [userCoords, setUserCoords] = useState<{lat: number, lng: number} | null>(null);
   
   // Swipe State
   const [swipeIndex, setSwipeIndex] = useState(0);
 
-  const handleFetchPlaces = async () => {
-    if (!exploreLocationInput.trim()) return;
+  const handleFetchPlaces = () => {
+    if (!navigator.geolocation) {
+      showToast('Trình duyệt của bạn không hỗ trợ định vị (Geolocation)!');
+      return;
+    }
+    
     setLoadingPlaces(true);
     setSearchError(null);
-    try {
-      const result = await fetchNearbyPlaces(exploreLocationInput);
-      setUserCoords(result.userLocation);
-      
-      const placesWithDist = result.places.map(p => ({
-        ...p,
-        distance: calculateDistance(result.userLocation.lat, result.userLocation.lng, p.lat, p.lng)
-      }));
-      setDynamicPlaces(placesWithDist);
-    } catch (error) {
-      console.error(error);
-      setSearchError('Có lỗi xảy ra khi tìm kiếm địa điểm!');
-      showToast('Có lỗi xảy ra khi tìm kiếm địa điểm!');
-    } finally {
-      setLoadingPlaces(false);
-    }
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        setUserCoords({ lat, lng });
+        
+        const placesWithDist = REAL_LOCATIONS.map((p: any) => {
+          let distance = 999;
+          if (p.lat && p.lng) {
+            distance = calculateDistance(lat, lng, p.lat, p.lng);
+          }
+          return { ...p, distance };
+        });
+        
+        setDynamicPlaces(placesWithDist as any);
+        setPlacesSort('best_choice');
+        setLoadingPlaces(false);
+        showToast('Đã tính toán khoảng cách thành công!');
+      },
+      (error) => {
+        console.error("Lỗi Geolocation:", error);
+        setSearchError('Vui lòng cấp quyền vị trí (Location) để hệ thống có thể tự động tìm địa điểm gần bạn nhất!');
+        showToast('Vui lòng cấp quyền vị trí!');
+        setLoadingPlaces(false);
+      }
+    );
   };
 
   const getSortedPlaces = () => {
     const places = [...dynamicPlaces];
-    if (placesSort === 'rating_desc') places.sort((a, b) => b.rating - a.rating);
-    if (placesSort === 'rating_asc') places.sort((a, b) => a.rating - b.rating);
+    if (placesSort === 'rating_desc') places.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    if (placesSort === 'rating_asc') places.sort((a, b) => (a.rating || 0) - (b.rating || 0));
     if (placesSort === 'dist_asc') places.sort((a, b) => (a.distance || 0) - (b.distance || 0));
     if (placesSort === 'dist_desc') places.sort((a, b) => (b.distance || 0) - (a.distance || 0));
+    if (placesSort === 'best_choice') {
+      places.sort((a, b) => ((b.rating || 0) * 10 - (b.distance || 999)) - ((a.rating || 0) * 10 - (a.distance || 999)));
+    }
     return places;
   };
 
@@ -260,19 +353,9 @@ export default function App() {
         companion,
         startTime,
         endTime,
-        preferences,
-        selectedStyle
+        preferences
       });
       setCombos(liveCombos);
-      
-      // Dynamic outfit mapping from AI combo theme
-      if (liveCombos.length > 0) {
-        const mappedStyle = THEME_TO_OUTFIT_STYLE[liveCombos[0].theme] || 'Minimalism';
-        setDisplayStyle(mappedStyle);
-        showToast(`Outfit đã được cập nhật theo vibe ${liveCombos[0].theme}! ✨`);
-      } else {
-        setDisplayStyle(selectedStyle);
-      }
     } catch (error: any) {
       console.error(error);
       const errMsg = error.message || '';
@@ -284,7 +367,6 @@ export default function App() {
       }
       
       setCombos(SAMPLE_COMBOS);
-      setDisplayStyle(selectedStyle);
     } finally {
       setIsGenerating(false);
     }
@@ -315,32 +397,7 @@ export default function App() {
     }, 2000);
   };
 
-  const getRentTotal = () => {
-    if (!rentModalData) return 0;
-    const basePrice = rentModalData.data.price;
-    let durationPrice = basePrice;
-    if (rentDuration === 2) durationPrice = 90000;
-    if (rentDuration === 3) durationPrice = 120000;
-    if (rentDuration === 7) durationPrice = 250000;
-    return durationPrice + 100000; // + 100k deposit
-  };
 
-  const handleRentPayment = () => {
-    if (!rentModalData) return;
-
-    // Award Date Miles for renting outfit
-    earnMiles(50, `Thuê Outfit ${rentModalData.data.id}`);
-
-    setRentSuccess(true);
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#10b981', '#34d399', '#fcd34d'] });
-    showToast('Bạn đã nhận 50 Date Miles! 👗');
-
-    setTimeout(() => {
-      setRentModalData(null);
-      setRentSuccess(false);
-      setActiveTab('wallet');
-    }, 3000);
-  };
 
   const handleRide = (app: 'grab' | 'be' | 'xanhsm', name: string, lat: number, lng: number) => {
     let url = '';
@@ -365,23 +422,40 @@ export default function App() {
   const renderHome = () => (
     <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
       
-      {/* Banner Thời tiết & Kỷ niệm */}
-      <div className="bg-gradient-to-br from-pink-500 via-rose-400 to-orange-400 rounded-3xl p-6 text-white shadow-lg shadow-pink-500/20 relative overflow-hidden">
+      {/* Banner Thời tiết */}
+      <div className="bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 rounded-3xl p-6 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-10 w-32 h-32 bg-yellow-300/30 rounded-full blur-2xl"></div>
+        <div className="absolute top-1/2 -left-10 w-32 h-32 bg-yellow-300/20 rounded-full blur-2xl"></div>
         <div className="relative z-10 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <span className="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-sm border border-white/10 flex items-center gap-1.5">
-              <CalendarHeart className="w-3 h-3 text-white" /> Kỷ niệm 1 năm yêu nhau 💖
-            </span>
-            <div className="flex items-center gap-1.5 text-sm font-bold bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-              <Sun className="w-4 h-4 text-yellow-300" /> 26°C Nắng đẹp
+          {weatherData ? (
+            <>
+              <div className="flex items-center justify-between">
+                <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-sm font-bold shadow-sm border border-white/10 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-white" /> {weatherData.name}
+                </span>
+                <div className="flex items-center gap-2 text-sm font-bold bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 capitalize">
+                  <CloudRain className="w-4 h-4 text-white" /> {weatherData.weather[0]?.description}
+                </div>
+              </div>
+              <div className="flex justify-between items-end mt-2">
+                <div>
+                  <h2 className="text-5xl font-extrabold leading-tight mb-1 flex items-center gap-2">
+                    {Math.round(weatherData.main.temp)}°C
+                  </h2>
+                  <p className="text-white/90 text-sm font-medium">Cảm giác như {Math.round(weatherData.main.feels_like)}°C • Độ ẩm: {weatherData.main.humidity}%</p>
+                </div>
+                <img 
+                  src={`https://openweathermap.org/img/wn/${weatherData.weather[0]?.icon}@2x.png`} 
+                  alt="Thời tiết" 
+                  className="w-20 h-20 -mb-2"
+                />
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 text-white/80">
+              <span className="animate-pulse flex items-center gap-2"><Sun className="w-5 h-5"/> Đang lấy thông tin thời tiết...</span>
             </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold leading-tight mb-1 flex items-center gap-2">Chào Buổi Sáng! ☀️</h2>
-            <p className="text-white/90 text-sm font-medium">Hôm nay là một ngày lý tưởng để ra ngoài tạo chút kỷ niệm đó!</p>
-          </div>
+          )}
         </div>
       </div>
 
@@ -439,34 +513,15 @@ export default function App() {
         <div className="space-y-3 mb-6">
           <label className="text-sm font-semibold text-slate-700 flex items-center gap-2"><Sparkles className="w-4 h-4 text-yellow-500" /> Sở thích</label>
           <div className="flex flex-wrap gap-2">
-            {[
-              { id: 'Ăn uống', icon: <Utensils className="w-3 h-3" /> },
-              { id: 'Cà phê', icon: <Coffee className="w-3 h-3" /> },
-              { id: 'Workshop', icon: <Sparkles className="w-3 h-3" /> },
-              { id: 'Địa điểm checkin', icon: <MapPin className="w-3 h-3" /> },
-              { id: 'Đi phượt', icon: <Compass className="w-3 h-3" /> },
-              { id: 'Xem phim', icon: <Film className="w-3 h-3" /> },
-              { id: 'Dạo phố', icon: <Footprints className="w-3 h-3" /> },
-            ].map(pref => {
-              const isSelected = preferences.includes(pref.id);
+            {Array.from(new Set(REAL_LOCATIONS.map((loc: any) => loc.category).filter(Boolean))).map((cat: any) => {
+              const prefId = String(cat);
+              const isSelected = preferences.includes(prefId);
               return (
-                <button key={pref.id} onClick={() => setPreferences(isSelected ? preferences.filter(p => p !== pref.id) : [...preferences, pref.id])} className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border", isSelected ? "border-purple-500 bg-purple-50 text-purple-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")}>
-                  {pref.icon} {pref.id}
+                <button key={prefId} onClick={() => setPreferences(isSelected ? preferences.filter(p => p !== prefId) : [...preferences, prefId])} className={cn("flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border", isSelected ? "border-purple-500 bg-purple-50 text-purple-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")}>
+                  {prefId}
                 </button>
               );
             })}
-          </div>
-        </div>
-
-        {/* Style Selector */}
-        <div className="space-y-3 mb-8">
-          <label className="text-sm font-semibold text-slate-700 flex items-center gap-2"><Shirt className="w-4 h-4 text-blue-500" /> Phong cách thời trang hôm nay?</label>
-          <div className="flex flex-wrap gap-2">
-            {Object.keys(OUTFIT_STYLES).map(style => (
-              <button key={style} onClick={() => setSelectedStyle(style)} className={cn("px-4 py-2 rounded-full text-sm font-medium transition-all border", selectedStyle === style ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")}>
-                {style}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -560,97 +615,7 @@ export default function App() {
             ))}
           </div>
 
-          {/* Outfits Section */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                {outfitTab === 'buy' ? <><Shirt className="w-5 h-5 text-purple-500" /> Outfit Gợi Ý</> : <><Shirt className="w-5 h-5 text-emerald-500" /> Thuê Outfit Có Sẵn</>}
-              </h2>
-            </div>
-            
-            <div className="flex bg-slate-100 p-1 rounded-xl mb-4">
-              <button onClick={() => setOutfitTab('buy')} className={cn("flex-1 py-2 rounded-lg text-sm font-bold transition-all", outfitTab === 'buy' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700")}>
-                Mua Mới
-              </button>
-              <button onClick={() => setOutfitTab('rent')} className={cn("flex-1 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-1", outfitTab === 'rent' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}>
-                Thuê Nhanh ⚡ <span className="bg-yellow-400 text-yellow-900 text-[10px] px-1.5 py-0.5 rounded-md ml-1">HOT</span>
-              </button>
-            </div>
 
-            <div className="flex items-center gap-2 text-sm text-slate-600 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <CloudRain className="w-4 h-4 text-blue-500" />
-              <span>22°C • Mưa phùn nhẹ • Độ ẩm 78%</span>
-            </div>
-            <p className="text-sm text-slate-500 mb-4 italic">☔ Trời có mưa phùn, mang ô trong suốt để sống ảo nhé!</p>
-            
-            <div className="flex overflow-x-auto pb-2 mb-4 gap-2 hide-scrollbar">
-              {Object.keys(OUTFIT_STYLES).map(style => (
-                <button key={style} onClick={() => setDisplayStyle(style)} className={cn("whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all border", displayStyle === style ? (outfitTab === 'buy' ? "border-purple-500 bg-purple-50 text-purple-700" : "border-emerald-500 bg-emerald-50 text-emerald-700") : "border-slate-200 bg-white text-slate-600")}>
-                  {style}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Male Outfit */}
-              <div className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex flex-col relative">
-                {outfitTab === 'rent' && <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-sm">⚡ Giao 2h</div>}
-                <div className="h-48 overflow-hidden bg-slate-200">
-                  <img src={outfitTab === 'buy' ? OUTFIT_STYLES[displayStyle].male.image : RENTAL_STYLES[displayStyle].male.image} alt="Male outfit" className="w-full h-full object-cover" />
-                </div>
-                <div className="p-3 flex flex-col flex-1">
-                  <p className="text-xs font-bold text-blue-700 mb-1">Nam {outfitTab === 'rent' && `- ${RENTAL_STYLES[displayStyle].male.id}`}</p>
-                  <p className="text-xs text-slate-700 leading-relaxed mb-2 flex-1">{outfitTab === 'buy' ? OUTFIT_STYLES[displayStyle].male.desc : RENTAL_STYLES[displayStyle].male.desc}</p>
-                  
-                  {outfitTab === 'rent' && (
-                    <div className="mb-3 space-y-1">
-                      <p className="text-[10px] text-slate-500">Còn {RENTAL_STYLES[displayStyle].male.stock} bộ / Size: {RENTAL_STYLES[displayStyle].male.sizes.join(', ')}</p>
-                      <p className="text-sm font-bold text-emerald-600">{formatVND(RENTAL_STYLES[displayStyle].male.price)}/ngày</p>
-                    </div>
-                  )}
-
-                  {outfitTab === 'buy' ? (
-                    <a href={OUTFIT_STYLES[displayStyle].male.link} target="_blank" rel="noreferrer" className="w-full bg-orange-50 hover:bg-orange-100 text-orange-600 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 mt-auto">
-                      <ShoppingBag className="w-3 h-3" /> Mua trên Shopee
-                    </a>
-                  ) : (
-                    <button onClick={() => { setRentModalData({ style: displayStyle, gender: 'male', data: RENTAL_STYLES[displayStyle].male }); setRentSize(RENTAL_STYLES[displayStyle].male.sizes[0]); setRentDuration(1); }} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 mt-auto shadow-sm shadow-emerald-500/20">
-                      <Shirt className="w-3 h-3" /> Thuê Ngay
-                    </button>
-                  )}
-                </div>
-              </div>
-              
-              {/* Female Outfit */}
-              <div className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex flex-col relative">
-                {outfitTab === 'rent' && <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded-full z-10 shadow-sm">⚡ Giao 2h</div>}
-                <div className="h-48 overflow-hidden bg-slate-200">
-                  <img src={outfitTab === 'buy' ? OUTFIT_STYLES[displayStyle].female.image : RENTAL_STYLES[displayStyle].female.image} alt="Female outfit" className="w-full h-full object-cover" />
-                </div>
-                <div className="p-3 flex flex-col flex-1">
-                  <p className="text-xs font-bold text-pink-700 mb-1">Nữ {outfitTab === 'rent' && `- ${RENTAL_STYLES[displayStyle].female.id}`}</p>
-                  <p className="text-xs text-slate-700 leading-relaxed mb-2 flex-1">{outfitTab === 'buy' ? OUTFIT_STYLES[displayStyle].female.desc : RENTAL_STYLES[displayStyle].female.desc}</p>
-                  
-                  {outfitTab === 'rent' && (
-                    <div className="mb-3 space-y-1">
-                      <p className="text-[10px] text-slate-500">Còn {RENTAL_STYLES[displayStyle].female.stock} bộ / Size: {RENTAL_STYLES[displayStyle].female.sizes.join(', ')}</p>
-                      <p className="text-sm font-bold text-emerald-600">{formatVND(RENTAL_STYLES[displayStyle].female.price)}/ngày</p>
-                    </div>
-                  )}
-
-                  {outfitTab === 'buy' ? (
-                    <a href={OUTFIT_STYLES[displayStyle].female.link} target="_blank" rel="noreferrer" className="w-full bg-orange-50 hover:bg-orange-100 text-orange-600 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 mt-auto">
-                      <ShoppingBag className="w-3 h-3" /> Mua trên Shopee
-                    </a>
-                  ) : (
-                    <button onClick={() => { setRentModalData({ style: displayStyle, gender: 'female', data: RENTAL_STYLES[displayStyle].female }); setRentSize(RENTAL_STYLES[displayStyle].female.sizes[0]); setRentDuration(1); }} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 mt-auto shadow-sm shadow-emerald-500/20">
-                      <Shirt className="w-3 h-3" /> Thuê Ngay
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </motion.div>
@@ -679,19 +644,16 @@ export default function App() {
           <div className="bg-white p-4 rounded-3xl shadow-sm border border-slate-100 space-y-3">
             <label className="text-sm font-bold text-slate-700 block">Vị trí của bạn</label>
             <div className="flex gap-2">
-              <input 
-                type="text" 
-                value={exploreLocationInput}
-                onChange={(e) => setExploreLocationInput(e.target.value)}
-                placeholder="Nhập vị trí hiện tại..."
-                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
-              />
               <button 
                 onClick={handleFetchPlaces}
                 disabled={loadingPlaces}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white px-4 rounded-xl font-bold transition-colors flex items-center justify-center shrink-0"
+                className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 shadow-md shadow-slate-900/20"
               >
-                {loadingPlaces ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Navigation2 className="w-5 h-5" />}
+                {loadingPlaces ? (
+                  <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Đang định vị và tìm kiếm AI...</>
+                ) : (
+                  <><Navigation2 className="w-5 h-5" /> Sử dụng vị trí hiện tại (Geolocation)</>
+                )}
               </button>
             </div>
             {searchError && <p className="text-red-500 text-xs mt-2">{searchError}</p>}
@@ -711,6 +673,7 @@ export default function App() {
               onChange={(e) => setPlacesSort(e.target.value as any)}
               className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
             >
+              <option value="best_choice">Best Choice (Gần & Sao cao)</option>
               <option value="rating_desc">Đánh giá cao nhất</option>
               <option value="rating_asc">Đánh giá thấp nhất</option>
               <option value="dist_asc">Gần nhất</option>
@@ -719,71 +682,42 @@ export default function App() {
           </div>
 
           <div className="grid gap-4">
-            {dynamicPlaces.length > 0 ? (
-              getSortedPlaces().map((loc) => (
-                <div key={loc.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                        {loc.name}
-
-                        {loc.websiteUri && (
-                          <a href={loc.websiteUri} target="_blank" rel="noreferrer" className="text-purple-500 hover:text-purple-600" title="Mở trang web thực tế / đánh giá">
-                            🌐
-                          </a>
-                        )}
-                      </h3>
-                      <p className="text-sm text-slate-500">{loc.type} • {loc.address}</p>
-                    </div>
-                    <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-1 rounded-lg text-xs font-bold shrink-0">
-                      <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> {loc.rating}
-                    </div>
+            {getSortedPlaces().map((loc: any) => (
+              <div key={loc.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                      {loc.name}
+                      {loc.websiteUri && (
+                        <a href={loc.websiteUri} target="_blank" rel="noreferrer" className="text-purple-500 hover:text-purple-600" title="Mở trang web thực tế / đánh giá">
+                          🌐
+                        </a>
+                      )}
+                    </h3>
+                    <p className="text-sm text-slate-500">{loc.address} • {loc.theme || loc.type || loc.category}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-2 rounded-lg">
-                    <MapPin className="w-3 h-3" /> Cách bạn {loc.distance ? loc.distance.toFixed(1) : '?'} km
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 mt-1">
-                    <button onClick={() => showToast('Đã thêm vào combo của bạn!')} className="bg-purple-50 hover:bg-purple-100 text-purple-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
-                      <Plus className="w-3 h-3" /> Thêm vào Combo
-                    </button>
-                    <button onClick={() => setRideModalLoc({name: loc.name, lat: loc.lat, lng: loc.lng})} className="bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
-                      <Car className="w-3 h-3" /> Gọi Xe Đến Đây
-                    </button>
-                    <button onClick={() => handleOpenRealImage(loc.name, loc.mapsUri, loc.type)} className="col-span-2 bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-slate-200">
-                      <ImageIcon className="w-3 h-3" /> Xem Ảnh Thực Tế Của Địa Điểm
-                    </button>
+                  <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-1 rounded-lg text-xs font-bold shrink-0">
+                    <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> {loc.rating}
                   </div>
                 </div>
-              ))
-            ) : (
-              LOCATIONS.map(loc => (
-                <div key={loc.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-slate-800">{loc.name}</h3>
-                      <p className="text-sm text-slate-500">{loc.area} • {loc.desc}</p>
-                    </div>
-                    <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-1 rounded-lg text-xs font-bold">
-                      <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> {loc.rating}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-2 rounded-lg">
-                    <MapPin className="w-3 h-3" /> {loc.dist} • "{loc.note}"
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 mt-1">
-                    <button onClick={() => showToast('Đã thêm vào combo của bạn!')} className="bg-purple-50 hover:bg-purple-100 text-purple-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
-                      <Plus className="w-3 h-3" /> Thêm vào Combo
-                    </button>
-                    <button onClick={() => setRideModalLoc({name: loc.name, lat: loc.lat, lng: loc.lng})} className="bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
-                      <Car className="w-3 h-3" /> Gọi Xe Đến Đây
-                    </button>
-                    <button onClick={() => handleOpenRealImage(loc.name, undefined, loc.desc)} className="col-span-2 bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-slate-200">
-                      <ImageIcon className="w-3 h-3" /> Xem Ảnh Thực Tế Của Địa Điểm
-                    </button>
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-2 rounded-lg">
+                  <MapPin className="w-3 h-3" /> 
+                  {loc.distance !== undefined && loc.distance !== 999 ? `Cách bạn ${loc.distance.toFixed(1)} km • ` : ''} 
+                  Giá khoảng: {formatVND(loc.price || loc.cost || 0)}
                 </div>
-              ))
-            )}
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <button onClick={() => showToast('Đã thêm vào combo của bạn!')} className="bg-purple-50 hover:bg-purple-100 text-purple-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
+                    <Plus className="w-3 h-3" /> Thêm vào Combo
+                  </button>
+                  <button onClick={() => setRideModalLoc({name: loc.name, lat: loc.lat || 0, lng: loc.lng || 0})} className="bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
+                    <Car className="w-3 h-3" /> Gọi Xe Đến Đây
+                  </button>
+                  <button onClick={() => handleOpenRealImage(loc.name, loc.mapsLink || loc.mapsUri, loc.theme || loc.type || loc.category, loc.imageUrl)} className="col-span-2 bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-slate-200">
+                    <ImageIcon className="w-3 h-3" /> Xem Ảnh Thực Tế Của Địa Điểm
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </motion.div>
       )}
@@ -798,7 +732,7 @@ export default function App() {
           </div>
           
           {(() => {
-            const swipeCards = dynamicPlaces.length > 0 ? dynamicPlaces : LOCATIONS;
+            const swipeCards = dynamicPlaces.length > 0 ? dynamicPlaces : REAL_LOCATIONS;
             if (swipeIndex >= swipeCards.length) {
               return (
                 <div className="flex flex-col items-center justify-center p-10 bg-white rounded-3xl border border-slate-100 shadow-sm text-center space-y-4 h-[450px]">
@@ -834,7 +768,7 @@ export default function App() {
                           }
                           setSwipeIndex(prev => prev + 1);
                         }}
-                        onViewImage={() => handleOpenRealImage(loc.name, loc.mapsUri, loc.desc)}
+                        onViewImage={() => handleOpenRealImage(loc.name, loc.mapsLink || loc.mapsUri, loc.desc || loc.theme || loc.type || loc.category, loc.imageUrl)}
                       />
                     );
                   })}
@@ -1063,10 +997,10 @@ export default function App() {
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 pb-safe z-40">
         <div className="max-w-md mx-auto px-6 py-3 flex justify-between items-center">
           {[
-            { id: 'home', icon: Home, label: 'Trang Chủ' },
-            { id: 'explore', icon: Compass, label: 'Khám Phá' },
-            { id: 'history', icon: History, label: 'Lịch Sử' },
-            { id: 'wallet', icon: Trophy, label: 'Date Miles' },
+            { id: 'home', icon: Home, label: 'Trang chủ' },
+            { id: 'explore', icon: Compass, label: 'Khám phá' },
+            { id: 'history', icon: History, label: 'Lịch sử' },
+            { id: 'wallet', icon: Trophy, label: 'Date Milestones' },
           ].map((item) => {
             const isActive = activeTab === item.id;
             const Icon = item.icon;
@@ -1129,95 +1063,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Rent Modal */}
-      <AnimatePresence>
-        {rentModalData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
-              {rentSuccess ? (
-                <div className="p-8 text-center">
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", bounce: 0.5 }} className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-500" />
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-slate-800 mb-2">Đã đặt thuê!</h3>
-                  <p className="text-slate-600 font-medium mb-2">Xe giao hàng sẽ đến trong 2 giờ.</p>
-                  <p className="text-xs text-slate-400">Mã đơn: #WD{new Date().toISOString().slice(2,10).replace(/-/g,'')}0001</p>
-                </div>
-              ) : (
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-yellow-500" /> Thuê Nhanh
-                    </h3>
-                    <button onClick={() => setRentModalData(null)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200">✕</button>
-                  </div>
-                  
-                  <div className="flex gap-4 mb-6">
-                    <div className="w-20 h-24 bg-slate-100 rounded-xl overflow-hidden shrink-0">
-                      <img src={rentModalData.data.image} alt="Outfit" className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-800">{rentModalData.data.id}</p>
-                      <p className="text-xs text-slate-500 mb-2">{rentModalData.data.desc}</p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md">Giao 2h</span>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">Chọn Size</label>
-                      <div className="flex gap-2">
-                        {rentModalData.data.sizes.map((s: string) => (
-                          <button key={s} onClick={() => setRentSize(s)} className={cn("flex-1 py-2 rounded-xl text-sm font-bold transition-all border", rentSize === s ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")}>
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">Thời gian thuê</label>
-                      <select value={rentDuration} onChange={(e) => setRentDuration(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
-                        <option value={1}>1 ngày (50.000đ)</option>
-                        <option value={2}>2 ngày (90.000đ)</option>
-                        <option value={3}>3 ngày (120.000đ)</option>
-                        <option value={7}>1 tuần (250.000đ)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">Địa chỉ giao nhận</label>
-                      <input type="text" value={rentAddress} onChange={(e) => setRentAddress(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" placeholder="Nhập địa chỉ..." />
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
-                    <div className="flex justify-between items-center mb-2 text-sm">
-                      <span className="text-slate-600">Tiền thuê ({rentDuration} ngày)</span>
-                      <span className="font-medium text-slate-800">{formatVND(getRentTotal() - 100000)}</span>
-                    </div>
-                    <div className="flex justify-between items-center mb-3 text-sm">
-                      <span className="text-slate-600">Phí cọc (hoàn trả sau)</span>
-                      <span className="font-medium text-slate-800">100.000 ₫</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-3 border-t border-slate-200">
-                      <span className="text-slate-800 font-bold">Tổng thanh toán</span>
-                      <span className="text-xl font-bold text-emerald-600">{formatVND(getRentTotal())}</span>
-                    </div>
-                    <p className="text-[10px] text-slate-500 mt-2 text-center italic">Miễn phí giao/nhận trong nội thành Hà Nội.</p>
-                  </div>
-
-                  <button onClick={handleRentPayment} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/25 transition-all active:scale-[0.98]">
-                    Xác Nhận Thuê
-                  </button>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* Ride Modal */}
       <AnimatePresence>
@@ -1394,6 +1240,8 @@ export default function App() {
           </div>
         )}
       </AnimatePresence>
+      <AIMonitor />
+      {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
     </div>
   );
 }
