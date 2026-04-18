@@ -184,15 +184,28 @@ export default function App() {
     setRealImageLoc({ name, mapsUri: finalUri, desc });
     
     if (imageUrl) {
-      setIsRealImgLoading(false);
-      setRealImgUrl(imageUrl);
-      return;
+      // Decode image url embedded inside Google maps URL if exists
+      const match = imageUrl.match(/6s(https:%2F%2F[^!&]+)/);
+      if (match) {
+        let decoded = decodeURIComponent(match[1]);
+        decoded = decoded.replace(/=w\d+-h\d+-k-no/, '=s800');
+        setIsRealImgLoading(false);
+        setRealImgUrl(decoded);
+        return;
+      }
+      
+      if (!imageUrl.includes('google.com/maps') && !imageUrl.includes('maps.app.goo.gl')) {
+        setIsRealImgLoading(false);
+        setRealImgUrl(imageUrl);
+        return;
+      }
     }
 
     setIsRealImgLoading(true);
     setRealImgUrl(null);
     
-    const imgUrl = await scrapeGoogleMapsImage(finalUri);
+    const targetUri = (imageUrl && (imageUrl.includes('google.com/maps') || imageUrl.includes('maps.app.goo.gl'))) ? imageUrl : finalUri;
+    const imgUrl = await scrapeGoogleMapsImage(targetUri);
     // Fallback ảnh Unsplash nếu quán chạy offline không có thẻ tag
     setRealImgUrl(imgUrl || `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80`);
     setIsRealImgLoading(false);
