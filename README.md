@@ -4,7 +4,7 @@
 
 # Widget Date 💖
 
-Widget Date là một siêu ứng dụng lên kế hoạch hẹn hò dành riêng cho người dùng Việt Nam. Ứng dụng nổi bật với các tính năng: tạo lịch trình bằng AI, hệ thống điểm thưởng "Date Miles" (Gamification), khám phá địa điểm theo phong cách vuốt thẻ Tinder, tư vấn trang phục thông minh, và tích hợp gọi xe công nghệ trực tiếp.
+Widget Date là một siêu ứng dụng lên kế hoạch hẹn hò dành riêng cho người dùng Việt Nam. Ứng dụng nổi bật với các tính năng: tạo lịch trình bằng AI, hệ thống điểm thưởng "Date Miles" (Gamification), khám phá địa điểm theo phong cách vuốt thẻ Tinder, và tích hợp gọi xe công nghệ trực tiếp.
 
 ## 🌟 Chức Năng
 
@@ -64,4 +64,4 @@ node scraper.js
 ```
 
 ---
-*Created in AI Studio:* [Link to App (Demo Preview)](https://ai.studio/apps/9a2923f6-4591-48d0-96fe-2e0c8cf01b2a)
+*Widget Date - Lên kế hoạch hẹn hò thông minh cho cặp đôi.*
