@@ -278,6 +278,14 @@ export default function App() {
   const [swipeIndex, setSwipeIndex] = useState(0);
 
   const handleFetchPlaces = () => {
+    // Kiểm tra HTTPS - Geolocation bị chặn trên HTTP không phải localhost
+    const isSecureContext = window.isSecureContext || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (!isSecureContext) {
+      setSearchError('❌ Trình duyệt chặn Geolocation trên HTTP! Hãy truy cập qua localhost:5173 thay vì IP mạng để dùng tính năng này.');
+      showToast('❌ Truy cập qua localhost:5173 để dùng Geolocation!');
+      return;
+    }
+
     if (!navigator.geolocation) {
       showToast('Trình duyệt của bạn không hỗ trợ định vị (Geolocation)!');
       return;
@@ -307,10 +315,15 @@ export default function App() {
       },
       (error) => {
         console.error("Lỗi Geolocation:", error);
-        setSearchError('Vui lòng cấp quyền vị trí (Location) để hệ thống có thể tự động tìm địa điểm gần bạn nhất!');
-        showToast('Vui lòng cấp quyền vị trí!');
+        let errMsg = 'Không lấy được vị trí của bạn.';
+        if (error.code === 1) errMsg = '❌ Bạn đã từ chối cấp quyền vị trí. Hãy bật lại trong cài đặt trình duyệt ở icon khóa đầu thanh địa chỉ.';
+        if (error.code === 2) errMsg = '❌ Không xác định được vị trí. Hãy kiểm tra kết nối mạng.';
+        if (error.code === 3) errMsg = '❌ Thời gian chờ định vị quá lâu. Hãy thử lại.';
+        setSearchError(errMsg);
+        showToast(errMsg);
         setLoadingPlaces(false);
-      }
+      },
+      { timeout: 10000, maximumAge: 60000 }  // timeout 10s, cache 1 phút
     );
   };
 

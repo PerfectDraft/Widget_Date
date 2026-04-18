@@ -266,9 +266,10 @@ Do not include any other text outside the JSON block. Ensure the JSON is perfect
         throw new Error(`[FALLBACK LỖI AI] ${e.message}`);
       }
       
-      // ✅ Cải tiến 2: Exponential Backoff (Ngủ trước khi thử lại để tránh Rate Limit block)
-      const sleepMs = 1500 * (attempt + 1); 
-      console.log(`Đang chờ ${sleepMs}ms để Retry...`);
+      // ✅ Cải tiến 2: Exponential Backoff - chờ lâu hơn với lỗi 503 (server overload)
+      const is503 = e.message?.includes('503') || e.message?.includes('UNAVAILABLE');
+      const sleepMs = is503 ? 5000 * (attempt + 1) : 1500 * (attempt + 1);
+      console.log(`Đang chờ ${sleepMs}ms để Retry... (${is503 ? '503 overload' : 'lỗi thường'})`);
       await new Promise(resolve => setTimeout(resolve, sleepMs));
     }
   }
