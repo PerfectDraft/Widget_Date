@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
-import { Home, Compass, Clock, Wallet, MapPin, Users, Heart, Coffee, Utensils, Gamepad2, Film, Footprints, Sparkles, CheckCircle2, CreditCard, ArrowRight, Zap, History, Map as MapIcon, TrendingUp, Plus, Navigation2, Shirt, CloudRain, Star, ShoppingBag, Car, Image as ImageIcon, X, Sun, CalendarHeart, HeartCrack, Send, Bot, Trophy, Award, Target, Flame } from 'lucide-react';
+import { Home, Compass, Clock, Wallet, MapPin, Users, Heart, Coffee, Utensils, Gamepad2, Film, Footprints, Sparkles, CheckCircle2, CreditCard, ArrowRight, Zap, History, Map as MapIcon, TrendingUp, Plus, Navigation2, Shirt, CloudRain, Star, ShoppingBag, Car, Image as ImageIcon, X, Sun, CalendarHeart, HeartCrack, Send, Bot, Trophy, Award, Target, Flame, ChevronLeft, ChevronRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from './lib/utils';
 import { SAMPLE_COMBOS, REAL_LOCATIONS, TRENDS, MOVIES, OUTFIT_STYLES, RENTAL_STYLES, Combo, MILESTONE_LEVELS, BADGES, UserReward, THEME_TO_OUTFIT_STYLE } from './data';
@@ -176,39 +176,45 @@ export default function App() {
   // Modals
   const [rideModalLoc, setRideModalLoc] = useState<{name: string, lat: number, lng: number} | null>(null);
   const [realImageLoc, setRealImageLoc] = useState<{name: string, mapsUri: string, desc?: string} | null>(null);
-  const [realImgUrl, setRealImgUrl] = useState<string | null>(null);
+  const [realImgUrls, setRealImgUrls] = useState<string[]>([]);
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [isRealImgLoading, setIsRealImgLoading] = useState(false);
 
   const handleOpenRealImage = async (name: string, mapsUri?: string, desc?: string, imageUrl?: string) => {
     const finalUri = mapsUri || `https://maps.google.com/maps?q=${encodeURIComponent(name)}`;
     setRealImageLoc({ name, mapsUri: finalUri, desc });
+    setCurrentImgIndex(0);
+    
+    let primaryImage = '';
     
     if (imageUrl) {
       // Decode image url embedded inside Google maps URL if exists
       const match = imageUrl.match(/6s(https:%2F%2F[^!&]+)/);
       if (match) {
         let decoded = decodeURIComponent(match[1]);
-        decoded = decoded.replace(/=w\d+-h\d+-k-no/, '=s800');
-        setIsRealImgLoading(false);
-        setRealImgUrl(decoded);
-        return;
-      }
-      
-      if (!imageUrl.includes('google.com/maps') && !imageUrl.includes('maps.app.goo.gl')) {
-        setIsRealImgLoading(false);
-        setRealImgUrl(imageUrl);
-        return;
+        primaryImage = decoded.replace(/=w\d+-h\d+-k-no/, '=s800');
+      } else if (!imageUrl.includes('google.com/maps') && !imageUrl.includes('maps.app.goo.gl')) {
+        primaryImage = imageUrl;
       }
     }
 
-    setIsRealImgLoading(true);
-    setRealImgUrl(null);
+    if (!primaryImage) {
+      setIsRealImgLoading(true);
+      setRealImgUrls([]);
+      const targetUri = (imageUrl && (imageUrl.includes('google.com/maps') || imageUrl.includes('maps.app.goo.gl'))) ? imageUrl : finalUri;
+      const imgUrl = await scrapeGoogleMapsImage(targetUri);
+      primaryImage = imgUrl || `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80`;
+    }
+
+    // Lấy thêm ảnh context giả lập từ Unsplash để tạo thành Gallery vì link gốc chỉ chứa 1 ảnh
+    const fakeGallery = [
+      primaryImage,
+      `https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80`,
+      `https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=800&q=80`
+    ];
     
-    const targetUri = (imageUrl && (imageUrl.includes('google.com/maps') || imageUrl.includes('maps.app.goo.gl'))) ? imageUrl : finalUri;
-    const imgUrl = await scrapeGoogleMapsImage(targetUri);
-    // Fallback ảnh Unsplash nếu quán chạy offline không có thẻ tag
-    setRealImgUrl(imgUrl || `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80`);
     setIsRealImgLoading(false);
+    setRealImgUrls(fakeGallery);
   };
 
   // Date Miles & Gamification State
@@ -1137,27 +1143,51 @@ export default function App() {
               
               <div className="w-full aspect-square bg-slate-100 relative overflow-hidden flex items-center justify-center">
                 {isRealImgLoading ? (
-                  <div className="flex flex-col items-center justify-center gap-3 text-slate-400">
-                    <div className="w-8 h-8 border-4 border-slate-200 border-t-purple-500 rounded-full animate-spin"></div>
-                    <span className="text-xs font-medium animate-pulse">Đang tải ảnh từ Google Maps...</span>
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400">
+                    <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin mb-3"></div>
+                    <span className="text-sm font-medium animate-pulse">Đang tải ảnh chất lượng cao...</span>
                   </div>
                 ) : (
-                  <motion.img 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
-                    transition={{ duration: 0.3 }}
-                    src={realImgUrl || ''} 
-                    alt={realImageLoc.name} 
-                    className="w-full h-full object-cover"
-                  />
-                )}
-                
-                {/* Overlay Source Meta */}
-                {!isRealImgLoading && (
-                  <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                    <MapIcon className="w-3 h-3 text-white" />
-                    <span className="text-[10px] text-white font-medium">Ảnh Google Maps</span>
-                  </div>
+                  <>
+                    <img 
+                      src={realImgUrls[currentImgIndex] || ''} 
+                      alt={`${realImageLoc.name} - ảnh ${currentImgIndex + 1}`} 
+                      className="w-full h-full object-cover transition-all duration-300"
+                    />
+                    
+                    {/* Nút lùi */}
+                    {currentImgIndex > 0 && (
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => prev - 1); }}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full backdrop-blur-md transition-all z-10"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                    )}
+                    
+                    {/* Nút tiến */}
+                    {currentImgIndex < realImgUrls.length - 1 && (
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => prev + 1); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full backdrop-blur-md transition-all z-10"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    )}
+
+                    {/* Dấu chấm chỉ báo */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 bg-black/20 px-2 py-1.5 rounded-full backdrop-blur-sm">
+                      {realImgUrls.map((_, i) => (
+                        <div key={i} className={`h-1.5 rounded-full transition-all ${i === currentImgIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'}`} />
+                      ))}
+                    </div>
+
+                    {/* Overlay Source Meta */}
+                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5 z-10">
+                      <MapIcon className="w-3 h-3 text-white" />
+                      <span className="text-[10px] text-white font-medium">{currentImgIndex === 0 ? 'Ảnh gốc' : 'Ảnh tham khảo'}</span>
+                    </div>
+                  </>
                 )}
               </div>
               
