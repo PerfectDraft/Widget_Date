@@ -4,5 +4,9 @@ dist/
 coverage/
 .DS_Store
 *.log
+*.sqlite
+_archive/
+
+# Env files (keep .env.example)
 .env*
 !.env.example

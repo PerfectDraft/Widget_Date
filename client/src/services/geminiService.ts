@@ -50,15 +50,20 @@ export const subscribeToAILogs = (listener: (logs: AILogEntry[]) => void) => {
   };
 };
 
+// Singleton AI client — API key chỉ đọc 1 lần duy nhất
+const getAIClient = (): GoogleGenAI | null => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
+  if (!apiKey) return null;
+  return new GoogleGenAI({ apiKey });
+};
+
 export const fetchNearbyPlaces = async (userLocation: string): Promise<ExploreResult> => {
-  // @ts-ignore
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-  if (!apiKey) {
+  const ai = getAIClient();
+  if (!ai) {
     addAILog("Lấy địa điểm (fetchNearbyPlaces)", "error", "Thiếu API Key (VITE_GEMINI_API_KEY)");
-  } else {
-    addAILog("Lấy địa điểm (fetchNearbyPlaces)", "loading", `Đang tìm vị trí: ${userLocation}`);
+    throw new Error("Missing VITE_GEMINI_API_KEY");
   }
-  const ai = new GoogleGenAI({ apiKey });
+  addAILog("Lấy địa điểm (fetchNearbyPlaces)", "loading", `Đang tìm vị trí: ${userLocation}`);
   
   const prompt = `
 I am currently at: "${userLocation}".
@@ -156,14 +161,12 @@ export interface ComboParams {
 }
 
 export const generateCombos = async (params: ComboParams): Promise<Combo[]> => {
-  // @ts-ignore
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-  if (!apiKey) {
+  const ai = getAIClient();
+  if (!ai) {
     addAILog("Tạo Combo (generateCombos)", "error", "Thiếu API Key (VITE_GEMINI_API_KEY)");
-  } else {
-    addAILog("Tạo Combo (generateCombos)", "loading", `Đang tạo combo cho: ${params.location}, ${params.companion}`);
+    throw new Error("Missing VITE_GEMINI_API_KEY");
   }
-  const ai = new GoogleGenAI({ apiKey });
+  addAILog("Tạo Combo (generateCombos)", "loading", `Đang tạo combo cho: ${params.location}, ${params.companion}`);
   
   const availablePlaces = REAL_LOCATIONS.map((l: any) => `- ${l.name} (${l.category}, ${l.theme}) - Giá khoảng: ${l.price} - ${l.address}`).join('\n');
 
@@ -278,14 +281,12 @@ Do not include any other text outside the JSON block. Ensure the JSON is perfect
 };
 
 export const chatWithAI = async (history: {role: string, text: string}[], message: string): Promise<string> => {
-  // @ts-ignore
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-  if (!apiKey) {
+  const ai = getAIClient();
+  if (!ai) {
     addAILog("Chat AI (chatWithAI)", "error", "Thiếu API Key (VITE_GEMINI_API_KEY)");
-  } else {
-    addAILog("Chat AI (chatWithAI)", "loading", `Người dùng chat: ${message.substring(0, 30)}...`);
+    return "Thiếu API Key. Vui lòng cấu hình VITE_GEMINI_API_KEY trong file .env";
   }
-  const ai = new GoogleGenAI({ apiKey });
+  addAILog("Chat AI (chatWithAI)", "loading", `Người dùng chat: ${message.substring(0, 30)}...`);
 
   const systemInstruction = "Bạn là AI Trợ lý Hẹn hò tinh tế và hài hước của Widget Date. Nhiệm vụ tư vấn chi tiết các điểm đi chơi, review quán xá ở Việt Nam. Rất thân thiện, dùng icon dễ thương và chia lịch trình ra từng gạch đầu dòng rõ ràng, mạch lạc.";
   
