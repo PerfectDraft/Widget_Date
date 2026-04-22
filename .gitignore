@@ -10,3 +10,6 @@ _archive/
 # Env files (keep .env.example)
 .env*
 !.env.example
+
+# Agent tools
+.agent/
