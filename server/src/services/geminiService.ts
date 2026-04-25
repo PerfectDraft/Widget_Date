@@ -79,14 +79,10 @@ async function callOpenRouter(
 
       if (!res.ok) {
         const errorBody = await res.text();
-        const isRetryable = [429, 503, 504].includes(res.status);
-        console.warn(`[OpenRouter] Model "${model}" → ${res.status}${isRetryable ? ' (retryable, trying next model...)' : ''}`);
-
-        if (isRetryable) {
-          lastError = `${model}: ${res.status}`;
-          continue; // try next model
-        }
-        throw new Error(`OpenRouter ${res.status}: ${errorBody}`);
+        console.warn(`[OpenRouter] Model "${model}" → ${res.status}`);
+        console.warn(`[OpenRouter] Model "${model}" error:`, errorBody);
+        lastError = `OpenRouter ${res.status}: ${errorBody}`;
+        continue; // try next model for ANY error
       }
 
       const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };

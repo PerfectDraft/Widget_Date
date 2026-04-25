@@ -33,6 +33,7 @@ export default function App() {
   const chat = useChat();
 
   // Combo state
+  const [combos, setCombos] = useState<Combo[]>([]);
   const [selectedCombo, setSelectedCombo] = useState<Combo | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -96,6 +97,8 @@ export default function App() {
               setShowPaymentModal={setShowPaymentModal}
               setRideModalLoc={setRideModalLoc}
               setRealImageLoc={setRealImageLoc}
+              combos={combos}
+              setCombos={setCombos}
               openChat={() => chat.setIsChatOpen(true)}
               formatVND={formatVND}
               location={location}

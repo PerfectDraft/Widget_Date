@@ -10,7 +10,7 @@
 | Trường | Giá trị |
 |---|---|
 | **Ngày** | 2026-04-25 |
-| **Phiên làm việc** | #2 — Fix OpenRouter models + Image Viewer |
+| **Phiên làm việc** | #3 — Fix OpenRouter + Google Maps + Combo Persistence |
 | **Nhánh Git** | `main` |
 
 ---
@@ -153,6 +153,12 @@ npm run dev
 - **Fix B1 — Ảnh thực tế**: Phát hiện `locations.json` đã có sẵn ảnh thật Google Maps trong field `imageUrl` (`lh3.googleusercontent.com` CDN). Viết `extractRealGooglePhoto()` để parse URL, upscale lên `w800-h600`. Dùng ảnh category Unsplash làm fallback slots 2-3.
 - Files đã sửa: `.env`, `client/src/components/modals/ImageViewer.tsx`, `client/src/components/explore/ExploreView.tsx`, `client/src/App.tsx`
 - Bugs đã fix: B1
+
+### Session #3 — 2026-04-25
+- **Fix OpenRouter lần 2**: Tất cả model IDs cũ đã bị dẹp → chuyển sang `openrouter/free` (auto-router tự chọn model free có sẵn). Fix retry logic trong `geminiService.ts`: mọi HTTP error (400/404/429/503) đều retry sang model tiếp theo thay vì crash.
+- **Thêm nút "Mở trong Google Maps"**: Mỗi địa điểm trong tab Khám phá có nút mở chi tiết trên Google Maps. Mỗi activity trong combo ở Trang chủ cũng có link Google Maps.
+- **Fix mất combo khi chuyển tab**: Lift `combos` state từ `HomeView` lên `App.tsx` → combo persist khi chuyển tab.
+- Files đã sửa: `.env`, `server/src/services/geminiService.ts`, `client/src/components/explore/ExploreView.tsx`, `client/src/components/home/HomeView.tsx`, `client/src/App.tsx`
 
 ---
 

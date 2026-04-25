@@ -1,6 +1,6 @@
 import { useState, useCallback, type ReactNode } from 'react';
 import { motion } from 'motion/react';
-import { Wallet, Users, Clock, Sparkles, Zap, Heart, MapPin, ArrowRight, HeartCrack, CloudRain, Sun, Car, Image as ImageIcon, Map as MapIcon } from 'lucide-react';
+import { Wallet, Users, Clock, Sparkles, Zap, Heart, MapPin, ArrowRight, HeartCrack, CloudRain, Sun, Car, Image as ImageIcon, Map as MapIcon, ExternalLink } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { generateCombos } from '../../services/api';
 import { SAMPLE_COMBOS } from '../../data/constants';
@@ -13,15 +13,16 @@ interface Props {
   setSelectedCombo: (c: Combo) => void;
   setShowPaymentModal: (v: boolean) => void;
   setRideModalLoc: (v: { name: string; lat: number; lng: number } | null) => void;
-  setRealImageLoc: (v: { name: string; mapsUri: string; desc?: string } | null) => void;
+  setRealImageLoc: (v: { name: string; mapsUri: string; desc?: string; imageUrl?: string } | null) => void;
+  combos: Combo[];
+  setCombos: (c: Combo[]) => void;
   openChat: () => void;
   formatVND: (n: number) => string;
   location: string;
 }
 
-export function HomeView({ weatherData, showToast, setSelectedCombo, setShowPaymentModal, setRideModalLoc, setRealImageLoc, openChat, formatVND, location }: Props) {
+export function HomeView({ weatherData, showToast, setSelectedCombo, setShowPaymentModal, setRideModalLoc, setRealImageLoc, combos, setCombos, openChat, formatVND, location }: Props) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [combos, setCombos] = useState<Combo[]>([]);
   const [budget, setBudget] = useState('500K');
   const [companion, setCompanion] = useState('Người yêu');
   const [startTime, setStartTime] = useState('18:00');
@@ -169,6 +170,9 @@ export function HomeView({ weatherData, showToast, setSelectedCombo, setShowPaym
                               {act.websiteUri && <a href={act.websiteUri} target="_blank" rel="noreferrer" className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 py-1.5 rounded-lg text-xs font-bold transition-colors text-center">🌐 Website</a>}
                             </div>
                           </div>
+                        )}
+                        {act.lat && act.lng && (
+                          <a href={`https://www.google.com/maps/search/?api=1&query=${act.lat},${act.lng}`} target="_blank" rel="noreferrer" className="mt-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 border border-emerald-200"><MapIcon className="w-3.5 h-3.5" /> Mở trong Google Maps</a>
                         )}
                       </div>
                     ))}
