@@ -1,10 +1,56 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-}
-
 body {
   font-family: var(--font-sans);
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* ✅ Stitch colors — copy từ HTML */
+  --color-primary: #894c5c;
+  --color-background: #fff8f4;
+  --color-surface: #fff8f4;
+  --color-surface-container: #f5ece5;
+  --color-surface-container-low: #fbf2eb;
+  --color-surface-container-high: #efe7e0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-highest: #eae1da;
+  --color-on-surface: #1f1b17;
+  --color-on-surface-variant: #524346;
+  --color-primary-container: #f4a7b9;
+  --color-primary-fixed: #ffd9e0;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #733949;
+  --color-secondary: #605e58;
+  --color-secondary-container: #e6e2d9;
+  --color-on-secondary: #ffffff;
+  --color-tertiary: #745a2f;
+  --color-tertiary-container: #d9b784;
+  --color-tertiary-fixed: #ffdeac;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-fixed: #281900;
+  --color-outline: #847376;
+  --color-outline-variant: #d6c1c5;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+  --color-inverse-surface: #34302b;
+  --color-inverse-on-surface: #f8efe8;
+
+  /* Fonts */
+  --font-family-headline-md: "Epilogue", serif;
+  --font-family-headline-lg: "Epilogue", serif;
+  --font-family-body-md: "Plus Jakarta Sans", sans-serif;
+  --font-family-label-md: "Plus Jakarta Sans", sans-serif;
+  --font-family-label-sm: "Plus Jakarta Sans", sans-serif;
+}
+
+/* Glass card utility */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 24px -1px rgba(137, 76, 92, 0.08);
 }

@@ -125,18 +125,18 @@ Return ONLY a valid JSON object inside a \`\`\`json block with this exact struct
   "places": [
     {
       "id": "string (unique)",
-      "name": "string (real name from Google Maps)",
-      "address": "string (real address)",
-      "rating": number (real rating, e.g. 4.5),
+      "name": "string (real name)",
+      "address": "string",
+      "rating": number,
       "lat": number,
       "lng": number,
-      "type": "string (e.g. Cafe, Restaurant)",
-      "websiteUri": "string (REAL official website, Facebook, or Foody/Tripadvisor link. Leave empty if not found)",
-      "mapsUri": "string (real Google Maps URL)"
+      "type": "string",
+      "websiteUri": "string",
+      "mapsUri": "string"
     }
   ]
 }
-Do not include any other text outside the JSON block.
+CRITICAL: ENSURE ALL DOUBLE QUOTES INSIDE STRINGS ARE ESCAPED (e.g. \\"). NO TRAILING COMMAS.
 `;
 
   const text = await callOpenRouter([{ role: 'user', content: prompt }]);
@@ -176,24 +176,27 @@ Return ONLY a valid JSON array of combos inside a \`\`\`json block. The structur
   {
     "id": "c1",
     "theme": "string",
-    "icon": "string (A single descriptive emoji matching the theme)",
+    "icon": "string",
     "totalCost": number,
     "score": number,
     "activities": [
       {
         "time": "string",
-        "name": "string (EXACT name on Google Maps)",
-        "address": "string (EXACT address context from Google Maps)",
+        "name": "string",
+        "address": "string",
         "cost": number,
         "distance": "string",
         "lat": number,
         "lng": number,
-        "websiteUri": "string (REAL official website, Facebook, Foody, or Tripadvisor link for this place)"
+        "websiteUri": "string"
       }
     ]
   }
 ]
-Do not include any other text outside the JSON block. Ensure the JSON is perfectly valid.
+CRITICAL RULES FOR JSON: 
+1. DO NOT include trailing commas. 
+2. ESCAPE ALL double quotes inside strings (e.g., "name": "Quán \\"ABC\\""). 
+3. DO NOT output any extra markdown text outside the valid JSON array.
 `;
 
   const MAX_RETRIES = 2;
