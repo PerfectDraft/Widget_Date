@@ -39,7 +39,7 @@ export default function App() {
 
   // Modal state
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
-  const [realImageLoc, setRealImageLoc] = useState<{ name: string; mapsUri: string; desc?: string } | null>(null);
+  const [realImageLoc, setRealImageLoc] = useState<{ name: string; mapsUri: string; desc?: string; imageUrl?: string } | null>(null);
 
   const handlePayment = () => {
     if (!selectedCombo) return;
