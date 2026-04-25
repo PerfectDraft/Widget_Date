@@ -7,6 +7,7 @@ export interface Activity {
   lat?: number;
   lng?: number;
   websiteUri?: string;
+  imageUrl?: string;
 }
 
 export interface Combo {
