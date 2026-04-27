@@ -62,7 +62,7 @@ export function useDriveSync(
       // Optional: you can store the ID Token or Access Token in localStorage
       localStorage.setItem('google_access_token', tokenResponse.access_token);
     },
-    onError: (error) => console.log('Login Failed:', error),
+    onError: (error) => console.error('Login Failed:', error),
   });
 
   // Try to restore session on mount (Note: access tokens expire in 1 hour usually. 

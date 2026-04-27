@@ -92,7 +92,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
           </div>
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-800">Địa điểm quanh đây</h3>
-            <select value={placesSort} onChange={e => setPlacesSort(e.target.value as any)} className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-700">
+            <select value={placesSort} onChange={e => setPlacesSort(e.target.value as typeof placesSort)} className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-700">
               <option value="best_choice">Best Choice</option>
               <option value="rating_desc">Đánh giá cao nhất</option>
               <option value="rating_asc">Đánh giá thấp nhất</option>
@@ -113,7 +113,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
                 <div className="grid grid-cols-3 gap-2 mt-1">
                   <button onClick={() => onAddToCombo(loc)} className="bg-purple-50 hover:bg-purple-100 text-purple-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1"><Plus className="w-3 h-3" /> Combo{savedPlacesCount > 0 ? ` (${savedPlacesCount})` : ''}</button>
                   <button onClick={() => setRideModalLoc({ name: loc.name, lat: loc.lat || 0, lng: loc.lng || 0 })} className="bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1"><Car className="w-3 h-3" /> Gọi Xe</button>
-                  <button onClick={() => setRealImageLoc({ name: loc.name, mapsUri: loc.mapsLink || loc.mapsUri || '', desc: loc.theme || loc.category, imageUrl: (loc as any).imageUrl })} className="bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-slate-200"><ImageIcon className="w-3 h-3" /> Ảnh</button>
+                  <button onClick={() => setRealImageLoc({ name: loc.name, mapsUri: loc.mapsLink || loc.mapsUri || '', desc: loc.theme || loc.category, imageUrl: loc.imageUrl })} className="bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-slate-200"><ImageIcon className="w-3 h-3" /> Ảnh</button>
                   <a href={loc.mapsLink || loc.mapsUri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.name + ' ' + (loc.address || ''))}`} target="_blank" rel="noreferrer" className="col-span-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 border border-emerald-200"><MapIcon className="w-3.5 h-3.5" /> Mở trong Google Maps</a>
                 </div>
               </div>

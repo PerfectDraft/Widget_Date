@@ -33,3 +33,11 @@ Format per entry:
 - Fix applied: Added `savedPlaces` state + `handleAddToCombo` callback in App.tsx (with duplicate check). Added `onAddToCombo` + `savedPlacesCount` props to ExploreView. Button now pushes LocationItem into list and shows count badge.
 - Verification: lint [pass] / types [pass]
 - Result: Resolved
+
+## 2026-04-27T16:39 — Low-risk cleanup scan (4 issues)
+- Files: `useDriveSync.ts`, `ExploreView.tsx`, `main.tsx`, `tsconfig.json`
+- Change type: Low
+- Root cause: Leftover `console.log` in login error handler, 2x unnecessary `as any` casts in ExploreView (LocationItem already has `imageUrl`, placesSort type inferrable), and missing `vite/client` types in tsconfig forcing `import.meta as any` workaround.
+- Fix applied: (1) `console.log` → `console.error` (2) `as any` → `as typeof placesSort` (3) `(loc as any).imageUrl` → `loc.imageUrl` (4) Added `"types": ["vite/client"]` to tsconfig, removed `as any` cast in main.tsx.
+- Verification: tsc --noEmit [pass] / lint [pass]
+- Result: Resolved (all 4 issues)
