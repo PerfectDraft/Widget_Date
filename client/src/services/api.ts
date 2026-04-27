@@ -3,8 +3,15 @@ import type { Combo, LocationItem } from '../types';
 const API_BASE = '/api';
 
 async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
+  const token = localStorage.getItem('google_access_token');
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_BASE}${url}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...headers, ...(options?.headers as Record<string, string>) },
     ...options,
   });
 

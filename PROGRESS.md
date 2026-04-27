@@ -164,8 +164,12 @@ npm run dev
 - **Google Drive Database**: Cấu trúc Decentralized Database. Đã tích hợp Google OAuth 2.0 và Google Drive API.
 - Tạo `driveService.ts` tạo và đọc ghi `database.json` thẳng lên AppData Drive của người dùng bảo mật cao. 
 - Xây dựng hook `useDriveSync` cho phép auto-sync dữ liệu khi người dùng sử dụng app.
-- Chuẩn bị nền móng Phase 1 cho Vercel (sẽ triển khai ở Session 5).
-- Files đã sửa: `main.tsx`, `App.tsx`, `useDriveSync.ts`, `driveService.ts`, `package.json`.
+- Xuất server API Key Gateway Server. Cài `google-auth-library` và `express-rate-limit`.
+- Xây dựng `authMiddleware.ts` decode ID Token / Access Token tự động và gắp ra Google ID.
+- Cấu hình chia pool `aiLimiter` (20 lượt) và `guestLimiter` (3 lượt).
+- Client `api.ts` tự động ghép Header `Authorization`.
+- Files đã sửa thêm: `api.ts`, `gemini.ts`, phân nhánh middleware auth hoàn toàn độc lập cho Backend.
+- Bỏ qua triển khai Vercel theo yêu cầu của user.
 
 ---
 

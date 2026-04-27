@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { fetchNearbyPlaces, generateCombos, chatWithAI } from '../services/geminiService.js';
-import { chatLimiter, geminiLimiter } from '../middleware/rateLimit.js';
+import { authGuard } from '../middleware/authMiddleware.js';
+import { aiLimiter, guestLimiter } from '../middleware/rateLimiter.js';
 
 export const geminiRouter = Router();
 
 // POST /api/nearby-places
-geminiRouter.post('/nearby-places', geminiLimiter, async (req, res, next) => {
+geminiRouter.post('/nearby-places', authGuard, aiLimiter, async (req, res, next) => {
   try {
     const { location } = req.body;
     if (!location || typeof location !== 'string') {
@@ -21,7 +22,7 @@ geminiRouter.post('/nearby-places', geminiLimiter, async (req, res, next) => {
 });
 
 // POST /api/combos
-geminiRouter.post('/combos', geminiLimiter, async (req, res, next) => {
+geminiRouter.post('/combos', authGuard, aiLimiter, async (req, res, next) => {
   try {
     const { location, budget, companion, startTime, endTime, preferences, availablePlaces } = req.body;
 
@@ -47,7 +48,7 @@ geminiRouter.post('/combos', geminiLimiter, async (req, res, next) => {
 });
 
 // POST /api/chat
-geminiRouter.post('/chat', chatLimiter, async (req, res, next) => {
+geminiRouter.post('/chat', authGuard, aiLimiter, async (req, res, next) => {
   try {
     const { history, message } = req.body;
 
