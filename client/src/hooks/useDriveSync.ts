@@ -8,11 +8,13 @@ export function useDriveSync(
   chatMessages: { role: string; text: string }[],
   setCombos: (combos: any[]) => void,
   setUserReward: (reward: any) => void,
-  setChatMessages: (msgs: any[]) => void
+  setChatMessages: (msgs: any[]) => void,
+  preferences: string[] = []
 ) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [fileId, setFileId] = useState<string | null>(null);
   const [userIdentifier, setUserIdentifier] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
 
@@ -62,6 +64,7 @@ export function useDriveSync(
           if (dbData.combos) setCombos(dbData.combos);
           if (dbData.userReward) setUserReward(dbData.userReward);
           if (dbData.chatMessages) setChatMessages(dbData.chatMessages);
+          if (dbData.phoneNumber) setPhoneNumber(dbData.phoneNumber);
         }
       }
       
@@ -78,13 +81,29 @@ export function useDriveSync(
 
     const timeout = setTimeout(async () => {
       setIsSyncing(true);
-      const dataToSave: AppDatabase = { combos, userReward, chatMessages };
+      const dataToSave: AppDatabase = { phoneNumber: phoneNumber || '', combos, userReward, chatMessages };
       await writeDatabase(accessToken, fileId, dataToSave);
+
+      // Sync to Server (W6)
+      if (phoneNumber) {
+        try {
+          const { syncUser } = await import('../services/api');
+          await syncUser({
+            phone: phoneNumber,
+            googleId: userIdentifier || undefined,
+            preferences,
+            lastTab: 'home' // default or current active tab
+          });
+        } catch (err) {
+          console.error('Server sync failed:', err);
+        }
+      }
+
       setIsSyncing(false);
     }, 5000); // 5 seconds debounce
 
     return () => clearTimeout(timeout);
-  }, [combos, userReward, chatMessages, accessToken, fileId, isInitializing]);
+  }, [combos, userReward, chatMessages, phoneNumber, accessToken, fileId, isInitializing, userIdentifier, preferences]);
 
   const login = useGoogleLogin({
     scope: 'https://www.googleapis.com/auth/drive.appdata openid email profile',
@@ -107,6 +126,7 @@ export function useDriveSync(
     setAccessToken(null);
     setFileId(null);
     setUserIdentifier(null);
+    setPhoneNumber(null);
     localStorage.removeItem('google_access_token');
 
     // Reset app state to clear sensitive data
@@ -122,6 +142,8 @@ export function useDriveSync(
     logout,
     isLoggedIn: !!accessToken,
     userIdentifier,
+    phoneNumber,
+    setPhoneNumber,
     isSyncing,
     isInitializing
   };

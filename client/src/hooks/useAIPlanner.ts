@@ -7,15 +7,27 @@ interface UseAIPlannerProps {
   location: string;
   showToast: (msg: string) => void;
   initialCombos?: Combo[];
+  externalPreferences?: string[];
+  setExternalPreferences?: (p: string[]) => void;
 }
 
-export function useAIPlanner({ location, showToast, initialCombos = [] }: UseAIPlannerProps) {
+export function useAIPlanner({ 
+  location, 
+  showToast, 
+  initialCombos = [],
+  externalPreferences,
+  setExternalPreferences
+}: UseAIPlannerProps) {
   // Form State
   const [budget, setBudget] = useState('500K');
   const [companion, setCompanion] = useState('Người yêu');
   const [startTime, setStartTime] = useState('18:00');
   const [endTime, setEndTime] = useState('22:00');
-  const [preferences, setPreferences] = useState<string[]>(['Cafe']);
+  
+  // Use external preferences if provided, otherwise local state
+  const [localPreferences, setLocalPreferences] = useState<string[]>(['Cafe']);
+  const preferences = externalPreferences || localPreferences;
+  const setPreferences = setExternalPreferences || setLocalPreferences;
   
   // Data State
   const [combos, setCombos] = useState<Combo[]>(initialCombos);

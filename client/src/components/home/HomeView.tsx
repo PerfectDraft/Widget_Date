@@ -16,26 +16,24 @@ interface Props {
   openChat: () => void;
   formatVND: (n: number) => string;
   location: string;
+  preferences: string[];
+  setPreferences: (p: string[]) => void;
 }
 
 export function HomeView({ 
   weatherData, showToast, setSelectedCombo, setShowPaymentModal, 
   setRideModalLoc, setRealImageLoc, combos, setCombos, 
-  openChat, formatVND, location 
+  openChat, formatVND, location, preferences, setPreferences 
 }: Props) {
   
   const { formState, dataState, actions } = useAIPlanner({
     location,
     showToast,
     initialCombos: combos,
+    externalPreferences: preferences,
+    setExternalPreferences: setPreferences
   });
 
-  // Sync combos back up if necessary, but actually we should just map dataState.combos
-  // Wait, if combos are generated in useAIPlanner, do we set Combos for App?
-  // Our hook has its own combos state. We should probably sync it back or pass setCombos into the hook. Let's sync it.
-  // Actually, useAIPlanner just uses its own internal state. To keep it compatible, we should use the useAIPlanner's combos instead or pass the prop combos down to useAIPlanner. 
-  // Let's rely on dataState.combos.
-  
   const categories = Array.from(new Set(REAL_LOCATIONS.map(loc => loc.category).filter(Boolean))) as string[];
 
   const handleSelectCombo = useCallback((combo: Combo) => {
@@ -44,8 +42,6 @@ export function HomeView({
   }, [setSelectedCombo, setShowPaymentModal]);
 
   const handleSelectVenue = useCallback((venue: Activity) => {
-    // If venue has an image, maybe show the image modal? Or map?
-    // Let's trigger the real location image view
     if (venue.imageUrl) {
       setRealImageLoc({
         name: venue.name,

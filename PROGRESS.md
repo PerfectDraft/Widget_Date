@@ -10,7 +10,7 @@
 | Trường | Giá trị |
 |---|---|
 | **Ngày** | 2026-04-27 |
-| **Phiên làm việc** | #8 — Multi-Account Fix & Chat Sync |
+| **Phiên làm việc** | #10 — Authentication System Integration |
 | **Nhánh Git** | `main` |
 
 ---
@@ -18,10 +18,10 @@
 ## 📊 Tổng quan tiến độ
 
 ```
-Tính năng chính    ████████████░░░░░░░░  60%
-Backend / Server   █████████░░░░░░░░░░░  45%
+Tính năng chính    ██████████████░░░░░░  70%
+Backend / Server   ████████████░░░░░░░░  60%
 Security / Refactor████████████████░░░░  80%
-Data & Database    █████░░░░░░░░░░░░░░░  25%
+Data & Database    ████████░░░░░░░░░░░░  40%
 ```
 
 ---
@@ -88,7 +88,8 @@ Data & Database    █████░░░░░░░░░░░░░░░ 
 - [x] Home | Bỏ phần "kỷ niệm" buổi sáng, làm to phần thời tiết, hiển thị ngày tháng (W3)
 - [ ] Sở thích | Chỉ hiện category có trong database, không hiện các mục thừa (W4)
 | W5 | Trang chủ | Bổ sung thêm địa điểm vào mục Sở thích / Workspace | `data/locations.ts` |
-| W6 | Database | Tạo user database riêng (key = số điện thoại): lưu sở thích, địa điểm, lịch sử tab | `server/src/services/userService.ts` |
+- [x] **Database** — Tạo user database riêng (key = số điện thoại): lưu sở thích, địa điểm, lịch sử tab (W6)
+- [x] **Authentication** — Triển khai hệ thống Đăng nhập/Đăng ký (Login/Register) bảo mật với mật khẩu hashed (W8)
 | W7 | Outfit | Bỏ tính năng "Outfit Gợi ý" | `HomeView.tsx` |
 
 ---
@@ -192,14 +193,30 @@ npm run dev
 - **Files đã sửa**: `client/src/hooks/useAIPlanner.ts`, `client/src/components/home/ComboList.tsx`, `client/src/components/home/HomeDashboardUI.tsx`, `PROGRESS.md`.
 - **Verification**: Chạy thành công `tsc --noEmit` cho client, đảm bảo không còn lỗi syntax hay type-safety.
 - **Status**: Project đã có thể build và chạy lại bình thường.
-196: 
-197: ### Session #8 — 2026-04-27
-198: - **Multi-Account Fix**: Triển khai cơ chế reset state (`combos`, `userReward`, `chatMessages`) khi logout để tránh rò rỉ dữ liệu giữa các tài khoản khác nhau.
-199: - **Chat Sync to Drive**: Tích hợp đồng bộ lịch sử chat trực tiếp lên Google Drive. Toàn bộ cuộc hội thoại sẽ được lưu và tải lại tự động khi đăng nhập.
-200: - **Account Identification**: Sử dụng `userId` (sub/email từ Google UserInfo) để quản lý phiên làm việc chính xác trong `useChat` và `useDriveSync`.
-201: - **Fix regressions in App.tsx**: Khắc phục lỗi mất hook và thiếu import phát sinh trong quá trình tái cấu trúc.
-202: - **Files đã sửa**: `driveService.ts`, `useChat.ts`, `useDriveSync.ts`, `App.tsx`.
-203: 
+ 
+### Session #9 — 2026-04-27
+- **User Database (W6)**: Triển khai hệ thống database server-side sử dụng SQLite (`better-sqlite3`).
+- **Phone Identification**: Dùng số điện thoại làm khóa chính để lưu trữ sở thích (`preferences`) và địa điểm yêu thích.
+- **Sync Logic**: Cập nhật `useDriveSync` để đồng bộ dữ liệu song song lên cả Google Drive và Server DB.
+- **UI Interaction**: Thêm ô nhập số điện thoại tại Header để người dùng tự xác thực và kích hoạt đồng bộ server.
+- **Files đã sửa**: `server/src/index.ts`, `server/src/db/client.ts`, `server/src/services/userService.ts`, `server/src/routes/user.ts`, `client/src/services/api.ts`, `client/src/services/driveService.ts`, `client/src/hooks/useDriveSync.ts`, `client/src/App.tsx`, `client/src/components/home/HomeView.tsx`, `client/src/hooks/useAIPlanner.ts`.
+- **Tasks hoàn thành**: W6.
+- **PROJECT_CONTEXT.md synced.**
+- **Multi-Account Fix**: Triển khai cơ chế reset state (`combos`, `userReward`, `chatMessages`) khi logout để tránh rò rỉ dữ liệu giữa các tài khoản khác nhau.
+- **Chat Sync to Drive**: Tích hợp đồng bộ lịch sử chat trực tiếp lên Google Drive. Toàn bộ cuộc hội thoại sẽ được lưu và tải lại tự động khi đăng nhập.
+- **Account Identification**: Sử dụng `userId` (sub/email từ Google UserInfo) để quản lý phiên làm việc chính xác trong `useChat` và `useDriveSync`.
+- **Fix regressions in App.tsx**: Khắc phục lỗi mất hook và thiếu import phát sinh trong quá trình tái cấu trúc.
+- **Files đã sửa**: `driveService.ts`, `useChat.ts`, `useDriveSync.ts`, `App.tsx`.
+
+---
+
+### Session #10 — 2026-04-27
+- **Authentication System (W8)**: Triển khai hệ thống Đăng nhập/Đăng ký hoàn chỉnh.
+- **UI/UX**: Thiết kế `AuthView.tsx` theo phong cách "Modern Romanticism" với glassmorphism và hiệu ứng chuyển cảnh mượt mà.
+- **Backend**: Thêm `password_hash` vào SQLite, cấu trúc `authRouter` xử lý `/register` và `/login`. Sử dụng `bcryptjs` để bảo mật mật khẩu.
+- **Integration**: Gated truy cập ứng dụng bằng Auth, tích hợp header logout và đồng bộ state người dùng theo phone number.
+- **Files đã sửa**: `server/src/db/client.ts`, `server/src/services/userService.ts`, `server/src/routes/auth.ts`, `server/src/index.ts`, `client/src/services/api.ts`, `client/src/components/auth/AuthView.tsx`, `client/src/App.tsx`.
+- **Tasks hoàn thành**: W8.
 
 ---
 

@@ -20,6 +20,7 @@ import { ChatPanel } from './components/chat/ChatPanel';
 import { PaymentModal } from './components/modals/PaymentModal';
 import { RideModal } from './components/modals/RideModal';
 import { ImageViewer } from './components/modals/ImageViewer';
+import { AuthView } from './components/auth/AuthView';
 
 import type { Tab, Combo, LocationItem } from './types';
 
@@ -27,12 +28,19 @@ const formatVND = (amount: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [phone, setPhone] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const { toastMessage, showToast, hideToast } = useToast();
   const weatherData = useWeather();
   const { userReward, setUserReward, earnMiles, incrementDates } = useReward(showToast);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const chat = useChat(currentUserId);
+
+  // User Stats & Preferences (W6)
+  const [preferences, setPreferences] = useState<string[]>(['Cafe']);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [phoneValue, setPhoneValue] = useState('');
 
   // Combo state
   const [combos, setCombos] = useState<Combo[]>([]);
@@ -47,13 +55,32 @@ export default function App() {
     chat.chatMessages, 
     setCombos, 
     setUserReward, 
-    chat.setChatMessages
+    chat.setChatMessages,
+    preferences
   );
 
-  // Update userId when drive identifier changes
+  // Update userId when drive identifier or auth phone changes
   useEffect(() => {
-    setCurrentUserId(drive.userIdentifier);
-  }, [drive.userIdentifier]);
+    setCurrentUserId(phone || drive.userIdentifier);
+  }, [drive.userIdentifier, phone]);
+
+  const handleAuthSuccess = (phone: string, userData: any) => {
+    setPhone(phone);
+    setIsAuthenticated(true);
+    showToast(`Chào mừng trở lại, ${phone}!`);
+    // Sync if needed or load profile
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setPhone(null);
+    setCurrentUserId(null);
+    showToast('Đã đăng xuất');
+  };
+
+  if (!isAuthenticated) {
+    return <AuthView onAuthSuccess={handleAuthSuccess} />;
+  }
 
   // Modal state
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
@@ -119,9 +146,6 @@ export default function App() {
                 {drive.isInitializing ? <Cloud className="w-3 h-3 animate-pulse text-blue-500" /> : drive.isSyncing ? <Cloud className="w-3 h-3 animate-pulse text-indigo-500" /> : <Cloud className="w-3 h-3 text-green-500" />}
                 {drive.isInitializing ? 'Loading' : drive.isSyncing ? 'Syncing...' : 'Synced'}
               </span>
-              <button onClick={drive.logout} aria-label="Đăng xuất" className="p-1.5 text-slate-400 hover:text-red-500 bg-slate-100 rounded-full transition-colors">
-                <LogOut className="w-4 h-4" />
-              </button>
             </div>
           ) : (
              <button onClick={() => drive.login()} aria-label="Đăng nhập Google Drive Backup" className="text-xs font-semibold bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-full hover:bg-slate-50 flex items-center gap-1 transition-colors">
@@ -129,6 +153,55 @@ export default function App() {
               Backup
             </button>
           )}
+
+          <button onClick={handleLogout} aria-label="Đăng xuất" className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-slate-100 shadow-sm">
+            <LogOut className="w-5 h-5" />
+          </button>
+
+          {drive.isLoggedIn && (
+            <div className="flex items-center gap-1">
+              {!drive.phoneNumber || isEditingPhone ? (
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-full border border-pink-200">
+                  <input
+                    type="tel"
+                    placeholder="Số điện thoại..."
+                    className="bg-transparent text-xs px-2 py-0.5 outline-none w-24"
+                    value={phoneValue}
+                    onChange={(e) => setPhoneValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        drive.setPhoneNumber(phoneValue);
+                        setIsEditingPhone(false);
+                        showToast('Đã lưu số điện thoại! 📱');
+                      }
+                    }}
+                  />
+                  <button 
+                    onClick={() => {
+                      drive.setPhoneNumber(phoneValue);
+                      setIsEditingPhone(false);
+                      showToast('Đã lưu số điện thoại! 📱');
+                    }}
+                    className="p-1 rounded-full bg-pink-500 text-white"
+                  >
+                    <History className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    setIsEditingPhone(true);
+                    setPhoneValue(drive.phoneNumber || '');
+                  }}
+                  className="text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full flex items-center gap-1 border border-transparent hover:border-pink-300 transition-all"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  {drive.phoneNumber}
+                </button>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center gap-2 text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
             <MapPin className="w-4 h-4 text-pink-500" /> {location}
           </div>
@@ -151,6 +224,8 @@ export default function App() {
               openChat={() => chat.setIsChatOpen(true)}
               formatVND={formatVND}
               location={location}
+              preferences={preferences}
+              setPreferences={setPreferences}
             />
           )}
           {activeTab === 'explore' && (

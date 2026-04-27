@@ -82,6 +82,33 @@ export async function fetchWeather(city: string = 'Hanoi') {
   return apiRequest<any>(`/weather?city=${encodeURIComponent(city)}`);
 }
 
+// --- User Endpoints (W6) ---
+
+export interface UserSyncParams {
+  phone: string;
+  googleId?: string;
+  preferences?: string[];
+  lastTab?: string;
+}
+
+export async function syncUser(params: UserSyncParams): Promise<{ status: string }> {
+  return apiRequest<{ status: string }>('/user/sync', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function getUserProfile(phone: string): Promise<any> {
+  return apiRequest<any>(`/user/profile?phone=${encodeURIComponent(phone)}`);
+}
+
+export async function saveUserPlace(phone: string, placeId: string, placeData: any): Promise<{ status: string }> {
+  return apiRequest<{ status: string }>('/user/place', {
+    method: 'POST',
+    body: JSON.stringify({ phone, placeId, placeData }),
+  });
+}
+
 // --- Utilities (kept client-side) ---
 
 export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -96,4 +123,27 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
+}
+
+// --- Auth Endpoints ---
+
+export interface AuthResponse {
+  success: boolean;
+  message?: string;
+  user?: any;
+  error?: string;
+}
+
+export async function login(phone: string, password: string): Promise<AuthResponse> {
+  return apiRequest<AuthResponse>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ phone, password }),
+  });
+}
+
+export async function register(phone: string, password: string): Promise<AuthResponse> {
+  return apiRequest<AuthResponse>('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ phone, password }),
+  });
 }

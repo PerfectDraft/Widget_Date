@@ -26,8 +26,8 @@ Last updated: 2026-04-27
 | Design import | Stitch MCP (className only) |
 | Backend | Express.js (Node.js) |
 | AI Gateway | OpenRouter API (proxied via server) |
-| Auth | Google OAuth 2.0 (@react-oauth/google) |
-| Database | Google Drive AppData (decentralized) + localStorage fallback |
+| Auth | Google OAuth 2.0 (@react-oauth/google) + Phone/Password (bcryptjs) |
+| Database | Google Drive AppData (decentralized) + SQLite (Server-side) |
 | State management | React useState + custom hooks |
 | Security | authMiddleware (Google token verify) + express-rate-limit |
 
@@ -107,6 +107,7 @@ Widget_Date/
 
 - [x] State management: React useState + custom hooks (confirmed)
 - [x] Database: Google Drive AppData (decentralized, confirmed)
+- [x] Auth: Google OAuth + Native Phone/Password (confirmed)
 - [ ] Testing framework and coverage targets
 - [ ] Deployment pipeline details (Vercel deferred)
 

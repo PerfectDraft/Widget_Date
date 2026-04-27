@@ -1,6 +1,7 @@
 const DRIVE_FILE_NAME = 'database.json';
 
 export interface AppDatabase {
+  phoneNumber?: string;
   combos: any[];
   userReward: {
     miles: number;
