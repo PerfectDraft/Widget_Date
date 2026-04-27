@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Session Manager - Antigravity Kit
 =================================
@@ -11,10 +12,15 @@ Usage:
 """
 
 import os
+import sys
 import json
 import argparse
 from pathlib import Path
 from typing import Dict, Any, List
+
+# Force UTF-8 output so emoji render correctly in all terminals (incl. Antigravity)
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 def get_project_root(path: str) -> Path:
     return Path(path).resolve()
@@ -97,38 +103,38 @@ def print_status(root: Path):
     agent_res = list_agent_resources(root)
     
     print("\n=== Project Status ===")
-    print(f"\n📁 Project: {info.get('name', root.name)}")
-    print(f"📂 Path: {root}")
-    print(f"🏷️  Type: {', '.join(info.get('stack', ['Generic']))}")
-    print(f"📊 Status: Active")
+    print(f"\n\U0001f4c1 Project: {info.get('name', root.name)}")
+    print(f"\U0001f4c2 Path: {root}")
+    print(f"\U0001f3f7\ufe0f  Type: {', '.join(info.get('stack', ['Generic']))}")
+    print(f"\U0001f4ca Status: Active")
     
-    print("\n🔧 Tech Stack:")
+    print("\n\U0001f527 Tech Stack:")
     for tech in info.get('stack', []):
-        print(f"   • {tech}")
+        print(f"   \u2022 {tech}")
         
-    print(f"\n✅ Detected Modules/Features ({len(features)}):")
+    print(f"\n\u2705 Detected Modules/Features ({len(features)}):")
     for feat in features:
-        print(f"   • {feat}")
+        print(f"   \u2022 {feat}")
     if not features:
         print("   (No distinct feature modules detected)")
         
-    print(f"\n📄 Files: {stats['total']} total files tracked")
+    print(f"\n\U0001f4c4 Files: {stats['total']} total files tracked")
 
-    print(f"\n🤖 Agents ({len(agent_res['agents'])}):")
+    print(f"\n\U0001f916 Agents ({len(agent_res['agents'])}):")
     for a in agent_res['agents']:
-        print(f"   • @{a}")
+        print(f"   \u2022 @{a}")
     if not agent_res['agents']:
         print("   (No agents found)")
 
-    print(f"\n🧠 Skills ({len(agent_res['skills'])}):")
+    print(f"\n\U0001f9e0 Skills ({len(agent_res['skills'])}):")
     for s in agent_res['skills']:
-        print(f"   • {s}")
+        print(f"   \u2022 {s}")
     if not agent_res['skills']:
         print("   (No skills found)")
 
-    print(f"\n⚡ Workflows ({len(agent_res['workflows'])}):")
+    print(f"\n\u26a1 Workflows ({len(agent_res['workflows'])}):")
     for w in agent_res['workflows']:
-        print(f"   • {w}")
+        print(f"   \u2022 {w}")
     if not agent_res['workflows']:
         print("   (No workflows found)")
 
