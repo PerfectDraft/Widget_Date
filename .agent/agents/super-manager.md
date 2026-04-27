@@ -113,7 +113,7 @@ Stitch Project ID: `17526464061189967193` (Widget Date Mobile Dashboard)
 | `/debug` | Summon `@debugger` + run `lint_runner.py` |
 | `/plan` | Switch to `@project-planner`, NO CODE until Phase 4 |
 | `/check` | Run `python .agent/scripts/checklist.py` |
-| `/status` | Read `progress-tracking.md` + summarize current state |
+| `/status` | Read `progress-tracking.md` + list all files in `.agent/agents/`, `.agent/skills/`, `.agent/workflows/` + summarize current state |
 | `/autonomous [scope]` | Activate Autonomous Mode — read `autonomous-policy.md` first |
 | `/stitch [screen_name]` | Load stitch-to-logic skill → run 6-step protocol for the specified screen |
 

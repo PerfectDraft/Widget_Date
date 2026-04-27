@@ -173,3 +173,64 @@ function [ComponentName]WithStates() {
 [] Happy path shows real data
 [] All buttons/inputs respond correctly
 [] No console errors in browser
+
+
+If any check fails: fix before moving to the next component.
+
+---
+
+## Widget Date Specific Patterns
+
+### Location list
+```typescript
+const { locations, isLoading, error } = useLocations();
+const handleSelect = useCallback((id: string) => {
+  const loc = locations.find(l => l.id === id);
+  if (loc) setSelectedLocation(loc);
+}, [locations]);
+```
+
+### Weather card
+```typescript
+// Always handle null selectedLocation before calling the hook
+const { weather, isLoading } = useWeather(selectedLocation?.coordinates);
+```
+
+### Search form
+```typescript
+const [query, setQuery] = useState('');
+const handleSearch = useCallback(async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!query.trim()) return;
+  await performSearch(query);
+}, [query]);
+```
+
+---
+
+## Hard Rules
+
+| Never | Why |
+|---|---|
+| Edit props interface inside the Stitch file | Overwritten on next Stitch sync |
+| Add business logic inside Stitch component render | Lost on next import |
+| Use as any to satisfy props | Hides type mismatch, runtime errors |
+| Skip loading/empty/error states | UI blank or crashes in production |
+| Wire data without a hook | Untestable, spaghetti architecture |
+| Assume a prop is optional without checking | Undefined reference errors |
+
+---
+
+## Self-Check Before Marking Task Complete
+
+- [ ] All props typed, zero any or unknown
+- [ ] Loading state implemented
+- [ ] Empty state implemented
+- [ ] Error state implemented
+- [ ] All handlers have try/catch
+- [ ] npx tsc --noEmit passes with zero errors
+- [ ] No console.log left in wired code
+- [ ] component-contract.md rules not violated
+- [ ] Renders correctly with both empty and real data
+
+If any box is unchecked: task is NOT complete.
