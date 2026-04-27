@@ -55,7 +55,6 @@ def analyze_package_json(root: Path) -> Dict[str, Any]:
 
 def count_files(root: Path) -> Dict[str, int]:
     stats = {"created": 0, "modified": 0, "total": 0}
-    # Simple count for now, comprehensive tracking would require git diff or extensive history
     exclude = {".git", "node_modules", ".next", "dist", "build", ".agent", ".gemini", "__pycache__"}
     
     for root_dir, dirs, files in os.walk(root):
@@ -65,7 +64,6 @@ def count_files(root: Path) -> Dict[str, int]:
     return stats
 
 def detect_features(root: Path) -> List[str]:
-    # Heuristic: look at folder names in src/
     features = []
     src = root / "src"
     if src.exists():
@@ -73,16 +71,30 @@ def detect_features(root: Path) -> List[str]:
         for d in possible_dirs:
             p = src / d
             if p.exists() and p.is_dir():
-                # List subdirectories as likely features
                 for child in p.iterdir():
                     if child.is_dir():
                         features.append(child.name)
-    return features[:10] # Limit to top 10
+    return features[:10]
+
+def list_agent_resources(root: Path) -> Dict[str, List[str]]:
+    agent_dir = root / ".agent"
+    result = {"agents": [], "skills": [], "workflows": []}
+
+    for key in result:
+        folder = agent_dir / key
+        if folder.exists() and folder.is_dir():
+            result[key] = sorted([
+                f.stem if f.is_file() else f.name
+                for f in folder.iterdir()
+                if not f.name.startswith('.')
+            ])
+    return result
 
 def print_status(root: Path):
     info = analyze_package_json(root)
     stats = count_files(root)
     features = detect_features(root)
+    agent_res = list_agent_resources(root)
     
     print("\n=== Project Status ===")
     print(f"\n📁 Project: {info.get('name', root.name)}")
@@ -101,6 +113,25 @@ def print_status(root: Path):
         print("   (No distinct feature modules detected)")
         
     print(f"\n📄 Files: {stats['total']} total files tracked")
+
+    print(f"\n🤖 Agents ({len(agent_res['agents'])}):")
+    for a in agent_res['agents']:
+        print(f"   • @{a}")
+    if not agent_res['agents']:
+        print("   (No agents found)")
+
+    print(f"\n🧠 Skills ({len(agent_res['skills'])}):")
+    for s in agent_res['skills']:
+        print(f"   • {s}")
+    if not agent_res['skills']:
+        print("   (No skills found)")
+
+    print(f"\n⚡ Workflows ({len(agent_res['workflows'])}):")
+    for w in agent_res['workflows']:
+        print(f"   • {w}")
+    if not agent_res['workflows']:
+        print("   (No workflows found)")
+
     print("\n====================\n")
 
 def main():
