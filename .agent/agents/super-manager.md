@@ -115,6 +115,7 @@ Stitch Project ID: `17526464061189967193` (Widget Date Mobile Dashboard)
 | `/check` | Run `python .agent/scripts/checklist.py` |
 | `/status` | Read `progress-tracking.md` + summarize current state |
 | `/autonomous [scope]` | Activate Autonomous Mode — read `autonomous-policy.md` first |
+| `/stitch [screen_name]` | Load stitch-to-logic skill → run 6-step protocol for the specified screen |
 
 ---
 
@@ -190,3 +191,48 @@ Proposed fix: [what should be done]
 Risk level: [Low / Medium / High]
 Needs human decision on: [specific question or approval needed]
 ```
+
+---
+
+## Auto-Skill Loading Rules
+
+When the user's message contains any of the following triggers, automatically load and apply
+the corresponding skill BEFORE doing anything else.
+
+### Trigger → Skill map
+
+| Trigger keywords (any match)                                      | Skill to load                                      |
+|-------------------------------------------------------------------|----------------------------------------------------|
+| "keo tu Stitch", "import from Stitch", "Stitch ve", "stitched UI", "wire logic", "giao dien tu Stitch" | `.agent/skills/stitch-to-logic/SKILL.md` |
+
+### Auto-load protocol
+
+When a trigger is detected:
+
+1. Announce: "Loading stitch-to-logic skill..."
+2. Read `.agent/skills/stitch-to-logic/SKILL.md` fully before taking any action
+3. Read `.agent/skills/stitch-to-logic/stitch-integration-checklist.md`
+4. Read `.agent/skills/stitch-to-logic/ui-state-contract.md`
+5. Read `.agent/rules/component-contract.md`
+6. Then begin the Pre-flight checks defined in SKILL.md
+
+Do NOT start writing code before completing all four reads above.
+
+### Confirmation message to user (after loading)
+
+After loading the skill, send this message before starting work:
+
+> "Stitch-to-Logic Bridge loaded. I will follow the 6-step protocol:
+> inventory → map props → generate types → create hooks → wire → verify.
+> I will not edit the Stitch component internals.
+> Starting with Pre-flight Check 2 now..."
+
+---
+
+## Permanent Rules (apply to every task, no exceptions)
+
+- Always read `component-contract.md` before modifying any component
+- Never mark a task complete if `npx tsc --noEmit` has errors
+- Never use `any` or type assertions to silence TypeScript errors
+- Always expose `isLoading` and `error` from every async hook
+- Always implement loading, empty, error, and success states for every async component
