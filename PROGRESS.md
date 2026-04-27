@@ -160,6 +160,13 @@ npm run dev
 - **Fix mất combo khi chuyển tab**: Lift `combos` state từ `HomeView` lên `App.tsx` → combo persist khi chuyển tab.
 - Files đã sửa: `.env`, `server/src/services/geminiService.ts`, `client/src/components/explore/ExploreView.tsx`, `client/src/components/home/HomeView.tsx`, `client/src/App.tsx`, `client/src/types/index.ts`
 - **UI & Types**: Áp dụng giao diện mới từ Stitch MCP (screen `5b32504c0018489e99463755126b9ab5`) cho `HomeView.tsx`. Bổ sung `imageUrl` vào type `Activity` để fix lỗi TypeScript (`any` type anti-pattern). Thay thế toàn bộ Material Design/Stitch token bằng Tailwind CSS standard utilities.
+### Session #4 — 2026-04-27
+- **Google Drive Database**: Cấu trúc Decentralized Database. Đã tích hợp Google OAuth 2.0 và Google Drive API.
+- Tạo `driveService.ts` tạo và đọc ghi `database.json` thẳng lên AppData Drive của người dùng bảo mật cao. 
+- Xây dựng hook `useDriveSync` cho phép auto-sync dữ liệu khi người dùng sử dụng app.
+- Chuẩn bị nền móng Phase 1 cho Vercel (sẽ triển khai ở Session 5).
+- Files đã sửa: `main.tsx`, `App.tsx`, `useDriveSync.ts`, `driveService.ts`, `package.json`.
+
 ---
 
 > 💡 **Hướng dẫn cập nhật:** Sau mỗi session, thêm một dòng mới vào **Changelog**, tick ✅ các task đã xong, chuyển bugs đã fix sang phần ✅, và commit cùng với code.
