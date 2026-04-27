@@ -90,7 +90,7 @@ async function callOpenRouter(
 
       if (content) {
         if (model !== env.OPENROUTER_MODEL) {
-          console.log(`[OpenRouter] ✅ Fallback success with "${model}"`);
+          console.info(`[OpenRouter] ✅ Fallback success with "${model}"`);
         }
         return content;
       }

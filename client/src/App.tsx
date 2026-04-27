@@ -106,12 +106,12 @@ export default function App() {
                 {drive.isInitializing ? <Cloud className="w-3 h-3 animate-pulse text-blue-500" /> : drive.isSyncing ? <Cloud className="w-3 h-3 animate-pulse text-indigo-500" /> : <Cloud className="w-3 h-3 text-green-500" />}
                 {drive.isInitializing ? 'Loading' : drive.isSyncing ? 'Syncing...' : 'Synced'}
               </span>
-              <button onClick={drive.logout} className="p-1.5 text-slate-400 hover:text-red-500 bg-slate-100 rounded-full transition-colors">
+              <button onClick={drive.logout} aria-label="Đăng xuất" className="p-1.5 text-slate-400 hover:text-red-500 bg-slate-100 rounded-full transition-colors">
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
           ) : (
-             <button onClick={() => drive.login()} className="text-xs font-semibold bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-full hover:bg-slate-50 flex items-center gap-1 transition-colors">
+             <button onClick={() => drive.login()} aria-label="Đăng nhập Google Drive Backup" className="text-xs font-semibold bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-full hover:bg-slate-50 flex items-center gap-1 transition-colors">
               <CloudOff className="w-3 h-3 text-slate-400" />
               Backup
             </button>
@@ -156,7 +156,7 @@ export default function App() {
       </main>
 
       {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 pb-safe z-40">
+      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 pb-safe z-40">
         <div className="max-w-md mx-auto px-6 py-3 flex justify-between items-center">
           {([
             { id: 'home', icon: Home, label: 'Trang chủ' },
@@ -167,7 +167,7 @@ export default function App() {
             const isActive = activeTab === item.id;
             const Icon = item.icon;
             return (
-              <button key={item.id} onClick={() => setActiveTab(item.id)} className={cn('flex flex-col items-center gap-1 p-2 transition-all duration-200', isActive ? 'text-purple-600' : 'text-slate-400 hover:text-slate-600')}>
+              <button key={item.id} onClick={() => setActiveTab(item.id)} aria-label={item.label} aria-current={isActive ? 'page' : undefined} className={cn('flex flex-col items-center gap-1 p-2 transition-all duration-200', isActive ? 'text-purple-600' : 'text-slate-400 hover:text-slate-600')}>
                 <div className="relative">
                   <Icon className={cn('w-6 h-6', isActive && 'fill-purple-50')} />
                   {isActive && <motion.div layoutId="nav-indicator" className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-1 h-1 bg-purple-600 rounded-full" />}

@@ -41,3 +41,15 @@ Format per entry:
 - Fix applied: (1) `console.log` → `console.error` (2) `as any` → `as typeof placesSort` (3) `(loc as any).imageUrl` → `loc.imageUrl` (4) Added `"types": ["vite/client"]` to tsconfig, removed `as any` cast in main.tsx.
 - Verification: tsc --noEmit [pass] / lint [pass]
 - Result: Resolved (all 4 issues)
+
+## 2026-04-27T17:19 — Autonomous scan: log severity + accessibility
+- Files: `server/src/services/geminiService.ts`, `client/src/App.tsx`
+- Change type: Low
+- Root cause: (1) Server `geminiService.ts` used `console.log` for operational info (should be `console.info`). (2) Client App.tsx had zero `aria-label` attributes on interactive buttons (nav, logout, login).
+- Fix applied: (1) `console.log` → `console.info` in server fallback handler. (2) Added `aria-label` to nav buttons, logout button, login button. Added `aria-current="page"` to active nav tab. Added `aria-label` to `<nav>` element.
+- Verification: tsc --noEmit [pass] on both client + server
+- Result: Resolved
+
+### Issues skipped (out of scope)
+- **B3** (Geolocation error) — Medium risk, needs real device testing to reproduce
+- **B6** (CANNOT GET /) — High risk, server config, protected scope
