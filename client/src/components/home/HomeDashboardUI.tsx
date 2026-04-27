@@ -134,7 +134,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             </button>
           </div>
         </section>
-
         {/* AI Date Planner Section */}
         <section className="space-y-6">
           <div className="flex items-center gap-2">

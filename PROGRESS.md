@@ -187,6 +187,12 @@ npm run dev
 - **Fix Drive API 403**: Bổ sung log chỉ dẫn kích hoạt Google Drive API trong Google Cloud Console khi gặp lỗi Forbidden (403).
 - Files đã sửa: `index.html`, `vite.config.ts`, `api.ts`, `useAIPlanner.ts`, `HomeDashboardUI.tsx`, `ComboList.tsx`, `useDriveSync.ts`, `geminiService.ts`, `driveService.ts`.
 
+### Session #7 — 2026-04-27
+- **Git Merge Conflict Resolution**: Giải quyết triệt để các conflict markers xuất hiện sau khi merge/rebase (xảy ra trong session trước).
+- **Files đã sửa**: `client/src/hooks/useAIPlanner.ts`, `client/src/components/home/ComboList.tsx`, `client/src/components/home/HomeDashboardUI.tsx`, `PROGRESS.md`.
+- **Verification**: Chạy thành công `tsc --noEmit` cho client, đảm bảo không còn lỗi syntax hay type-safety.
+- **Status**: Project đã có thể build và chạy lại bình thường.
+
 ---
 
 > 💡 **Hướng dẫn cập nhật:** Sau mỗi session, thêm một dòng mới vào **Changelog**, tick ✅ các task đã xong, chuyển bugs đã fix sang phần ✅, và commit cùng với code.
