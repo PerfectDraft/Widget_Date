@@ -12,4 +12,3 @@ _archive/
 !.env.example
 
 # Agent tools
-.agent/
