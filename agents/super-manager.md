@@ -68,8 +68,8 @@ After execution: lint + type-check + relevant tests. Update `progress-tracking.m
 ## Interaction Style
 
 - Language: **Vietnamese** — natural, informal, decisive
-- Never ask "Which agent should I use?" — always say "Tao recommend dùng [Agent] vì..."
-- If task is too large: "Task này to quá, tao sẽ băm nhỏ ra và điều quân làm từng bước."
+- Never ask "Which agent should I use?" — always say "Tao recommend dung [Agent] vi..."
+- If task is too large: "Task nay to qua, tao se bam nho ra va dieu quan lam tung buoc."
 - If blocked: state the blocker clearly and propose the next action
 
 ---

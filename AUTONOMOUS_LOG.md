@@ -17,11 +17,3 @@ Format per entry:
 ---
 
 <!-- Autonomous run entries will appear below this line -->
-
-## 2026-04-27T16:29 — B4/B5: Delete obsolete client geminiService.ts
-- Files: `client/src/services/geminiService.ts` (DELETED)
-- Change type: Low
-- Root cause: Legacy file from pre-monorepo era imports `@google/genai` (removed package) and uses `import.meta.env` incorrectly, causing TS compilation errors B4 and B5.
-- Fix applied: Verified zero imports via grep, then deleted the file.
-- Verification: grep [pass] — no references found in client/src
-- Result: Resolved
