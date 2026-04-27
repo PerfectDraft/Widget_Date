@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { HeartCrack, ArrowRight } from 'lucide-react';
 import { ComboList } from './ComboList';
 import type { Combo, Activity } from '../../types';
@@ -10,9 +11,11 @@ export interface HomeDashboardUIProps {
   
   // Interactions
   openChat: () => void;
+  onAvatarClick: () => void;
 
   // Weather Data
   weatherData: any | null; // Keep existing shape
+  onWeatherClick?: () => void;
 
   // AI Planner Form
   budget: string;
@@ -40,12 +43,14 @@ export interface HomeDashboardUIProps {
 
 export function HomeDashboardUI(props: HomeDashboardUIProps) {
   const {
-    userName, userAvatar, dateMiles, openChat, weatherData,
+    userName, userAvatar, dateMiles, openChat, onAvatarClick, weatherData, onWeatherClick,
     budget, onBudgetChange, companion, onCompanionChange,
     startTime, endTime, onTimeChange, preferences, categories, onPreferenceToggle,
     isGenerating, onGenerate,
     combos, error, onSelectCombo, onSelectVenue, formatVND
   } = props;
+
+  const [showWeatherDetail, setShowWeatherDetail] = useState(false);
 
   const today = new Date();
   const dateStr = today.toLocaleDateString('vi-VN', {
@@ -62,10 +67,10 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
 
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 relative">
-      {/* Header Section */}
+      {/* Header — Avatar + Welcome + Date Miles */}
       <header className="sticky top-0 z-40 glass-card px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="size-12 rounded-full overflow-hidden border-2 border-primary-container">
+        <button onClick={onAvatarClick} className="flex items-center gap-3 group cursor-pointer">
+          <div className="size-12 rounded-full overflow-hidden border-2 border-primary-container group-hover:border-primary transition-colors shadow-sm">
             <img 
               alt="User Profile" 
               className="w-full h-full object-cover" 
@@ -76,7 +81,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             <p className="text-on-surface-variant text-label-sm">Welcome back,</p>
             <h1 className="text-headline-md font-bold text-on-surface">{userName}</h1>
           </div>
-        </div>
+        </button>
         <div className="bg-primary-fixed px-4 py-2 rounded-full flex items-center gap-2 shadow-sm">
           <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
           <span className="text-on-primary-fixed font-bold text-label-md">{dateMiles} Date Miles</span>
@@ -84,55 +89,75 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
       </header>
 
       <main className="px-6 space-y-8 mt-6">
-        {/* Modern Weather & Date Banner (W3: Enlarged weather, added date) */}
-        <section className="glass-card rounded-[32px] p-8 border-none bg-gradient-to-br from-primary/10 via-secondary/10 to-background shadow-2xl relative overflow-hidden">
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-tertiary/10 rounded-full blur-3xl"></div>
-          
-          <div className="relative z-10 space-y-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-primary font-bold text-label-md uppercase tracking-[0.2em] mb-1">{dateStr}</p>
-                <h2 className="text-headline-lg font-black text-on-surface">Chào buổi sáng, {userName.split(' ')[0]}!</h2>
-              </div>
-              <div className="bg-white/40 dark:bg-black/20 p-4 rounded-3xl backdrop-blur-md shadow-sm border border-white/20">
-                <span className="material-symbols-outlined text-primary text-[40px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  {weatherData?.weather[0]?.main === 'Rain' ? 'rainy' : weatherData?.weather[0]?.main === 'Clouds' ? 'cloud' : 'light_mode'}
-                </span>
-              </div>
-            </div>
+        {/* Weather Card — Clean 2-column layout */}
+        <section className="glass-card rounded-[32px] p-6 border-none bg-gradient-to-br from-primary/10 via-secondary/10 to-background shadow-xl relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="flex items-center gap-6">
-              {weatherData ? (
-                <>
-                  <h3 className="text-[64px] font-black leading-none text-on-surface tracking-tighter">
-                    {Math.round(weatherData.main.temp)}°C
-                  </h3>
-                  <div className="space-y-1">
-                    <p className="text-on-surface-variant font-bold text-body-lg capitalize flex items-center gap-2">
-                       {weatherData.weather[0]?.description} 
-                       <span className="w-1 h-1 bg-outline-variant rounded-full"></span>
-                       {weatherData.name}
-                    </p>
-                    <p className="text-on-surface-variant/70 text-label-md">Thời tiết thật tuyệt để đi hẹn hò!</p>
+          {weatherData ? (
+            <div className="relative z-10">
+              {/* Row 1: Date + Icon */}
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-primary font-bold text-label-sm uppercase tracking-[0.15em]">{dateStr}</p>
+                <div className="bg-white/40 p-3 rounded-2xl backdrop-blur-md shadow-sm border border-white/20">
+                  <span className="material-symbols-outlined text-primary text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {weatherData.weather[0]?.main === 'Rain' ? 'rainy' : weatherData.weather[0]?.main === 'Clouds' ? 'cloud' : 'light_mode'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Row 2: Temp + Description */}
+              <div className="flex items-end gap-4 mb-3">
+                <h3 className="text-[56px] font-black leading-none text-on-surface tracking-tighter">
+                  {Math.round(weatherData.main.temp)}°
+                </h3>
+                <div className="pb-2">
+                  <p className="text-on-surface font-bold text-body-lg capitalize">
+                    {weatherData.weather[0]?.description}
+                  </p>
+                  <p className="text-on-surface-variant text-label-md">
+                    {weatherData.name} • Feels {Math.round(weatherData.main.feels_like)}°
+                  </p>
+                </div>
+              </div>
+
+              {/* Expandable Detail */}
+              {showWeatherDetail && (
+                <div className="grid grid-cols-3 gap-3 mb-4 pt-3 border-t border-white/30">
+                  <div className="text-center">
+                    <span className="material-symbols-outlined text-primary text-[20px]">water_drop</span>
+                    <p className="text-label-sm text-on-surface mt-1 font-bold">{weatherData.main.humidity}%</p>
+                    <p className="text-[10px] text-on-surface-variant">Humidity</p>
                   </div>
-                </>
-              ) : (
-                <div className="animate-pulse flex items-center gap-6 w-full">
-                  <div className="h-20 w-32 bg-surface-container-high rounded-3xl"></div>
-                  <div className="space-y-3 flex-1">
-                    <div className="h-6 w-1/2 bg-surface-container-high rounded-full"></div>
-                    <div className="h-4 w-1/3 bg-surface-container-high rounded-full"></div>
+                  <div className="text-center">
+                    <span className="material-symbols-outlined text-primary text-[20px]">air</span>
+                    <p className="text-label-sm text-on-surface mt-1 font-bold">{Math.round(weatherData.wind?.speed || 0)} m/s</p>
+                    <p className="text-[10px] text-on-surface-variant">Wind</p>
+                  </div>
+                  <div className="text-center">
+                    <span className="material-symbols-outlined text-primary text-[20px]">visibility</span>
+                    <p className="text-label-sm text-on-surface mt-1 font-bold">{Math.round((weatherData.visibility || 10000) / 1000)} km</p>
+                    <p className="text-[10px] text-on-surface-variant">Visibility</p>
                   </div>
                 </div>
               )}
+
+              <button
+                onClick={() => onWeatherClick?.()}
+                className="flex items-center gap-2 text-primary font-bold text-label-md bg-primary-container/30 px-4 py-2 rounded-full hover:bg-primary-container/50 transition-colors cursor-pointer"
+              >
+                Xem chi tiết thời tiết
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
             </div>
-            
-            <button className="flex items-center gap-2 text-primary font-bold text-label-md bg-primary-container/30 px-4 py-2 rounded-full hover:bg-primary-container/50 transition-colors">
-              Xem chi tiết thời tiết
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </button>
-          </div>
+          ) : (
+            <div className="animate-pulse flex items-center gap-6 w-full relative z-10">
+              <div className="h-16 w-28 bg-surface-container-high rounded-3xl" />
+              <div className="space-y-3 flex-1">
+                <div className="h-5 w-1/2 bg-surface-container-high rounded-full" />
+                <div className="h-4 w-1/3 bg-surface-container-high rounded-full" />
+              </div>
+            </div>
+          )}
         </section>
         {/* AI Date Planner Section */}
         <section className="space-y-6">

@@ -47,7 +47,7 @@ export function useAIPlanner({
       if (status === 429 || err?.message?.includes('[FALLBACK LỖI AI]')) {
          friendlyError = "AI đang quá tải, thử lại sau ít phút.";
       } else if (status === 401) {
-         friendlyError = "Vui lòng đăng nhập Google Drive ở góc trên bên phải để bắt đầu!";
+         friendlyError = "Phiên đăng nhập đã hết hạn, vui lòng thử lại.";
       }
       
       setError(friendlyError);

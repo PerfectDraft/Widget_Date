@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Compass, History, Trophy, MapPin, Bot, Cloud, CloudOff, LogOut } from 'lucide-react';
+import { Home, Compass, History, Trophy, Bot } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from './lib/utils';
 import { Toast } from './components/Toast';
@@ -12,7 +12,7 @@ import { useChat } from './hooks/useChat';
 import { useToast } from './hooks/useToast';
 import { useDriveSync } from './hooks/useDriveSync';
 
-// Pages (lazy-loaded inline for now — will be separate files in future)
+// Pages
 import { HomeView } from './components/home/HomeView';
 import { ExploreView } from './components/explore/ExploreView';
 import { DateMilesView } from './components/wallet/DateMilesView';
@@ -21,6 +21,8 @@ import { PaymentModal } from './components/modals/PaymentModal';
 import { RideModal } from './components/modals/RideModal';
 import { ImageViewer } from './components/modals/ImageViewer';
 import { AuthView } from './components/auth/AuthView';
+import { ProfileView } from './components/profile/ProfileView';
+import { WeatherDetailView } from './components/weather/WeatherDetailView';
 
 import type { Tab, Combo, LocationItem } from './types';
 
@@ -31,6 +33,8 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [phone, setPhone] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('home');
+  const [showProfile, setShowProfile] = useState(false);
+  const [showWeatherDetail, setShowWeatherDetail] = useState(false);
   const { toastMessage, showToast, hideToast } = useToast();
   const weatherData = useWeather();
   const { userReward, setUserReward, earnMiles, incrementDates } = useReward(showToast);
@@ -39,14 +43,19 @@ export default function App() {
 
   // User Stats & Preferences (W6)
   const [preferences, setPreferences] = useState<string[]>(['Cafe']);
-  const [isEditingPhone, setIsEditingPhone] = useState(false);
-  const [phoneValue, setPhoneValue] = useState('');
 
   // Combo state
   const [combos, setCombos] = useState<Combo[]>([]);
   const [selectedCombo, setSelectedCombo] = useState<Combo | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  // Modal state
+  const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
+  const [realImageLoc, setRealImageLoc] = useState<{ name: string; mapsUri: string; desc?: string; imageUrl?: string } | null>(null);
+
+  // Saved places ("Thêm vào Combo" from Explore)
+  const [savedPlaces, setSavedPlaces] = useState<LocationItem[]>([]);
 
   // Sync state
   const drive = useDriveSync(
@@ -64,30 +73,23 @@ export default function App() {
     setCurrentUserId(phone || drive.userIdentifier);
   }, [drive.userIdentifier, phone]);
 
-  const handleAuthSuccess = (phone: string, userData: any) => {
+  const handleAuthSuccess = (phone: string, _userData: any) => {
     setPhone(phone);
     setIsAuthenticated(true);
     showToast(`Chào mừng trở lại, ${phone}!`);
-    // Sync if needed or load profile
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setPhone(null);
     setCurrentUserId(null);
+    setShowProfile(false);
     showToast('Đã đăng xuất');
   };
 
   if (!isAuthenticated) {
     return <AuthView onAuthSuccess={handleAuthSuccess} />;
   }
-
-  // Modal state
-  const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
-  const [realImageLoc, setRealImageLoc] = useState<{ name: string; mapsUri: string; desc?: string; imageUrl?: string } | null>(null);
-
-  // Saved places ("Thêm vào Combo" from Explore)
-  const [savedPlaces, setSavedPlaces] = useState<LocationItem[]>([]);
 
   const handleAddToCombo = (loc: LocationItem) => {
     setSavedPlaces(prev => {
@@ -133,83 +135,8 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-20 selection:bg-pink-200">
       <Toast message={toastMessage} onClose={hideToast} />
 
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-orange-500 flex items-center justify-center text-white font-bold text-lg shadow-sm">W</div>
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500">Widget Date</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          {drive.isLoggedIn ? (
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-slate-500 flex items-center gap-1 bg-slate-100 px-2 py-1.5 rounded-full">
-                {drive.isInitializing ? <Cloud className="w-3 h-3 animate-pulse text-blue-500" /> : drive.isSyncing ? <Cloud className="w-3 h-3 animate-pulse text-indigo-500" /> : <Cloud className="w-3 h-3 text-green-500" />}
-                {drive.isInitializing ? 'Loading' : drive.isSyncing ? 'Syncing...' : 'Synced'}
-              </span>
-            </div>
-          ) : (
-             <button onClick={() => drive.login()} aria-label="Đăng nhập Google Drive Backup" className="text-xs font-semibold bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-full hover:bg-slate-50 flex items-center gap-1 transition-colors">
-              <CloudOff className="w-3 h-3 text-slate-400" />
-              Backup
-            </button>
-          )}
-
-          <button onClick={handleLogout} aria-label="Đăng xuất" className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-slate-100 shadow-sm">
-            <LogOut className="w-5 h-5" />
-          </button>
-
-          {drive.isLoggedIn && (
-            <div className="flex items-center gap-1">
-              {!drive.phoneNumber || isEditingPhone ? (
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-full border border-pink-200">
-                  <input
-                    type="tel"
-                    placeholder="Số điện thoại..."
-                    className="bg-transparent text-xs px-2 py-0.5 outline-none w-24"
-                    value={phoneValue}
-                    onChange={(e) => setPhoneValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        drive.setPhoneNumber(phoneValue);
-                        setIsEditingPhone(false);
-                        showToast('Đã lưu số điện thoại! 📱');
-                      }
-                    }}
-                  />
-                  <button 
-                    onClick={() => {
-                      drive.setPhoneNumber(phoneValue);
-                      setIsEditingPhone(false);
-                      showToast('Đã lưu số điện thoại! 📱');
-                    }}
-                    className="p-1 rounded-full bg-pink-500 text-white"
-                  >
-                    <History className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <button 
-                  onClick={() => {
-                    setIsEditingPhone(true);
-                    setPhoneValue(drive.phoneNumber || '');
-                  }}
-                  className="text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full flex items-center gap-1 border border-transparent hover:border-pink-300 transition-all"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  {drive.phoneNumber}
-                </button>
-              )}
-            </div>
-          )}
-
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
-            <MapPin className="w-4 h-4 text-pink-500" /> {location}
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-md mx-auto w-full p-4">
+      {/* Main Content — No top-level header, each view has its own */}
+      <main className="max-w-md mx-auto w-full">
         <AnimatePresence mode="wait">
           {activeTab === 'home' && (
             <HomeView
@@ -222,6 +149,8 @@ export default function App() {
               combos={combos}
               setCombos={setCombos}
               openChat={() => chat.setIsChatOpen(true)}
+              onAvatarClick={() => setShowProfile(true)}
+              onWeatherClick={() => setShowWeatherDetail(true)}
               formatVND={formatVND}
               location={location}
               preferences={preferences}
@@ -266,6 +195,36 @@ export default function App() {
           })}
         </div>
       </nav>
+
+      {/* Profile Screen (overlay) */}
+      <AnimatePresence>
+        {showProfile && (
+          <ProfileView
+            phone={phone || ''}
+            userName="Hưng"
+            userAvatar="https://lh3.googleusercontent.com/aida-public/AB6AXuD5fQvzhgWAnCEj7ACr7c_XPwX5u48krOmZuXxBChh911zOWYQRJcnaNtoQqplogf2AXUFicP9kn3TIbu-AI1FrobzW7zy73oO1v4ehbZKCtmSt1KXQJvIubhuBTzIGi1c0kzLLvt_Ykxn2ypNtz5YplxUHttU4mqRkMU9L82XDuoouQij2ZUUSpiP13o49_TSgYHOa0ZNTSCx4Am6e1gxZ83r7nQQ9uQpArgF6iu6SjN34NGisxjWTJ-xiImchPKYVctLQsyydIUBS"
+            dateMiles={userReward.totalMiles}
+            totalDates={userReward.totalDates}
+            isDriveSynced={drive.isLoggedIn}
+            isSyncing={drive.isSyncing}
+            onDriveLogin={drive.login}
+            onDriveLogout={() => {/* Drive logout placeholder */}}
+            onLogout={handleLogout}
+            onBack={() => setShowProfile(false)}
+            showToast={showToast}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Weather Detail Screen (overlay) */}
+      <AnimatePresence>
+        {showWeatherDetail && (
+          <WeatherDetailView
+            weatherData={weatherData}
+            onBack={() => setShowWeatherDetail(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Modals */}
       <PaymentModal

@@ -9,8 +9,8 @@
 
 | Trường | Giá trị |
 |---|---|
-| **Ngày** | 2026-04-27 |
-| **Phiên làm việc** | #10 — Authentication System Integration |
+| **Ngày** | 2026-04-28 |
+| **Phiên làm việc** | #12 — Bug Fixes + Weather Detail Screen |
 | **Nhánh Git** | `main` |
 
 ---
@@ -18,7 +18,7 @@
 ## 📊 Tổng quan tiến độ
 
 ```
-Tính năng chính    ██████████████░░░░░░  70%
+Tính năng chính    ████████████████░░░░  80%
 Backend / Server   ████████████░░░░░░░░  60%
 Security / Refactor████████████████░░░░  80%
 Data & Database    ████████░░░░░░░░░░░░  40%
@@ -221,3 +221,14 @@ npm run dev
 ---
 
 > 💡 **Hướng dẫn cập nhật:** Sau mỗi session, thêm một dòng mới vào **Changelog**, tick ✅ các task đã xong, chuyển bugs đã fix sang phần ✅, và commit cùng với code.
+
+### Session #11 — 2026-04-28
+- **Home UI Redesign**: Thiết kế lại header (avatar clickable + Welcome back + Date Miles badge), bỏ logo Widget Date và sync UI cũ.
+- **Profile Screen (NEW)**: Tạo `ProfileView.tsx` — full-page overlay với Account, Data Sync, Notifications, App Info, Logout.
+- **Weather Detail Screen (NEW)**: Tạo `WeatherDetailView.tsx` — giao diện chi tiết thời tiết premium (temp, wind, humidity, UV, sunset, pressure, visibility, clouds).
+- **Bug Fix — Mobile Clickability**: Thêm `pointer-events-none` vào decorative blur divs để fix click bị chặn trên phone dimensions.
+- **Bug Fix — Drive Gate**: Sửa thông báo lỗi 401 trong `useAIPlanner.ts`, bỏ yêu cầu đăng nhập Drive.
+- **Bug Fix — Profile Interactivity**: Thêm toast feedback cho Edit Profile, Phone, Change Password.
+- **Files đã sửa**: `App.tsx`, `HomeDashboardUI.tsx`, `HomeView.tsx`, `ProfileView.tsx`, `WeatherDetailView.tsx`, `useAIPlanner.ts`.
+
+---

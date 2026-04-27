@@ -14,6 +14,8 @@ interface Props {
   combos: Combo[];
   setCombos: (c: Combo[]) => void;
   openChat: () => void;
+  onAvatarClick: () => void;
+  onWeatherClick: () => void;
   formatVND: (n: number) => string;
   location: string;
   preferences: string[];
@@ -23,7 +25,7 @@ interface Props {
 export function HomeView({ 
   weatherData, showToast, setSelectedCombo, setShowPaymentModal, 
   setRideModalLoc, setRealImageLoc, combos, setCombos, 
-  openChat, formatVND, location, preferences, setPreferences 
+  openChat, onAvatarClick, onWeatherClick, formatVND, location, preferences, setPreferences 
 }: Props) {
   
   const { formState, dataState, actions } = useAIPlanner({
@@ -64,6 +66,8 @@ export function HomeView({
       userAvatar="https://lh3.googleusercontent.com/aida-public/AB6AXuD5fQvzhgWAnCEj7ACr7c_XPwX5u48krOmZuXxBChh911zOWYQRJcnaNtoQqplogf2AXUFicP9kn3TIbu-AI1FrobzW7zy73oO1v4ehbZKCtmSt1KXQJvIubhuBTzIGi1c0kzLLvt_Ykxn2ypNtz5YplxUHttU4mqRkMU9L82XDuoouQij2ZUUSpiP13o49_TSgYHOa0ZNTSCx4Am6e1gxZ83r7nQQ9uQpArgF6iu6SjN34NGisxjWTJ-xiImchPKYVctLQsyydIUBS"
       dateMiles={1500}
       openChat={openChat}
+      onAvatarClick={onAvatarClick}
+      onWeatherClick={onWeatherClick}
       weatherData={weatherData}
       budget={formState.budget}
       onBudgetChange={formState.setBudget}
