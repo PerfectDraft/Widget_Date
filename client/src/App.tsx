@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Compass, History, Trophy, MapPin, Bot } from 'lucide-react';
+import { Home, Compass, History, Trophy, MapPin, Bot, Cloud, CloudOff, LogOut } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from './lib/utils';
 import { Toast } from './components/Toast';
@@ -10,6 +10,7 @@ import { useWeather } from './hooks/useWeather';
 import { useReward } from './hooks/useReward';
 import { useChat } from './hooks/useChat';
 import { useToast } from './hooks/useToast';
+import { useDriveSync } from './hooks/useDriveSync';
 
 // Pages (lazy-loaded inline for now — will be separate files in future)
 import { HomeView } from './components/home/HomeView';
@@ -29,7 +30,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const { toastMessage, showToast, hideToast } = useToast();
   const weatherData = useWeather();
-  const { userReward, earnMiles, incrementDates } = useReward(showToast);
+  const { userReward, setUserReward, earnMiles, incrementDates } = useReward(showToast);
   const chat = useChat();
 
   // Combo state
@@ -37,6 +38,9 @@ export default function App() {
   const [selectedCombo, setSelectedCombo] = useState<Combo | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  // Sync state
+  const drive = useDriveSync(combos, userReward, setCombos, setUserReward);
 
   // Modal state
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
@@ -81,8 +85,26 @@ export default function App() {
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-orange-500 flex items-center justify-center text-white font-bold text-lg shadow-sm">W</div>
           <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500">Widget Date</h1>
         </div>
-        <div className="flex items-center gap-2 text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
-          <MapPin className="w-4 h-4 text-pink-500" /> {location}
+        <div className="flex items-center gap-2">
+          {drive.isLoggedIn ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-slate-500 flex items-center gap-1 bg-slate-100 px-2 py-1.5 rounded-full">
+                {drive.isInitializing ? <Cloud className="w-3 h-3 animate-pulse text-blue-500" /> : drive.isSyncing ? <Cloud className="w-3 h-3 animate-pulse text-indigo-500" /> : <Cloud className="w-3 h-3 text-green-500" />}
+                {drive.isInitializing ? 'Loading' : drive.isSyncing ? 'Syncing...' : 'Synced'}
+              </span>
+              <button onClick={drive.logout} className="p-1.5 text-slate-400 hover:text-red-500 bg-slate-100 rounded-full transition-colors">
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+             <button onClick={() => drive.login()} className="text-xs font-semibold bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-full hover:bg-slate-50 flex items-center gap-1 transition-colors">
+              <CloudOff className="w-3 h-3 text-slate-400" />
+              Backup
+            </button>
+          )}
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
+            <MapPin className="w-4 h-4 text-pink-500" /> {location}
+          </div>
         </div>
       </header>
 

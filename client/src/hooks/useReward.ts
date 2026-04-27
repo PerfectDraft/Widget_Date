@@ -52,5 +52,5 @@ export function useReward(showToast: (msg: string) => void) {
     setUserReward(prev => ({ ...prev, completedDates: prev.completedDates + 1 }));
   }, []);
 
-  return { userReward, earnMiles, incrementDates };
+  return { userReward, setUserReward, earnMiles, incrementDates };
 }
