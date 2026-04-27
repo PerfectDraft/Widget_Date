@@ -170,6 +170,7 @@ npm run dev
 - Client `api.ts` tự động ghép Header `Authorization`.
 - Files đã sửa thêm: `api.ts`, `gemini.ts`, phân nhánh middleware auth hoàn toàn độc lập cho Backend.
 - Bỏ qua triển khai Vercel theo yêu cầu của user.
+- **Tích hợp Stitch UI**: Import giao diện "Home Dashboard - AI Planner". Tách logic ra `useAIPlanner.ts` và tái cấu trúc `HomeView.tsx` sử dụng 100% components từ Stitch (`HomeDashboardUI.tsx`, `ComboList.tsx`). Implement đủ 4 trạng thái (Loading, Empty, Error, Success). Khắc phục type errors của TypeScript (`ComboActivity` -> `Activity`).
 
 ---
 
