@@ -127,6 +127,13 @@ Every autonomous action must produce a log entry in `AUTONOMOUS_LOG.md`:
 
 ---
 
+## Scope Limits
+
+- **Maximum 10 files modified per autonomous run.** If approaching this limit, stop and hand off remaining issues.
+- **Maximum 5 issues addressed per autonomous run.** Quality over quantity.
+
+---
+
 ## Hard Stops — Non-negotiable
 
 Immediately stop and write a handoff note if any of these occur:

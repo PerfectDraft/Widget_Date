@@ -11,8 +11,8 @@ Last updated: 2026-04-27
 ## Project Overview
 
 **Name:** Widget Date  
-**Type:** Mobile Application (React Native)  
-**Purpose:** A mobile dashboard / widget-based date and scheduling tool  
+**Type:** Web Application (React 19 + Vite 6)  
+**Purpose:** A mobile-first web dashboard for date planning, gamification, and AI recommendations  
 **Status:** Active development
 
 ---
@@ -21,13 +21,15 @@ Last updated: 2026-04-27
 
 | Layer | Technology |
 |---|---|
-| Mobile frontend | React Native |
-| UI components | Stitch MCP (design import) |
-| Styling | Tailwind / className-based |
-| Backend | Node.js (server directory) |
-| Database | (update when confirmed) |
-| State management | (update: Redux / Zustand / Context) |
-| Testing | (update: Jest / Testing Library) |
+| Frontend | React 19 + Vite 6 + TypeScript |
+| UI framework | Tailwind CSS v4 + Motion (framer-motion) |
+| Design import | Stitch MCP (className only) |
+| Backend | Express.js (Node.js) |
+| AI Gateway | OpenRouter API (proxied via server) |
+| Auth | Google OAuth 2.0 (@react-oauth/google) |
+| Database | Google Drive AppData (decentralized) + localStorage fallback |
+| State management | React useState + custom hooks |
+| Security | authMiddleware (Google token verify) + express-rate-limit |
 
 ---
 
@@ -35,8 +37,9 @@ Last updated: 2026-04-27
 
 ```
 Widget_Date/
-├── client/          <- React Native mobile app (frontend agents work here)
-├── server/          <- Backend API (backend agents work here)
+├── client/          <- React 19 + Vite 6 web app (frontend agents work here)
+├── server/          <- Express.js API gateway (backend agents work here)
+├── data-service/    <- Crawler + cron jobs (better-sqlite3)
 ├── .agent/          <- AI agent system (Antigravity Kit)
 │   ├── agents/
 │   ├── skills/
@@ -55,7 +58,7 @@ Widget_Date/
 
 - **Project ID:** `17526464061189967193`
 - **Flow:** `list_projects` → `list_screens [PROJECT_ID]` → confirm screen with user → import
-- **Constraint:** Widget Date is a MOBILE app — always use `@mobile-developer`, never `@frontend-specialist`
+- **Constraint:** Widget Date is a **React web app** with mobile-first layout — use `@frontend-specialist` for UI work
 - **Editing rule:** Change `className` ONLY when editing Stitch-imported components. Never touch props, event handlers, or data bindings
 
 ---
@@ -75,6 +78,7 @@ Widget_Date/
 - Auto Accept extension is installed — terminal commands do not need manual approval
 - `terminal-guard.md` was intentionally NOT created (replaced by Auto Accept + inline pre-flight checklist in super-manager)
 - `.agent/` was previously in `.gitignore` — now tracked in git
+- Project uses `npm workspaces` with root `package.json` managing `client/` and `server/`
 
 ---
 
@@ -91,7 +95,7 @@ Widget_Date/
 
 ## Anti-Patterns (things we do NOT do)
 
-- Do NOT use `@frontend-specialist` for mobile UI work
+- Do NOT use `@mobile-developer` for this project — Widget Date is a React web app
 - Do NOT mix `/client` and `/server` dependencies
 - Do NOT edit component props or handlers when importing from Stitch
 - Do NOT batch unrelated fixes in a single autonomous commit
@@ -101,10 +105,10 @@ Widget_Date/
 
 ## Open Decisions (update when resolved)
 
-- [ ] State management library confirmation (Redux vs Zustand vs Context)
+- [x] State management: React useState + custom hooks (confirmed)
+- [x] Database: Google Drive AppData (decentralized, confirmed)
 - [ ] Testing framework and coverage targets
-- [ ] Database technology confirmation
-- [ ] Deployment pipeline details
+- [ ] Deployment pipeline details (Vercel deferred)
 
 ---
 

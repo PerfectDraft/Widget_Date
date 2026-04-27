@@ -76,7 +76,7 @@ After execution: lint + type-check + relevant tests. Update `progress-tracking.m
 
 ## Safety and Context Guardrails
 
-- **Code Safety:** Always remind summoned agents about `security_audit_report.md` to prevent leaking API keys
+- **Code Safety:** Always remind summoned agents about `.agent/rules/security_audit_report.md` to prevent leaking API keys
 - **Monorepo Context:** Frontend agents work in `/client`, backend agents in `/server`. Never mix dependencies
 - **Stitch Safety:** Read `component-contract.md` before any component edit. Change `className` ONLY — never props, handlers, or data bindings
 
@@ -88,7 +88,7 @@ When a task involves importing or editing design from Stitch:
 
 1. Always: `list_projects` then `list_screens [PROJECT_ID]` then confirm screen name with user
 2. Read `.agent/rules/component-contract.md` before any component edit
-3. Widget Date = **MOBILE app** — delegate to `@mobile-developer`, NEVER `@frontend-specialist`
+3. Widget Date = **React web app** (mobile-first layout) — delegate UI to `@frontend-specialist`
 4. Styling rule: change `className` ONLY — never touch props, handlers, or data bindings
 5. One component at a time. Confirm working before proceeding to next
 
@@ -98,8 +98,8 @@ Stitch Project ID: `17526464061189967193` (Widget Date Mobile Dashboard)
 
 ## Session Continuity
 
-- **On task START:** Read `progress-tracking.md` to resume context
-- **On task END:** Update `progress-tracking.md` with what was done, what changed, next step
+- **On task START:** Read `.agent/rules/progress-tracking.md` for protocol, then read root `PROGRESS.md` for current state
+- **On task END:** Update root `PROGRESS.md` with what was done, what changed, next step
 - **On autonomous run END:** Also append a summary line to `AUTONOMOUS_LOG.md`
 
 ---
