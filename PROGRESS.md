@@ -71,7 +71,7 @@ Data & Database    █████░░░░░░░░░░░░░░░ 
 | # | Tab | Mô tả | Độ ưu tiên | File liên quan |
 |---|---|---|---|---|
 | B1 | Khám phá | ~~Ảnh thực tế địa điểm không hiển thị~~ → **ĐÃ FIX**: parse `lh3.googleusercontent.com` URL từ `imageUrl` field trong `locations.json` | ✅ Fixed | `ImageViewer.tsx`, `ExploreView.tsx`, `App.tsx` |
-| B2 | Khám phá | Nút "Thêm vào Combo" chỉ hiện toast, không có state để gom thành danh sách | 🔴 Cao | `ExploreView.tsx`, `App.tsx` |
+| B2 | Khám phá | ~~Nút "Thêm vào Combo" chỉ hiện toast, không có state để gom thành danh sách~~ → **ĐÃ FIX**: Thêm `savedPlaces` state + `onAddToCombo` callback, chặn duplicate, hiện badge count | ✅ Fixed | `ExploreView.tsx`, `App.tsx` |
 | B3 | Khám phá | Geolocation đôi khi báo lỗi quyền truy cập không chính xác | 🟡 Trung | `ExploreView.tsx` (handleFetchPlaces) |
 | B4 | Client | ~~TypeScript error: `Cannot find module '@google/genai'` trong `geminiService.ts` cũ~~ → **ĐÃ FIX**: Xoá file obsolete | ✅ Fixed | `client/src/services/geminiService.ts` → **ĐÃ XOÁ** |
 | B5 | Client | ~~TypeScript error: `Property 'env' does not exist on type 'ImportMeta'`~~ → **ĐÃ FIX**: Xoá file obsolete | ✅ Fixed | `client/src/services/geminiService.ts` → **ĐÃ XOÁ** |

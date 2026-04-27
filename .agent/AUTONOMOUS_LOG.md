@@ -25,3 +25,11 @@ Format per entry:
 - Fix applied: Verified zero imports via grep, then deleted the file.
 - Verification: grep [pass] — no references found in client/src
 - Result: Resolved
+
+## 2026-04-27T16:33 — B2: "Thêm vào Combo" button has no state
+- Files: `client/src/App.tsx`, `client/src/components/explore/ExploreView.tsx`
+- Change type: Medium
+- Root cause: The "+ Combo" button in ExploreView line 112 only called `showToast()` without saving the location to any state array.
+- Fix applied: Added `savedPlaces` state + `handleAddToCombo` callback in App.tsx (with duplicate check). Added `onAddToCombo` + `savedPlacesCount` props to ExploreView. Button now pushes LocationItem into list and shows count badge.
+- Verification: lint [pass] / types [pass]
+- Result: Resolved

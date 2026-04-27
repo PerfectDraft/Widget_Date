@@ -21,7 +21,7 @@ import { PaymentModal } from './components/modals/PaymentModal';
 import { RideModal } from './components/modals/RideModal';
 import { ImageViewer } from './components/modals/ImageViewer';
 
-import type { Tab, Combo } from './types';
+import type { Tab, Combo, LocationItem } from './types';
 
 const formatVND = (amount: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -45,6 +45,20 @@ export default function App() {
   // Modal state
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [realImageLoc, setRealImageLoc] = useState<{ name: string; mapsUri: string; desc?: string; imageUrl?: string } | null>(null);
+
+  // Saved places ("Thêm vào Combo" from Explore)
+  const [savedPlaces, setSavedPlaces] = useState<LocationItem[]>([]);
+
+  const handleAddToCombo = (loc: LocationItem) => {
+    setSavedPlaces(prev => {
+      if (prev.some(p => p.id === loc.id)) {
+        showToast(`${loc.name} đã có trong danh sách rồi!`);
+        return prev;
+      }
+      showToast(`Đã thêm ${loc.name} vào combo! (${prev.length + 1} địa điểm)`);
+      return [...prev, loc];
+    });
+  };
 
   const handlePayment = () => {
     if (!selectedCombo) return;
@@ -132,6 +146,8 @@ export default function App() {
               setRideModalLoc={setRideModalLoc}
               setRealImageLoc={setRealImageLoc}
               formatVND={formatVND}
+              onAddToCombo={handleAddToCombo}
+              savedPlacesCount={savedPlaces.length}
             />
           )}
           {activeTab === 'wallet' && <DateMilesView userReward={userReward} />}
