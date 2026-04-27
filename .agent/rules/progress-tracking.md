@@ -5,7 +5,7 @@ trigger: always_on
 ---
 trigger: always_on
 description: Đọc PROGRESS.md trước khi làm việc, cập nhật sau mỗi task
-***
+---
 
 # Progress Tracking Protocol — Widget Date
 
@@ -47,6 +47,17 @@ Thêm vào cuối mục `Changelog theo session`, không xóa session cũ:
 ```
 
 **Bước 4 — Cập nhật progress bar** nếu một mảng tính năng thay đổi đáng kể (>10%)
+
+**Bước 5 — Sync PROJECT_CONTEXT.md**
+
+Sau mỗi session, kiểm tra xem các file sau có thay đổi không:
+- `client/package.json`
+- `server/package.json`
+- `PROGRESS.md` (tech stack section)
+
+Nếu có thay đổi liên quan đến stack, dependencies, hoặc kiến trúc:
+→ Tự động update `.agent/.shared/PROJECT_CONTEXT.md` cho khớp.
+→ Không cần hỏi user, chỉ cần log: "PROJECT_CONTEXT.md synced."
 
 ***
 

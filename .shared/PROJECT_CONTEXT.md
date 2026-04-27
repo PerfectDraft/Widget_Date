@@ -25,9 +25,9 @@ Last updated: 2026-04-27
 | UI components | Stitch MCP (design import) |
 | Styling | Tailwind / className-based |
 | Backend | Node.js (server directory) |
-| Database | (update when confirmed) |
-| State management | (update: Redux / Zustand / Context) |
-| Testing | (update: Jest / Testing Library) |
+| State management | React useState + useContext (no Redux/Zustand) |
+| Database         | Google Drive AppData (primary) + localStorage (fallback) + better-sqlite3 (server crawler) |
+| Testing          | Chưa có (pending — xem Open Decisions)         |
 
 ---
 
@@ -99,11 +99,10 @@ Widget_Date/
 
 ---
 
-## Open Decisions (update when resolved)
-
-- [ ] State management library confirmation (Redux vs Zustand vs Context)
-- [ ] Testing framework and coverage targets
-- [ ] Database technology confirmation
+## Open Decisions
+- [x] State management → confirmed: useState only, no global store library
+- [x] Database → confirmed: Google Drive AppData + localStorage + better-sqlite3
+- [ ] Testing framework and coverage targets → chưa quyết định
 - [ ] Deployment pipeline details
 
 ---
