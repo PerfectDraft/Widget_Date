@@ -10,7 +10,7 @@
 | Trường | Giá trị |
 |---|---|
 | **Ngày** | 2026-04-27 |
-| **Phiên làm việc** | #6 — UI Revamp + AI Model Upgrade |
+| **Phiên làm việc** | #8 — Multi-Account Fix & Chat Sync |
 | **Nhánh Git** | `main` |
 
 ---
@@ -192,6 +192,14 @@ npm run dev
 - **Files đã sửa**: `client/src/hooks/useAIPlanner.ts`, `client/src/components/home/ComboList.tsx`, `client/src/components/home/HomeDashboardUI.tsx`, `PROGRESS.md`.
 - **Verification**: Chạy thành công `tsc --noEmit` cho client, đảm bảo không còn lỗi syntax hay type-safety.
 - **Status**: Project đã có thể build và chạy lại bình thường.
+196: 
+197: ### Session #8 — 2026-04-27
+198: - **Multi-Account Fix**: Triển khai cơ chế reset state (`combos`, `userReward`, `chatMessages`) khi logout để tránh rò rỉ dữ liệu giữa các tài khoản khác nhau.
+199: - **Chat Sync to Drive**: Tích hợp đồng bộ lịch sử chat trực tiếp lên Google Drive. Toàn bộ cuộc hội thoại sẽ được lưu và tải lại tự động khi đăng nhập.
+200: - **Account Identification**: Sử dụng `userId` (sub/email từ Google UserInfo) để quản lý phiên làm việc chính xác trong `useChat` và `useDriveSync`.
+201: - **Fix regressions in App.tsx**: Khắc phục lỗi mất hook và thiếu import phát sinh trong quá trình tái cấu trúc.
+202: - **Files đã sửa**: `driveService.ts`, `useChat.ts`, `useDriveSync.ts`, `App.tsx`.
+203: 
 
 ---
 

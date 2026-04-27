@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, Compass, History, Trophy, MapPin, Bot, Cloud, CloudOff, LogOut } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -31,7 +31,8 @@ export default function App() {
   const { toastMessage, showToast, hideToast } = useToast();
   const weatherData = useWeather();
   const { userReward, setUserReward, earnMiles, incrementDates } = useReward(showToast);
-  const chat = useChat();
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const chat = useChat(currentUserId);
 
   // Combo state
   const [combos, setCombos] = useState<Combo[]>([]);
@@ -40,7 +41,19 @@ export default function App() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   // Sync state
-  const drive = useDriveSync(combos, userReward, setCombos, setUserReward);
+  const drive = useDriveSync(
+    combos, 
+    userReward, 
+    chat.chatMessages, 
+    setCombos, 
+    setUserReward, 
+    chat.setChatMessages
+  );
+
+  // Update userId when drive identifier changes
+  useEffect(() => {
+    setCurrentUserId(drive.userIdentifier);
+  }, [drive.userIdentifier]);
 
   // Modal state
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);

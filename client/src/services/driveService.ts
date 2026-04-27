@@ -8,6 +8,7 @@ export interface AppDatabase {
     badges: string[];
   };
   preferences?: string[];
+  chatMessages?: { role: string; text: string }[];
 }
 
 /**
