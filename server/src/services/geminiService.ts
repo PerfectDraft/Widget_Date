@@ -209,10 +209,18 @@ CRITICAL RULES FOR JSON:
       // Try parsing as array first from extracted block
       let parsedResult;
       const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-      if (arrayMatch?.[0]) {
-        parsedResult = JSON.parse(arrayMatch[0]);
-      } else {
-        parsedResult = JSON.parse(jsonStr);
+      let targetJson = arrayMatch?.[0] || jsonStr;
+
+      // Clean up common AI JSON mistakes (trailing commas)
+      const cleanedJson = targetJson
+        .replace(/,\s*([\]}])/g, '$1') // Remove trailing commas
+        .replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1'); // Remove comments
+
+      try {
+        parsedResult = JSON.parse(cleanedJson);
+      } catch (parseError: any) {
+        console.error('[JSON Parse Error Source]:', cleanedJson);
+        throw parseError;
       }
 
       if (!Array.isArray(parsedResult)) {

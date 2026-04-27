@@ -24,7 +24,12 @@ export async function getDatabaseFileId(accessToken: string): Promise<string | n
         },
       }
     );
-    if (!res.ok) throw new Error('Failed to query drive');
+    if (!res.ok) {
+      if (res.status === 403) {
+        console.error('CRITICAL: 403 Forbidden. Vui lòng bật "Google Drive API" trong Google Cloud Console: https://console.cloud.google.com/apis/library/drive.googleapis.com');
+      }
+      throw new Error(`Failed to query drive: ${res.status}`);
+    }
     const data = await res.json();
     if (data.files && data.files.length > 0) {
       return data.files[0].id;

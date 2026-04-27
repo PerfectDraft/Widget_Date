@@ -9,8 +9,8 @@
 
 | Trường | Giá trị |
 |---|---|
-| **Ngày** | 2026-04-25 |
-| **Phiên làm việc** | #3 — Fix OpenRouter + Google Maps + Combo Persistence |
+| **Ngày** | 2026-04-27 |
+| **Phiên làm việc** | #6 — UI Revamp + AI Model Upgrade |
 | **Nhánh Git** | `main` |
 
 ---
@@ -40,7 +40,7 @@ Data & Database    █████░░░░░░░░░░░░░░░ 
 - [x] **Gamification** — `useReward` hook: `earnMiles`, `incrementDates`, cấp bậc Newbie→Master
 - [x] **AI Chat Panel** — Full-screen chat với Gemini 2.5 Pro (`useChat` hook)
 - [x] **Ride Modal** — Deep link Grab, Be, Xanh SM với toạ độ lat/lng
-- [x] **Weather Banner** — Tích hợp OpenWeather API (`useWeather` hook)
+- [x] **Weather Banner** — Trang chủ: Weather card lớn + hiển thị ngày tháng (W3)
 - [x] **Toast Notification** — Component dùng chung với auto-dismiss 3 giây
 - [x] **Payment Modal** — Xác nhận thanh toán + confetti + +100 Miles
 - [x] **Image Viewer Modal** — Xem ảnh địa điểm (carousel)
@@ -85,8 +85,8 @@ Data & Database    █████░░░░░░░░░░░░░░░ 
 |---|---|---|---|
 | W1 | Backend | Expose REST endpoint từ `data-service` để client React lấy data Trends thực tế | `server/src/routes/trends.ts` |
 | W2 | Huy hiệu | Auto-unlock badge theo hành động (chỉ có "First Date" tự động, các badge khác chưa có logic) | `useReward.ts` |
-| W3 | Trang chủ | Bỏ phần "kỷ niệm" buổi sáng, làm to phần thời tiết, hiển thị ngày tháng | `HomeView.tsx` |
-| W4 | Sở thích | Chỉ hiện category có trong database, không hiện các mục thừa | `HomeView.tsx` (categories filter) |
+- [x] Home | Bỏ phần "kỷ niệm" buổi sáng, làm to phần thời tiết, hiển thị ngày tháng (W3)
+- [ ] Sở thích | Chỉ hiện category có trong database, không hiện các mục thừa (W4)
 | W5 | Trang chủ | Bổ sung thêm địa điểm vào mục Sở thích / Workspace | `data/locations.ts` |
 | W6 | Database | Tạo user database riêng (key = số điện thoại): lưu sở thích, địa điểm, lịch sử tab | `server/src/services/userService.ts` |
 | W7 | Outfit | Bỏ tính năng "Outfit Gợi ý" | `HomeView.tsx` |
@@ -155,21 +155,37 @@ npm run dev
 - Bugs đã fix: B1
 
 ### Session #3 — 2026-04-25
-- **Fix OpenRouter lần 2**: Tất cả model IDs cũ đã bị dẹp → chuyển sang `openrouter/free` (auto-router tự chọn model free có sẵn). Fix retry logic trong `geminiService.ts`: mọi HTTP error (400/404/429/503) đều retry sang model tiếp theo thay vì crash.
-- **Thêm nút "Mở trong Google Maps"**: Mỗi địa điểm trong tab Khám phá có nút mở chi tiết trên Google Maps. Mỗi activity trong combo ở Trang chủ cũng có link Google Maps.
-- **Fix mất combo khi chuyển tab**: Lift `combos` state từ `HomeView` lên `App.tsx` → combo persist khi chuyển tab.
-- Files đã sửa: `.env`, `server/src/services/geminiService.ts`, `client/src/components/explore/ExploreView.tsx`, `client/src/components/home/HomeView.tsx`, `client/src/App.tsx`, `client/src/types/index.ts`
-- **UI & Types**: Áp dụng giao diện mới từ Stitch MCP (screen `5b32504c0018489e99463755126b9ab5`) cho `HomeView.tsx`. Bổ sung `imageUrl` vào type `Activity` để fix lỗi TypeScript (`any` type anti-pattern). Thay thế toàn bộ Material Design/Stitch token bằng Tailwind CSS standard utilities.
+- Fix OpenRouter lần 2, Thêm nút "Mở trong Google Maps", Fix mất combo khi chuyển tab
+
 ### Session #4 — 2026-04-27
+- Google Drive Database, Tích hợp Stitch UI
+
+### Session #5 — 2026-04-27
+- Audit UI & Material Symbols, Fix Error 400 redirect_uri_mismatch, Fix Error Mapping, Fix JSON Parse Error, Fix Drive API 403
+
+### Session #6 — 2026-04-27
+- **UI Revamp (W3)**: Loại bỏ banner cảnh báo "kỷ niệm", mở rộng phần Weather Banner thành card lớn chuyên nghiệp.
+- **Date & Time**: Hiển thị ngày tháng tiếng Việt (Thứ, ngày, tháng) trực tiếp trên Dashboard.
+- **Model Upgrade (Fix)**: Khắc phục lỗi 404/429 bằng cách chuyển sang các model ổn định nhất của OpenRouter (cập nhật 27/04): `meta-llama/llama-3.3-70b-instruct:free` (Primary), và fallbacks: `google/gemma-4-31b-it:free`, `nvidia/nemotron-nano-9b-v2:free`.
+- **Port Conflict Fix**: Kill process chiếm port 3001, khắc phục lỗi `EADDRINUSE` và WebSocket HMR error.
+- Files đã sửa: `HomeDashboardUI.tsx`, `.env`, `PROGRESS.md`, `task.md`.
 - **Google Drive Database**: Cấu trúc Decentralized Database. Đã tích hợp Google OAuth 2.0 và Google Drive API.
 - Tạo `driveService.ts` tạo và đọc ghi `database.json` thẳng lên AppData Drive của người dùng bảo mật cao. 
 - Xây dựng hook `useDriveSync` cho phép auto-sync dữ liệu khi người dùng sử dụng app.
 - Xuất server API Key Gateway Server. Cài `google-auth-library` và `express-rate-limit`.
 - Xây dựng `authMiddleware.ts` decode ID Token / Access Token tự động và gắp ra Google ID.
-- Cấu hình chia pool `aiLimiter` (20 lượt) và `guestLimiter` (3 lượt).
 - Client `api.ts` tự động ghép Header `Authorization`.
 - Files đã sửa thêm: `api.ts`, `gemini.ts`, phân nhánh middleware auth hoàn toàn độc lập cho Backend.
 - Bỏ qua triển khai Vercel theo yêu cầu của user.
+- **Tích hợp Stitch UI**: Import giao diện "Home Dashboard - AI Planner". Tách logic ra `useAIPlanner.ts` và tái cấu trúc `HomeView.tsx` sử dụng 100% components từ Stitch (`HomeDashboardUI.tsx`, `ComboList.tsx`). Implement đủ 4 trạng thái (Loading, Empty, Error, Success). Khắc phục type errors của TypeScript (`ComboActivity` -> `Activity`).
+
+### Session #5 — 2026-04-27
+- **Audit UI & Material Symbols**: Fix lỗi font Epilogue/Plus Jakarta Sans và Material Symbols Outlined không hiển thị (xử lý tại `index.html`).
+- **Fix Error 400 redirect_uri_mismatch**: Enforce `strictPort: true` trong `vite.config.ts` để chặn Vite tự động nhảy sang port 5174 (phá vỡ Authorized Origins của Google).
+- **Fix Error Mapping**: Cập nhật `api.ts` để forward đúng HTTP status code (401, 429) vào UI. Bổ sung thông báo yêu cầu login Google Drive khi bị 401.
+- **Fix JSON Parse Error**: Triển khai `cleanedJson` trong `geminiService.ts` để tự động dọn dẹp trailing commas và comments trong kết quả trả về từ AI, giúp parse combo ổn định hơn.
+- **Fix Drive API 403**: Bổ sung log chỉ dẫn kích hoạt Google Drive API trong Google Cloud Console khi gặp lỗi Forbidden (403).
+- Files đã sửa: `index.html`, `vite.config.ts`, `api.ts`, `useAIPlanner.ts`, `HomeDashboardUI.tsx`, `ComboList.tsx`, `useDriveSync.ts`, `geminiService.ts`, `driveService.ts`.
 
 ---
 

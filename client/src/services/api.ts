@@ -16,8 +16,10 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ error: 'Network error' }));
-    throw new Error(error.error || `API error: ${res.status}`);
+    const errorBody = await res.json().catch(() => ({ error: 'Network error' }));
+    const error = new Error(errorBody.error || `API error: ${res.status}`);
+    (error as any).status = res.status;
+    throw error;
   }
 
   return res.json();
