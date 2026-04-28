@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, useActionState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Phone, Lock, Eye, EyeOff, ArrowRight, Heart } from 'lucide-react';
 import { login, register } from '../../services/api';
@@ -10,40 +10,34 @@ interface AuthViewProps {
 
 export function AuthView({ onAuthSuccess }: AuthViewProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  
+  const [state, formAction, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const formPhone = formData.get('phone') as string;
+    const formPassword = formData.get('password') as string;
 
     try {
       if (mode === 'login') {
-        const res = await login(phone, password);
+        const res = await login(formPhone, formPassword);
         if (res.success) {
-          onAuthSuccess(phone, res.user);
+          onAuthSuccess(formPhone, res.user);
+          return { error: null, success: true, phone: formPhone, password: formPassword };
         } else {
-          setError(res.error || 'Đăng nhập thất bại');
+          return { error: res.error || 'Đăng nhập thất bại', success: false, phone: formPhone, password: formPassword };
         }
       } else {
-        const res = await register(phone, password);
+        const res = await register(formPhone, formPassword);
         if (res.success) {
           setMode('login');
-          // Optional: show toast "Registered! Please login"
+          return { error: null, success: true, phone: formPhone, password: formPassword };
         } else {
-          setError(res.error || 'Đăng ký thất bại');
+          return { error: res.error || 'Đăng ký thất bại', success: false, phone: formPhone, password: formPassword };
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Lỗi kết nối server');
-    } finally {
-      setLoading(false);
+      return { error: err.message || 'Lỗi kết nối server', success: false, phone: formPhone, password: formPassword };
     }
-  };
+  }, { error: null, success: false, phone: '', password: '' });
 
   return (
     <div className="min-h-screen bg-[#FFF9F5] flex flex-col items-center justify-center p-6 relative overflow-hidden">
@@ -67,15 +61,15 @@ export function AuthView({ onAuthSuccess }: AuthViewProps) {
         </div>
 
         <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-8 border border-white/50 shadow-[0_20px_50px_rgba(212,163,115,0.1)]">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form action={formAction} className="space-y-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-[#6B6662] ml-1">Số điện thoại</label>
               <div className="relative">
                 <input
                   type="tel"
+                  name="phone"
                   placeholder="098..."
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  defaultValue={state.phone}
                   className="w-full h-14 bg-white rounded-2xl px-12 border border-[#F5E6E0] focus:ring-2 focus:ring-[#D4A373] focus:border-transparent outline-none transition-all placeholder:text-[#C4C0BE] text-[#4A4441]"
                   required
                 />
@@ -88,9 +82,9 @@ export function AuthView({ onAuthSuccess }: AuthViewProps) {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
+                  name="password"
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  defaultValue={state.password}
                   className="w-full h-14 bg-white rounded-2xl px-12 border border-[#F5E6E0] focus:ring-2 focus:ring-[#D4A373] focus:border-transparent outline-none transition-all placeholder:text-[#C4C0BE] text-[#4A4441]"
                   required
                 />
@@ -105,29 +99,29 @@ export function AuthView({ onAuthSuccess }: AuthViewProps) {
               </div>
             </div>
 
-            {error && (
+            {state.error && (
               <motion.p 
                 initial={{ opacity: 0, x: -10 }} 
                 animate={{ opacity: 1, x: 0 }}
                 className="text-red-500 text-sm ml-1 py-1"
               >
-                {error}
+                {state.error}
               </motion.p>
             )}
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={isPending}
               className={cn(
                 "w-full h-14 bg-[#D4A373] text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#D4A373]/20 hover:bg-[#C29262] transition-all",
-                loading && "opacity-70 cursor-not-allowed"
+                isPending && "opacity-70 cursor-not-allowed"
               )}
             >
-              {loading ? (
+              {isPending ? (
                 <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>{mode === 'login' ? 'Đăng nhập' : 'Đạo tài khoản'}</span>
+                  <span>{mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}</span>
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
