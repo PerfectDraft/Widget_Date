@@ -186,7 +186,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
           </div>
 
           <div className="space-y-5">
-            {filteredPlaces.slice(0, 6).map((loc, i) => (
+            {filteredPlaces.slice(0, expandedSection === 'places' ? filteredPlaces.length : 6).map((loc, i) => (
               <motion.div
                 key={loc.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -195,10 +195,15 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
                 className="glass-card rounded-[28px] overflow-hidden border-none"
               >
                 {/* Cover Image */}
-                <div
-                  className="relative h-44 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20 bg-cover bg-center"
-                  style={extractPlaceImage(loc.imageUrl) ? { backgroundImage: `url(${extractPlaceImage(loc.imageUrl)})` } : undefined}
-                >
+                <div className="relative h-44 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20 overflow-hidden">
+                  {extractPlaceImage(loc.imageUrl) && (
+                    <img
+                      src={extractPlaceImage(loc.imageUrl)}
+                      alt={loc.name}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent z-10" />
                   {/* Favorite Button */}
                   <button
@@ -298,8 +303,8 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
               onClick={() => setExpandedSection(expandedSection === 'places' ? null : 'places')}
               className="w-full mt-4 py-3 rounded-full border border-outline-variant/30 text-primary font-bold text-label-md flex items-center justify-center gap-2 hover:bg-primary-container/20 transition-colors cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">expand_more</span>
-              Xem thêm {filteredPlaces.length - 6} địa điểm
+              <span className="material-symbols-outlined text-[18px]">{expandedSection === 'places' ? 'expand_less' : 'expand_more'}</span>
+              {expandedSection === 'places' ? 'Thu gọn' : `Xem thêm ${filteredPlaces.length - 6} địa điểm`}
             </button>
           )}
         </section>

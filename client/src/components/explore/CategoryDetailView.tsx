@@ -160,10 +160,15 @@ export function CategoryDetailView({
                 className="glass-card rounded-[24px] overflow-hidden border-none"
               >
                 {/* Cover */}
-                <div
-                  className="relative h-36 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20 bg-cover bg-center"
-                  style={extractPlaceImage(loc.imageUrl) ? { backgroundImage: `url(${extractPlaceImage(loc.imageUrl)})` } : undefined}
-                >
+                <div className="relative h-36 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20 overflow-hidden">
+                  {extractPlaceImage(loc.imageUrl) && (
+                    <img
+                      src={extractPlaceImage(loc.imageUrl)}
+                      alt={loc.name}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
                   {/* Rating badge */}
                   <div className="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md">
