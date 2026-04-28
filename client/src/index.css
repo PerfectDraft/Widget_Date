@@ -54,3 +54,31 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 24px -1px rgba(137, 76, 92, 0.08);
 }
+
+/* Category overlay card */
+.category-card {
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+.category-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.15));
+  border-radius: inherit;
+}
+.category-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hide scrollbar for horizontal scroll */
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scroll-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

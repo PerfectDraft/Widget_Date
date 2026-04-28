@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Compass, History, Trophy, Bot } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from './lib/utils';
 import { Toast } from './components/Toast';
@@ -202,23 +202,50 @@ export default function App() {
       </main>
 
       {/* Bottom Nav */}
-      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 pb-safe z-40">
-        <div className="max-w-md mx-auto px-6 py-3 flex justify-between items-center">
+      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 glass-card pb-safe z-40">
+        <div className="max-w-md mx-auto px-4 py-2 flex justify-around items-end">
           {([
-            { id: 'home', icon: Home, label: 'Trang chủ' },
-            { id: 'explore', icon: Compass, label: 'Khám phá' },
-            { id: 'history', icon: History, label: 'Lịch sử' },
-            { id: 'wallet', icon: Trophy, label: 'Date Milestones' },
+            { id: 'home', icon: 'home', label: 'Trang chủ' },
+            { id: 'explore', icon: 'explore', label: 'Khám phá' },
+            { id: 'history', icon: 'history', label: 'Lịch sử' },
+            { id: 'wallet', icon: 'emoji_events', label: 'Thành tích' },
           ] as const).map(item => {
             const isActive = activeTab === item.id;
-            const Icon = item.icon;
             return (
-              <button key={item.id} onClick={() => setActiveTab(item.id)} aria-label={item.label} aria-current={isActive ? 'page' : undefined} className={cn('flex flex-col items-center gap-1 p-2 transition-all duration-200', isActive ? 'text-purple-600' : 'text-slate-400 hover:text-slate-600')}>
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
+                className={cn(
+                  'flex flex-col items-center gap-0.5 px-3 py-1 transition-all duration-300 relative cursor-pointer',
+                  isActive ? 'text-primary -translate-y-1' : 'text-on-surface-variant/60 hover:text-on-surface-variant'
+                )}
+              >
                 <div className="relative">
-                  <Icon className={cn('w-6 h-6', isActive && 'fill-purple-50')} />
-                  {isActive && <motion.div layoutId="nav-indicator" className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-1 h-1 bg-purple-600 rounded-full" />}
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-active-bg"
+                      className="absolute -inset-2.5 bg-primary-fixed/50 rounded-full"
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <span
+                    className={cn(
+                      'material-symbols-outlined text-[24px] relative z-10 transition-all',
+                      isActive && 'font-bold'
+                    )}
+                    style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                  >
+                    {item.icon}
+                  </span>
                 </div>
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className={cn(
+                  'text-[10px] font-semibold transition-all',
+                  isActive ? 'text-primary' : 'text-on-surface-variant/60'
+                )}>
+                  {item.label}
+                </span>
               </button>
             );
           })}
@@ -269,7 +296,7 @@ export default function App() {
       <ImageViewer loc={realImageLoc} onClose={() => setRealImageLoc(null)} />
 
       {/* Chat FAB + Panel */}
-      <button onClick={() => chat.setIsChatOpen(true)} className="fixed bottom-24 right-4 z-40 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-full p-4 shadow-lg shadow-pink-500/30 transition-transform hover:scale-105 active:scale-95">
+      <button onClick={() => chat.setIsChatOpen(true)} className="fixed bottom-24 right-4 z-40 bg-primary hover:bg-on-primary-container text-on-primary rounded-full p-4 shadow-lg shadow-primary/30 transition-all hover:scale-105 active:scale-95">
         <Bot className="w-6 h-6 animate-bounce" />
       </button>
       <ChatPanel {...chat} />
