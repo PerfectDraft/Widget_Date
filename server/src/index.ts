@@ -6,6 +6,7 @@ import { scraperRouter } from './routes/scraper.js';
 import { weatherRouter } from './routes/weather.js';
 import { userRouter } from './routes/user.js';
 import { authRouter } from './routes/auth.js';
+import { trendsRouter } from './routes/trends.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { initSchema } from './db/client.js';
 
@@ -28,6 +29,7 @@ app.use('/api', scraperRouter);
 app.use('/api', weatherRouter);
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/trends', trendsRouter);
 
 // Global error handler (must be last)
 app.use(errorHandler);

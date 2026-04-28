@@ -1,6 +1,8 @@
-import type { TrendItem } from '../types';
+import { Router } from 'express';
 
-export const TRENDS: TrendItem[] = [
+export const trendsRouter = Router();
+
+const TRENDS = [
   { id: 1, icon: '🧋', name: 'Oolong Đậm Vị Kem Nướng', badge: 'VIRAL', badgeColor: 'bg-pink-100 text-pink-600', desc: 'Khu Chùa Láng', price: '35K/ly' },
   { id: 2, icon: '🍋', name: 'Trà Chanh Giã Tay', badge: 'HOT', badgeColor: 'bg-yellow-100 text-yellow-600', desc: 'Quảng Trường Đông Kinh', price: '25K/ly' },
   { id: 3, icon: '🪙', name: 'Bánh Đồng Xu Phô Mai', badge: 'TRENDING', badgeColor: 'bg-blue-100 text-blue-600', desc: 'Phố Hội & Phố Cổ', price: '35K/chiếc' },
@@ -10,3 +12,7 @@ export const TRENDS: TrendItem[] = [
   { id: 7, icon: '🍵', name: 'Cà Phê Trứng Giảng', badge: 'CLASSIC', badgeColor: 'bg-slate-100 text-slate-800', desc: 'Hoàn Kiếm', price: '35K/ly' },
   { id: 8, icon: '🥟', name: 'Bánh Trôi Tàu Đê La Thành', badge: 'WINTER', badgeColor: 'bg-purple-100 text-purple-600', desc: 'Đê La Thành', price: '20K/bát' },
 ];
+
+trendsRouter.get('/', (req, res) => {
+  res.json({ trends: TRENDS });
+});

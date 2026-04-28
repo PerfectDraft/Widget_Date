@@ -1,11 +1,10 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
-import { calculateDistance } from '../../services/api';
+import { calculateDistance, getTrends } from '../../services/api';
 import { REAL_LOCATIONS } from '../../data/locations';
-import { TRENDS } from '../../data/trends';
 import { MOVIES } from '../../data/movies';
-import type { LocationItem } from '../../types';
+import type { LocationItem, TrendItem } from '../../types';
 
 interface Props {
   showToast: (msg: string) => void;
@@ -33,6 +32,12 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   const [searchError, setSearchError] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<'places' | 'movies' | 'trends' | null>('places');
   const [favorites, setFavorites] = useState<Set<string | number>>(new Set());
+  const [trends, setTrends] = useState<TrendItem[]>([]);
+
+  // Fetch trends on mount
+  useMemo(() => {
+    getTrends().then(setTrends).catch(err => console.error('Failed to fetch trends:', err));
+  }, []);
 
   const handleFetchPlaces = () => {
     const isSecureContext = window.isSecureContext || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -350,7 +355,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
             </h2>
           </div>
           <div className="flex gap-3 overflow-x-auto scroll-hidden -mx-6 px-6 pb-2">
-            {TRENDS.map(t => (
+            {trends.map(t => (
               <div key={t.id} className="glass-card rounded-[24px] p-4 min-w-[180px] max-w-[180px] shrink-0 space-y-2 border-none">
                 <div className="text-3xl">{t.icon}</div>
                 <h3 className="font-bold text-on-surface text-label-md line-clamp-2">{t.name}</h3>

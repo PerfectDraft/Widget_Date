@@ -1,4 +1,4 @@
-import type { Combo, LocationItem } from '../types';
+import type { Combo, LocationItem, TrendItem } from '../types';
 
 /** API error with HTTP status code */
 export class ApiError extends Error {
@@ -169,4 +169,11 @@ export async function register(phone: string, password: string): Promise<AuthRes
     method: 'POST',
     body: JSON.stringify({ phone, password }),
   });
+}
+
+// --- Trends Endpoints ---
+
+export async function getTrends(): Promise<TrendItem[]> {
+  const result = await apiRequest<{ trends: TrendItem[] }>('/trends');
+  return result.trends;
 }
