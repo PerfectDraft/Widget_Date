@@ -5,7 +5,7 @@ import { calculateDistance, getTrends } from '../../services/api';
 import { REAL_LOCATIONS } from '../../data/locations';
 import { MOVIES } from '../../data/movies';
 import { CategoryDetailView } from './CategoryDetailView';
-import type { LocationItem, TrendItem } from '../../types';
+import type { LocationItem, TrendItem, Combo, ComboSlot } from '../../types';
 
 interface Props {
   showToast: (msg: string) => void;
@@ -14,6 +14,8 @@ interface Props {
   formatVND: (n: number) => string;
   onAddToCombo: (loc: LocationItem) => void;
   savedPlacesCount: number;
+  activeCombo: Combo | null;
+  comboSlots: ComboSlot[];
 }
 
 const CATEGORIES = ['Tất cả', 'Cafe', 'Food', 'Lãng mạn', 'Sang trọng'] as const;
@@ -25,7 +27,7 @@ const CATEGORY_GRID = [
   { label: 'Xem phim', icon: 'movie', gradient: 'from-slate-800 to-slate-600' },
 ] as const;
 
-export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, formatVND, onAddToCombo, savedPlacesCount }: Props) {
+export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, formatVND, onAddToCombo, savedPlacesCount, activeCombo, comboSlots }: Props) {
   const [activeCategory, setActiveCategory] = useState<string>('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
   const [dynamicPlaces, setDynamicPlaces] = useState<LocationItem[]>(REAL_LOCATIONS);
@@ -264,10 +266,18 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => onAddToCombo(loc)}
-                      className="flex-1 bg-primary text-on-primary py-2.5 rounded-full text-label-md font-bold transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer"
+                      className={`flex-1 py-2.5 rounded-full text-label-md font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        activeCombo && comboSlots.every(s => s !== null)
+                          ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
+                          : 'bg-primary text-on-primary hover:scale-[1.02] active:scale-[0.98]'
+                      }`}
+                      disabled={!!(activeCombo && comboSlots.every(s => s !== null))}
                     >
                       <span className="material-symbols-outlined text-[16px]">add</span>
-                      Combo{savedPlacesCount > 0 ? ` (${savedPlacesCount})` : ''}
+                      {activeCombo
+                        ? comboSlots.every(s => s !== null) ? 'Đã đủ' : 'Thêm vào Combo'
+                        : `Combo${savedPlacesCount > 0 ? ` (${savedPlacesCount})` : ''}`
+                      }
                     </button>
                     <button
                       onClick={() => setRideModalLoc({ name: loc.name, lat: loc.lat || 0, lng: loc.lng || 0 })}
@@ -395,9 +405,27 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
             formatVND={formatVND}
             onAddToCombo={onAddToCombo}
             savedPlacesCount={savedPlacesCount}
+            activeCombo={activeCombo}
+            comboSlots={comboSlots}
           />
         )}
       </AnimatePresence>
+
+      {/* Sticky Combo Progress Mini-Card */}
+      {activeCombo && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50">
+          <div className="glass-card rounded-2xl px-4 py-3 border border-primary/30 shadow-xl flex items-center gap-3">
+            <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>target</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-label-sm font-bold text-on-surface truncate">{activeCombo.theme} {activeCombo.icon}</p>
+              <p className="text-[11px] text-on-surface-variant">{comboSlots.filter(s => s !== null).length}/{comboSlots.length} địa điểm đã chọn</p>
+            </div>
+            <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
+              <span className="text-primary font-bold text-[11px]">{comboSlots.filter(s => s !== null).length}/{comboSlots.length}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { HomeDashboardUI } from './HomeDashboardUI';
 import { useAIPlanner } from '../../hooks/useAIPlanner';
 import { REAL_LOCATIONS } from '../../data/locations';
-import type { Combo, Activity } from '../../types';
+import type { Combo, Activity, ComboSlot } from '../../types';
 
 interface Props {
   weatherData: any;
@@ -20,12 +20,18 @@ interface Props {
   location: string;
   preferences: string[];
   setPreferences: (p: string[]) => void;
+  activeCombo: Combo | null;
+  comboSlots: ComboSlot[];
+  onClearCombo: () => void;
+  onConfirmCombo: () => void;
+  onRemoveSlot: (idx: number) => void;
 }
 
 export function HomeView({ 
   weatherData, showToast, setSelectedCombo, setShowPaymentModal, 
   setRideModalLoc, setRealImageLoc, combos, setCombos, 
-  openChat, onAvatarClick, onWeatherClick, formatVND, location, preferences, setPreferences 
+  openChat, onAvatarClick, onWeatherClick, formatVND, location, preferences, setPreferences,
+  activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot
 }: Props) {
   
   const { formState, dataState, actions } = useAIPlanner({
@@ -96,6 +102,11 @@ export function HomeView({
       onSelectCombo={handleSelectCombo}
       onSelectVenue={handleSelectVenue}
       formatVND={formatVND}
+      activeCombo={activeCombo}
+      comboSlots={comboSlots}
+      onClearCombo={onClearCombo}
+      onConfirmCombo={onConfirmCombo}
+      onRemoveSlot={onRemoveSlot}
     />
   );
 }

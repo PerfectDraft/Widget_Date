@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { cn, extractPlaceImage } from '../../lib/utils';
 import { calculateDistance } from '../../services/api';
 import { REAL_LOCATIONS } from '../../data/locations';
-import type { LocationItem } from '../../types';
+import type { LocationItem, Combo, ComboSlot } from '../../types';
 
 interface Props {
   categoryLabel: string;
@@ -17,6 +17,8 @@ interface Props {
   formatVND: (n: number) => string;
   onAddToCombo: (loc: LocationItem) => void;
   savedPlacesCount: number;
+  activeCombo: Combo | null;
+  comboSlots: ComboSlot[];
 }
 
 type SortMode = 'best' | 'rating' | 'distance';
@@ -30,7 +32,8 @@ const CATEGORY_MAP: Record<string, (loc: LocationItem) => boolean> = {
 
 export function CategoryDetailView({
   categoryLabel, categoryIcon, categoryGradient, onBack,
-  showToast, setRideModalLoc, setRealImageLoc, formatVND, onAddToCombo, savedPlacesCount
+  showToast, setRideModalLoc, setRealImageLoc, formatVND, onAddToCombo, savedPlacesCount,
+  activeCombo, comboSlots
 }: Props) {
   const [sortMode, setSortMode] = useState<SortMode>('best');
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -205,10 +208,18 @@ export function CategoryDetailView({
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => onAddToCombo(loc)}
-                      className="flex-1 bg-primary text-on-primary py-2.5 rounded-full text-label-md font-bold transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer"
+                      className={`flex-1 py-2.5 rounded-full text-label-md font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        activeCombo && comboSlots.every(s => s !== null)
+                          ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
+                          : 'bg-primary text-on-primary hover:scale-[1.02] active:scale-[0.98]'
+                      }`}
+                      disabled={!!(activeCombo && comboSlots.every(s => s !== null))}
                     >
                       <span className="material-symbols-outlined text-[16px]">add</span>
-                      Combo{savedPlacesCount > 0 ? ` (${savedPlacesCount})` : ''}
+                      {activeCombo
+                        ? comboSlots.every(s => s !== null) ? 'Đã đủ' : 'Thêm vào Combo'
+                        : `Combo${savedPlacesCount > 0 ? ` (${savedPlacesCount})` : ''}`
+                      }
                     </button>
                     <button
                       onClick={() => setRideModalLoc({ name: loc.name, lat: loc.lat || 0, lng: loc.lng || 0 })}

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { HeartCrack, ArrowRight } from 'lucide-react';
 import { ComboList } from './ComboList';
-import type { Combo, Activity } from '../../types';
+import { extractPlaceImage } from '../../lib/utils';
+import type { Combo, Activity, ComboSlot } from '../../types';
 
 export interface HomeDashboardUIProps {
   // User Info
@@ -39,6 +40,13 @@ export interface HomeDashboardUIProps {
   onSelectCombo: (combo: Combo) => void;
   onSelectVenue?: (venue: Activity) => void;
   formatVND: (n: number) => string;
+
+  // Combo Focus Mode
+  activeCombo: Combo | null;
+  comboSlots: ComboSlot[];
+  onClearCombo: () => void;
+  onConfirmCombo: () => void;
+  onRemoveSlot: (idx: number) => void;
 }
 
 export function HomeDashboardUI(props: HomeDashboardUIProps) {
@@ -47,8 +55,13 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
     budget, onBudgetChange, companion, onCompanionChange,
     startTime, endTime, onTimeChange, preferences, categories, onPreferenceToggle,
     isGenerating, onGenerate,
-    combos, error, onSelectCombo, onSelectVenue, formatVND
+    combos, error, onSelectCombo, onSelectVenue, formatVND,
+    activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot
   } = props;
+
+  const isFocusMode = activeCombo !== null;
+  const filledCount = comboSlots.filter(s => s !== null).length;
+  const allFilled = isFocusMode && filledCount === comboSlots.length;
 
   const [showWeatherDetail, setShowWeatherDetail] = useState(false);
 
@@ -89,6 +102,104 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
       </header>
 
       <main className="px-6 space-y-8 mt-6">
+
+        {/* ========== COMBO FOCUS MODE ========== */}
+        {isFocusMode && activeCombo && (
+          <section className="glass-card rounded-[32px] p-6 border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-secondary/5 shadow-xl relative">
+            {/* Header with cancel */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>playlist_add_check</span>
+                <div>
+                  <h3 className="text-headline-md font-bold text-on-surface">{activeCombo.theme} {activeCombo.icon}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{filledCount}/{comboSlots.length} địa điểm đã chọn</p>
+                </div>
+              </div>
+              <button
+                onClick={onClearCombo}
+                className="p-2 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer group"
+                aria-label="Huỷ combo"
+              >
+                <span className="material-symbols-outlined text-on-surface-variant group-hover:text-error text-[22px]">close</span>
+              </button>
+            </div>
+
+            {/* Progress bar */}
+            <div className="h-1.5 rounded-full bg-surface-container-high mb-5 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-primary to-tertiary transition-all duration-500"
+                style={{ width: `${(filledCount / comboSlots.length) * 100}%` }}
+              />
+            </div>
+
+            {/* Slot cards */}
+            <div className="space-y-3">
+              {comboSlots.map((slot, idx) => {
+                const originalActivity = activeCombo.activities[idx];
+                if (slot) {
+                  // Filled slot
+                  return (
+                    <div key={idx} className="flex items-center gap-3 bg-primary-container/20 rounded-2xl p-3 border border-primary/20">
+                      <div className="w-14 h-14 rounded-xl overflow-hidden bg-surface-container-high shrink-0">
+                        {extractPlaceImage(slot.imageUrl) ? (
+                          <img src={extractPlaceImage(slot.imageUrl)} alt={slot.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-label-sm text-primary font-bold">{originalActivity?.time || `Slot ${idx + 1}`}</p>
+                        <p className="font-bold text-on-surface truncate">{slot.name}</p>
+                        <p className="text-[11px] text-on-surface-variant truncate">{slot.address}</p>
+                      </div>
+                      <button
+                        onClick={() => onRemoveSlot(idx)}
+                        className="p-1.5 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-on-surface-variant hover:text-error text-[18px]">remove_circle</span>
+                      </button>
+                    </div>
+                  );
+                }
+                // Empty slot
+                return (
+                  <div key={idx} className="flex items-center gap-3 rounded-2xl p-3 border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50">
+                    <div className="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-outline-variant text-[24px]">add_location</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-label-sm text-outline font-bold">{originalActivity?.time || `Slot ${idx + 1}`}</p>
+                      <p className="text-on-surface-variant text-body-md">Chưa chọn địa điểm</p>
+                      <p className="text-[11px] text-outline-variant">Bấm Khám phá để thêm</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* CTA */}
+            <button
+              onClick={allFilled ? onConfirmCombo : undefined}
+              disabled={!allFilled}
+              className={`w-full mt-5 py-4 rounded-full font-bold text-body-lg flex items-center justify-center gap-2 transition-all ${
+                allFilled
+                  ? 'bg-primary text-on-primary shadow-xl hover:scale-[1.02] cursor-pointer'
+                  : 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {allFilled ? 'check_circle' : 'hourglass_empty'}
+              </span>
+              {allFilled ? 'Chốt lịch ✨' : `Chờ chọn địa điểm (${filledCount}/${comboSlots.length})`}
+            </button>
+          </section>
+        )}
+
+        {/* ========== REST OF CONTENT (dimmed in Focus Mode) ========== */}
+        <div className={isFocusMode ? 'opacity-40 pointer-events-none select-none transition-opacity duration-300' : 'transition-opacity duration-300'}>
+
         {/* Weather Card — Clean 2-column layout */}
         <section className="glass-card rounded-[32px] p-6 border-none bg-gradient-to-br from-primary/10 via-secondary/10 to-background shadow-xl relative overflow-hidden">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
@@ -291,6 +402,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             formatVND={formatVND}
           />
         )}
+        </div>{/* end dim wrapper */}
       </main>
     </div>
   );

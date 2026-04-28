@@ -24,7 +24,8 @@ import { AuthView } from './components/auth/AuthView';
 import { ProfileView } from './components/profile/ProfileView';
 import { WeatherDetailView } from './components/weather/WeatherDetailView';
 
-import type { Tab, Combo, LocationItem } from './types';
+import type { Tab, Combo, LocationItem, ComboSlot } from './types';
+import { CATEGORY_SLOT_MAP } from './types';
 
 const formatVND = (amount: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -64,6 +65,10 @@ export default function App() {
 
   // Saved places ("Thêm vào Combo" from Explore)
   const [savedPlaces, setSavedPlaces] = useState<LocationItem[]>([]);
+
+  // Combo Focus Mode
+  const [activeCombo, setActiveCombo] = useState<Combo | null>(null);
+  const [comboSlots, setComboSlots] = useState<ComboSlot[]>([]);
 
   // Persist state to localStorage on changes
   useEffect(() => {
@@ -120,15 +125,99 @@ export default function App() {
     return <AuthView onAuthSuccess={handleAuthSuccess} />;
   }
 
-  const handleAddToCombo = (loc: LocationItem) => {
-    setSavedPlaces(prev => {
-      if (prev.some(p => p.id === loc.id)) {
-        showToast(`${loc.name} đã có trong danh sách rồi!`);
-        return prev;
+  // --- Combo Focus Mode Handlers ---
+
+  const handleSelectCombo = (combo: Combo) => {
+    setActiveCombo(combo);
+    setComboSlots(combo.activities.map(() => null));
+    showToast(`Đã chọn combo "${combo.theme}" — Thêm địa điểm từ Khám phá!`);
+  };
+
+  const handleClearCombo = () => {
+    setActiveCombo(null);
+    setComboSlots([]);
+    showToast('Đã huỷ combo');
+  };
+
+  const handleConfirmCombo = () => {
+    if (!activeCombo || comboSlots.some(s => s === null)) return;
+    const filledSlots = comboSlots as LocationItem[];
+    const totalPrice = filledSlots.reduce((sum, loc) => sum + (loc.price || loc.cost || 0), 0);
+    const finalCombo: Combo = {
+      ...activeCombo,
+      totalCost: totalPrice || activeCombo.totalCost,
+      activities: filledSlots.map((loc, i) => ({
+        time: activeCombo.activities[i]?.time || `${17 + i}:00`,
+        name: loc.name,
+        address: loc.address,
+        cost: loc.price || loc.cost || activeCombo.activities[i]?.cost || 0,
+        lat: loc.lat,
+        lng: loc.lng,
+        imageUrl: loc.imageUrl,
+        category: loc.category,
+      })),
+    };
+    setSelectedCombo(finalCombo);
+    setShowPaymentModal(true);
+  };
+
+  /** Smart slot-filling: match loc.category to combo activity keywords */
+  const findMatchingSlotIndex = (loc: LocationItem): number => {
+    const locCat = (loc.category || '').toLowerCase();
+    const locName = loc.name.toLowerCase();
+    const locTheme = (loc.theme || '').toLowerCase();
+
+    for (let i = 0; i < comboSlots.length; i++) {
+      if (comboSlots[i] !== null) continue; // already filled
+      const act = activeCombo?.activities[i];
+      if (!act) continue;
+      const actName = act.name.toLowerCase();
+
+      // Check each slot map category
+      for (const keywords of Object.values(CATEGORY_SLOT_MAP)) {
+        const locMatches = keywords.some(kw => locCat.includes(kw) || locName.includes(kw) || locTheme.includes(kw));
+        const actMatches = keywords.some(kw => actName.includes(kw));
+        if (locMatches && actMatches) return i;
       }
-      showToast(`Đã thêm ${loc.name} vào combo! (${prev.length + 1} địa điểm)`);
-      return [...prev, loc];
+    }
+    // Fallback: first empty slot
+    return comboSlots.findIndex(s => s === null);
+  };
+
+  const handleAddToCombo = (loc: LocationItem) => {
+    if (!activeCombo) {
+      // No combo active — add to saved places list
+      setSavedPlaces(prev => {
+        if (prev.some(p => p.id === loc.id)) {
+          showToast(`${loc.name} đã có trong danh sách rồi!`);
+          return prev;
+        }
+        showToast(`Đã thêm ${loc.name} vào danh sách! (${prev.length + 1} địa điểm)`);
+        return [...prev, loc];
+      });
+      return;
+    }
+
+    // Combo Focus Mode — fill slot
+    const allFilled = comboSlots.every(s => s !== null);
+    if (allFilled) {
+      showToast('Combo đã đầy đủ! Bấm "Chốt lịch" trên Home.');
+      return;
+    }
+
+    const slotIdx = findMatchingSlotIndex(loc);
+    if (slotIdx === -1) {
+      showToast('Không còn slot trống!');
+      return;
+    }
+
+    setComboSlots(prev => {
+      const next = [...prev];
+      next[slotIdx] = loc;
+      return next;
     });
+    const filled = comboSlots.filter(s => s !== null).length + 1;
+    showToast(`Đã thêm ${loc.name} vào slot ${slotIdx + 1}! (${filled}/${comboSlots.length})`);
   };
 
   const handlePayment = () => {
@@ -171,7 +260,7 @@ export default function App() {
             <HomeView
               weatherData={weatherData?.current ?? null}
               showToast={showToast}
-              setSelectedCombo={setSelectedCombo}
+              setSelectedCombo={handleSelectCombo}
               setShowPaymentModal={setShowPaymentModal}
               setRideModalLoc={setRideModalLoc}
               setRealImageLoc={setRealImageLoc}
@@ -184,6 +273,11 @@ export default function App() {
               location={location}
               preferences={preferences}
               setPreferences={setPreferences}
+              activeCombo={activeCombo}
+              comboSlots={comboSlots}
+              onClearCombo={handleClearCombo}
+              onConfirmCombo={handleConfirmCombo}
+              onRemoveSlot={(idx) => setComboSlots(prev => { const n = [...prev]; n[idx] = null; return n; })}
             />
           )}
           {activeTab === 'explore' && (
@@ -194,6 +288,8 @@ export default function App() {
               formatVND={formatVND}
               onAddToCombo={handleAddToCombo}
               savedPlacesCount={savedPlaces.length}
+              activeCombo={activeCombo}
+              comboSlots={comboSlots}
             />
           )}
           {activeTab === 'wallet' && <DateMilesView userReward={userReward} />}
