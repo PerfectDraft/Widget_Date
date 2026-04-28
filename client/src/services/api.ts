@@ -88,13 +88,31 @@ export async function fetchPlaceImage(mapsUrl: string): Promise<string | null> {
 
 export interface WeatherData {
   name: string;
-  main: { temp: number; feels_like: number; humidity: number };
-  weather: Array<{ description: string; icon: string }>;
+  main: { temp: number; feels_like: number; humidity: number; pressure: number; temp_min: number; temp_max: number };
+  weather: Array<{ main: string; description: string; icon: string }>;
   wind: { speed: number };
+  clouds?: { all: number };
+  visibility?: number;
+  sys?: { sunset: number; sunrise: number };
 }
 
-export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherData> {
-  return apiRequest<WeatherData>(`/weather?city=${encodeURIComponent(city)}`);
+export interface ForecastDay {
+  date: string;
+  dayLabel: string;
+  tempMin: number;
+  tempMax: number;
+  icon: string;
+  main: string;
+  description: string;
+}
+
+export interface WeatherWithForecast {
+  current: WeatherData;
+  forecast: ForecastDay[];
+}
+
+export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherWithForecast> {
+  return apiRequest<WeatherWithForecast>(`/weather?city=${encodeURIComponent(city)}`);
 }
 
 // --- User Endpoints (W6) ---

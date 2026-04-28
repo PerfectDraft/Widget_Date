@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils';
 import { calculateDistance, getTrends } from '../../services/api';
 import { REAL_LOCATIONS } from '../../data/locations';
 import { MOVIES } from '../../data/movies';
+import { CategoryDetailView } from './CategoryDetailView';
 import type { LocationItem, TrendItem } from '../../types';
 
 interface Props {
@@ -33,6 +34,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   const [expandedSection, setExpandedSection] = useState<'places' | 'movies' | 'trends' | null>('places');
   const [favorites, setFavorites] = useState<Set<string | number>>(new Set());
   const [trends, setTrends] = useState<TrendItem[]>([]);
+  const [selectedCategoryGrid, setSelectedCategoryGrid] = useState<typeof CATEGORY_GRID[number] | null>(null);
 
   // Fetch trends on mount
   useMemo(() => {
@@ -118,7 +120,10 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full bg-surface-container-low pl-12 pr-12 py-3 rounded-full text-on-surface placeholder:text-on-surface-variant/40 border border-outline-variant/30 focus:border-primary focus:outline-none transition-colors"
           />
-          <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-surface-container-high p-1.5 rounded-full cursor-pointer">
+          <button
+            onClick={() => showToast('Bộ lọc nâng cao — Sử dụng "Khám phá theo danh mục" bên dưới!')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-surface-container-high p-1.5 rounded-full cursor-pointer hover:bg-primary-container/40 transition-colors"
+          >
             <span className="material-symbols-outlined text-on-surface-variant text-[18px]">tune</span>
           </button>
         </div>
@@ -190,7 +195,10 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
                 className="glass-card rounded-[28px] overflow-hidden border-none"
               >
                 {/* Cover Image */}
-                <div className="relative h-44 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20">
+                <div
+                  className="relative h-44 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20 bg-cover bg-center"
+                  style={loc.imageUrl ? { backgroundImage: `url(${loc.imageUrl})` } : undefined}
+                >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent z-10" />
                   {/* Favorite Button */}
                   <button
@@ -306,7 +314,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
             {CATEGORY_GRID.map((cat) => (
               <button
                 key={cat.label}
-                onClick={() => { setActiveCategory(cat.label === 'Ăn tối' ? 'Food' : cat.label === 'Cafe & Chill' ? 'Cafe' : 'Tất cả'); showToast(`Đang xem: ${cat.label}`); }}
+                onClick={() => setSelectedCategoryGrid(cat)}
                 className={cn(
                   'rounded-[24px] h-28 flex flex-col items-start justify-end p-4 bg-gradient-to-br text-white transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer shadow-lg',
                   cat.gradient
@@ -367,6 +375,24 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
           </div>
         </section>
       </main>
+
+      {/* Category Detail Overlay */}
+      <AnimatePresence>
+        {selectedCategoryGrid && (
+          <CategoryDetailView
+            categoryLabel={selectedCategoryGrid.label}
+            categoryIcon={selectedCategoryGrid.icon}
+            categoryGradient={selectedCategoryGrid.gradient}
+            onBack={() => setSelectedCategoryGrid(null)}
+            showToast={showToast}
+            setRideModalLoc={setRideModalLoc}
+            setRealImageLoc={setRealImageLoc}
+            formatVND={formatVND}
+            onAddToCombo={onAddToCombo}
+            savedPlacesCount={savedPlacesCount}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

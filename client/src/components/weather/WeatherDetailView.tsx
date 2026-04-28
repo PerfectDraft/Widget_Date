@@ -1,29 +1,31 @@
-import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
+import type { ForecastDay } from '../../services/api';
 
 interface WeatherDetailViewProps {
-  weatherData: any;
+  weatherData: { current: any; forecast: ForecastDay[] } | null;
   onBack: () => void;
 }
 
 export function WeatherDetailView({ weatherData, onBack }: WeatherDetailViewProps) {
   if (!weatherData) return null;
 
-  const temp = Math.round(weatherData.main.temp);
-  const feelsLike = Math.round(weatherData.main.feels_like);
-  const tempMin = Math.round(weatherData.main.temp_min);
-  const tempMax = Math.round(weatherData.main.temp_max);
-  const humidity = weatherData.main.humidity;
-  const windSpeed = Math.round((weatherData.wind?.speed || 0) * 3.6); // m/s → km/h
-  const visibility = Math.round((weatherData.visibility || 10000) / 1000);
-  const description = weatherData.weather[0]?.description || '';
-  const mainWeather = weatherData.weather[0]?.main || '';
-  const cityName = weatherData.name || 'Hà Nội';
+  const w = weatherData.current;
+  const forecast = weatherData.forecast || [];
 
-  // Sunset from sys
-  const sunsetTime = weatherData.sys?.sunset
-    ? new Date(weatherData.sys.sunset * 1000).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+  const temp = Math.round(w.main.temp);
+  const feelsLike = Math.round(w.main.feels_like);
+  const tempMin = Math.round(w.main.temp_min);
+  const tempMax = Math.round(w.main.temp_max);
+  const humidity = w.main.humidity;
+  const windSpeed = Math.round((w.wind?.speed || 0) * 3.6);
+  const visibility = Math.round((w.visibility || 10000) / 1000);
+  const description = w.weather[0]?.description || '';
+  const mainWeather = w.weather[0]?.main || '';
+  const cityName = w.name || 'Hà Nội';
+
+  const sunsetTime = w.sys?.sunset
+    ? new Date(w.sys.sunset * 1000).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
     : '18:42';
 
   const getWeatherIcon = (main: string) => {
@@ -37,8 +39,7 @@ export function WeatherDetailView({ weatherData, onBack }: WeatherDetailViewProp
     }
   };
 
-  // UV Index estimate based on cloudiness
-  const clouds = weatherData.clouds?.all || 0;
+  const clouds = w.clouds?.all || 0;
   const uvEstimate = clouds > 70 ? 2 : clouds > 40 ? 4 : 6;
   const uvLabel = uvEstimate <= 2 ? 'Low' : uvEstimate <= 5 ? 'Moderate' : 'High';
 
@@ -89,11 +90,19 @@ export function WeatherDetailView({ weatherData, onBack }: WeatherDetailViewProp
           <StatCard icon="visibility" label="VISIBILITY" value={`${visibility} km`} />
         </div>
 
-        {/* Feels Like + Sunset */}
+        {/* Feels Like + Sunset — Fixed alignment */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-white/70 backdrop-blur-xl rounded-[24px] p-5 shadow-[0_4px_20px_rgba(137,76,92,0.04)]">
             <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#847376] mb-2">FEELS LIKE</p>
-            <p className="text-3xl font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>{feelsLike}°</p>
+            <div className="flex items-center justify-between">
+              <p className="text-3xl font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>{feelsLike}°</p>
+              <span className="material-symbols-outlined text-[#D9B784] text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                thermostat
+              </span>
+            </div>
+            <p className="text-[11px] text-[#847376] mt-1.5">
+              {feelsLike > temp ? 'Ẩm hơn nhiệt độ thực' : feelsLike < temp ? 'Mát hơn nhiệt độ thực' : 'Giống nhiệt độ thực'}
+            </p>
           </div>
           <div className="bg-white/70 backdrop-blur-xl rounded-[24px] p-5 shadow-[0_4px_20px_rgba(137,76,92,0.04)]">
             <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#847376] mb-2">SUNSET</p>
@@ -110,10 +119,41 @@ export function WeatherDetailView({ weatherData, onBack }: WeatherDetailViewProp
         </div>
 
         {/* Pressure & Clouds */}
-        <div className="grid grid-cols-2 gap-4">
-          <StatCard icon="speed" label="PRESSURE" value={`${weatherData.main.pressure} hPa`} />
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <StatCard icon="speed" label="PRESSURE" value={`${w.main.pressure} hPa`} />
           <StatCard icon="cloud" label="CLOUDS" value={`${clouds}%`} />
         </div>
+
+        {/* 5-Day Forecast */}
+        {forecast.length > 0 && (
+          <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_4px_20px_rgba(137,76,92,0.06)]">
+            <h3 className="text-sm font-bold uppercase tracking-[0.15em] text-[#847376] mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#894C5C] text-[20px]">calendar_month</span>
+              DỰ BÁO TUẦN TỚI
+            </h3>
+            <div className="space-y-0">
+              {forecast.map((day, i) => (
+                <div
+                  key={day.date}
+                  className={`flex items-center justify-between py-3.5 ${i < forecast.length - 1 ? 'border-b border-[#EAE1DA]' : ''}`}
+                >
+                  <div className="w-10 text-sm font-bold text-[#524346]">{day.dayLabel}</div>
+                  <span
+                    className="material-symbols-outlined text-[24px] text-[#D9B784]"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    {getWeatherIcon(day.main)}
+                  </span>
+                  <p className="flex-1 text-sm text-[#847376] capitalize ml-3 truncate">{day.description}</p>
+                  <div className="flex items-center gap-2 text-sm font-bold shrink-0">
+                    <span className="text-[#894C5C]">{day.tempMax}°</span>
+                    <span className="text-[#847376]">{day.tempMin}°</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

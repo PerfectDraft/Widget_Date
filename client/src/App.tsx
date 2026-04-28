@@ -169,7 +169,7 @@ export default function App() {
         <AnimatePresence mode="wait">
           {activeTab === 'home' && (
             <HomeView
-              weatherData={weatherData}
+              weatherData={weatherData?.current ?? null}
               showToast={showToast}
               setSelectedCombo={setSelectedCombo}
               setShowPaymentModal={setShowPaymentModal}
