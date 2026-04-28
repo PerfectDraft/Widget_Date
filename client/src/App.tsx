@@ -29,9 +29,17 @@ import type { Tab, Combo, LocationItem } from './types';
 const formatVND = (amount: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
+// localStorage helpers
+function loadJson<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [phone, setPhone] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => loadJson('wd_auth', false));
+  const [phone, setPhone] = useState<string | null>(() => loadJson('wd_phone', null));
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [showProfile, setShowProfile] = useState(false);
   const [showWeatherDetail, setShowWeatherDetail] = useState(false);
@@ -42,10 +50,10 @@ export default function App() {
   const chat = useChat(currentUserId);
 
   // User Stats & Preferences (W6)
-  const [preferences, setPreferences] = useState<string[]>(['Cafe']);
+  const [preferences, setPreferences] = useState<string[]>(() => loadJson('wd_prefs', ['Cafe']));
 
-  // Combo state
-  const [combos, setCombos] = useState<Combo[]>([]);
+  // Combo state — restore from localStorage
+  const [combos, setCombos] = useState<Combo[]>(() => loadJson('wd_combos', []));
   const [selectedCombo, setSelectedCombo] = useState<Combo | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -56,6 +64,20 @@ export default function App() {
 
   // Saved places ("Thêm vào Combo" from Explore)
   const [savedPlaces, setSavedPlaces] = useState<LocationItem[]>([]);
+
+  // Persist state to localStorage on changes
+  useEffect(() => {
+    localStorage.setItem('wd_auth', JSON.stringify(isAuthenticated));
+    localStorage.setItem('wd_phone', JSON.stringify(phone));
+  }, [isAuthenticated, phone]);
+
+  useEffect(() => {
+    localStorage.setItem('wd_combos', JSON.stringify(combos));
+  }, [combos]);
+
+  useEffect(() => {
+    localStorage.setItem('wd_prefs', JSON.stringify(preferences));
+  }, [preferences]);
 
   // Sync state
   const drive = useDriveSync(
@@ -83,7 +105,14 @@ export default function App() {
     setIsAuthenticated(false);
     setPhone(null);
     setCurrentUserId(null);
+    setCombos([]);
+    setPreferences(['Cafe']);
     setShowProfile(false);
+    // Clear all persisted data
+    localStorage.removeItem('wd_auth');
+    localStorage.removeItem('wd_phone');
+    localStorage.removeItem('wd_combos');
+    localStorage.removeItem('wd_prefs');
     showToast('Đã đăng xuất');
   };
 
@@ -208,7 +237,7 @@ export default function App() {
             isDriveSynced={drive.isLoggedIn}
             isSyncing={drive.isSyncing}
             onDriveLogin={drive.login}
-            onDriveLogout={() => {/* Drive logout placeholder */}}
+            onDriveLogout={drive.logout}
             onLogout={handleLogout}
             onBack={() => setShowProfile(false)}
             showToast={showToast}

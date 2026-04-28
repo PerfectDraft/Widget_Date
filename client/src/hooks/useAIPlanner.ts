@@ -43,11 +43,10 @@ export function useAIPlanner({
       setCombos(liveCombos);
     } catch (err: any) {
       const status = err?.status;
+      const msg = err?.message || '';
       let friendlyError = "Có lỗi khi tạo combo. Thử lại nhé.";
-      if (status === 429 || err?.message?.includes('[FALLBACK LỖI AI]')) {
-         friendlyError = "AI đang quá tải, thử lại sau ít phút.";
-      } else if (status === 401) {
-         friendlyError = "Phiên đăng nhập đã hết hạn, vui lòng thử lại.";
+      if (status === 429 || msg.includes('limit exceeded') || msg.includes('[FALLBACK LỖI AI]')) {
+         friendlyError = "Bạn đã hết lượt dùng AI. Đăng nhập Google Drive để có thêm lượt nhé!";
       }
       
       setError(friendlyError);

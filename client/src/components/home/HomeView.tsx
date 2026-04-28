@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { HomeDashboardUI } from './HomeDashboardUI';
 import { useAIPlanner } from '../../hooks/useAIPlanner';
 import { REAL_LOCATIONS } from '../../data/locations';
@@ -36,6 +36,13 @@ export function HomeView({
     setExternalPreferences: setPreferences
   });
 
+  // Sync generated combos back to App state so they survive tab switches
+  useEffect(() => {
+    if (dataState.combos.length > 0) {
+      setCombos(dataState.combos);
+    }
+  }, [dataState.combos, setCombos]);
+
   const categories = Array.from(new Set(REAL_LOCATIONS.map(loc => loc.category).filter(Boolean))) as string[];
 
   const handleSelectCombo = useCallback((combo: Combo) => {
@@ -44,21 +51,17 @@ export function HomeView({
   }, [setSelectedCombo, setShowPaymentModal]);
 
   const handleSelectVenue = useCallback((venue: Activity) => {
-    if (venue.imageUrl) {
-      setRealImageLoc({
-        name: venue.name,
-        mapsUri: venue.websiteUri || '',
-        desc: venue.address,
-        imageUrl: venue.imageUrl
-      });
-    } else if (venue.lat && venue.lng) {
-       setRideModalLoc({
-           name: venue.name,
-           lat: venue.lat,
-           lng: venue.lng
-       });
-    }
-  }, [setRealImageLoc, setRideModalLoc]);
+    const mapsUri = venue.websiteUri 
+      || (venue.lat && venue.lng 
+        ? `https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}` 
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name + ' ' + (venue.address || ''))}`);
+    setRealImageLoc({
+      name: venue.name,
+      mapsUri,
+      desc: venue.address,
+      imageUrl: venue.imageUrl
+    });
+  }, [setRealImageLoc]);
 
   return (
     <HomeDashboardUI

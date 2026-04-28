@@ -1,12 +1,23 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { fetchNearbyPlaces, generateCombos, chatWithAI } from '../services/geminiService.js';
-import { authGuard } from '../middleware/authMiddleware.js';
+import { optionalAuth } from '../middleware/authMiddleware.js';
 import { aiLimiter, guestLimiter } from '../middleware/rateLimiter.js';
 
 export const geminiRouter = Router();
 
+/**
+ * Dual-track rate limiter: authenticated users get aiLimiter (20/hr),
+ * guests get guestLimiter (3/hr). No 401 for missing/expired tokens.
+ */
+const dualLimiter = (req: Request, res: Response, next: NextFunction) => {
+  if ((req as any).user) {
+    return aiLimiter(req, res, next);
+  }
+  return guestLimiter(req, res, next);
+};
+
 // POST /api/nearby-places
-geminiRouter.post('/nearby-places', authGuard, aiLimiter, async (req, res, next) => {
+geminiRouter.post('/nearby-places', optionalAuth, dualLimiter, async (req, res, next) => {
   try {
     const { location } = req.body;
     if (!location || typeof location !== 'string') {
@@ -22,7 +33,7 @@ geminiRouter.post('/nearby-places', authGuard, aiLimiter, async (req, res, next)
 });
 
 // POST /api/combos
-geminiRouter.post('/combos', authGuard, aiLimiter, async (req, res, next) => {
+geminiRouter.post('/combos', optionalAuth, dualLimiter, async (req, res, next) => {
   try {
     const { location, budget, companion, startTime, endTime, preferences, availablePlaces } = req.body;
 
@@ -48,7 +59,7 @@ geminiRouter.post('/combos', authGuard, aiLimiter, async (req, res, next) => {
 });
 
 // POST /api/chat
-geminiRouter.post('/chat', authGuard, aiLimiter, async (req, res, next) => {
+geminiRouter.post('/chat', optionalAuth, dualLimiter, async (req, res, next) => {
   try {
     const { history, message } = req.body;
 

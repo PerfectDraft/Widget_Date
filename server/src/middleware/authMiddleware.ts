@@ -3,6 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 
 const client = new OAuth2Client();
 
+/** Strict auth — rejects unauthenticated requests with 401 */
 export const authGuard = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
@@ -14,7 +15,6 @@ export const authGuard = async (req: Request, res: Response, next: NextFunction)
     const token = authHeader.split(' ')[1];
     
     try {
-      // First try as ID token
       const ticket = await client.verifyIdToken({ idToken: token });
       const payload = ticket.getPayload();
       if (payload) {
@@ -22,7 +22,6 @@ export const authGuard = async (req: Request, res: Response, next: NextFunction)
         return next();
       }
     } catch (idErr) {
-      // If it fails, assume it's an access_token (which was saved by useGoogleLogin in Phase 1)
       const tokenInfo = await client.getTokenInfo(token);
       if (tokenInfo && tokenInfo.sub) {
         (req as any).user = { googleId: tokenInfo.sub, email: tokenInfo.email };
@@ -34,4 +33,37 @@ export const authGuard = async (req: Request, res: Response, next: NextFunction)
     console.error('Auth verification failed:', error);
     res.status(401).json({ error: 'Unauthorized: Invalid Google token' });
   }
+};
+
+/**
+ * Optional auth — tries to verify Google token, but lets the request
+ * through regardless. Sets req.user if token is valid, otherwise req.user
+ * is undefined. Used for AI routes that should work for everyone.
+ */
+export const optionalAuth = async (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next(); // No token → proceed as guest
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const ticket = await client.verifyIdToken({ idToken: token });
+    const payload = ticket.getPayload();
+    if (payload) {
+      (req as any).user = { googleId: payload.sub, email: payload.email };
+      return next();
+    }
+  } catch {
+    try {
+      const tokenInfo = await client.getTokenInfo(token);
+      if (tokenInfo && tokenInfo.sub) {
+        (req as any).user = { googleId: tokenInfo.sub, email: tokenInfo.email };
+        return next();
+      }
+    } catch {
+      // Token invalid or expired — silently continue as guest
+    }
+  }
+  next();
 };

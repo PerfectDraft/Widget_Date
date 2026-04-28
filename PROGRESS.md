@@ -232,3 +232,18 @@ npm run dev
 - **Files đã sửa**: `App.tsx`, `HomeDashboardUI.tsx`, `HomeView.tsx`, `ProfileView.tsx`, `WeatherDetailView.tsx`, `useAIPlanner.ts`.
 
 ---
+
+### Session #12 — 2026-04-28
+- **Fix Auth → AI Decoupling**: AI routes (`/combos`, `/chat`, `/nearby-places`) không còn yêu cầu Google OAuth. Thay `authGuard` bằng `optionalAuth` + `dualLimiter` (verified: 20 req/hr, guest: 3 req/hr).
+- **Fix Drive Sync Toggle**: Kết nối `drive.logout` vào nút toggle Data Sync trong ProfileView (trước đó là placeholder rỗng).
+- **Fix Error Message**: Thay "Phiên đăng nhập đã hết hạn" bằng "Bạn đã hết lượt dùng AI" khi bị rate limit.
+- **OpenRouter Model Rotation**: Đưa `nvidia/nemotron-nano-9b-v2:free` lên primary (model ổn định nhất). Test 10 model, loại bỏ 7 model chết/429.
+- **Unique Combo Images**: Thêm pool 10 ảnh Unsplash, mỗi combo card hiển thị ảnh riêng theo index.
+- **Clickable Venue in Combo**: Bấm vào địa điểm trong combo luôn mở modal xem ảnh + link Google Maps.
+- **Fix Combo Tab Persistence**: Sync combos từ `useAIPlanner` ngược lên App state qua `useEffect` — combos không mất khi chuyển tab.
+- **localStorage Persistence**: Auth, combos, preferences lưu vào localStorage, chỉ xóa khi logout — reload page không mất data.
+- **Files đã sửa**: `authMiddleware.ts`, `gemini.ts`, `App.tsx`, `useAIPlanner.ts`, `ComboList.tsx`, `HomeView.tsx`, `.env`.
+
+---
+
+
