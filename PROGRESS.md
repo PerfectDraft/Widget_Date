@@ -257,3 +257,19 @@ npm run dev
 
 ---
 
+
+### Session #14 — 2026-04-28
+- **Explore Page Redesign**: Chuyển từ 4-tab layout sang single-scroll discovery page.
+  - Sticky header với search bar + category filter pills (Tất cả, Cafe, Food, Lãng mạn, Sang trọng)
+  - Map preview section "Địa điểm gần đây" với geolocation
+  - Image-card place listings với favorite hearts, rating, tags, action buttons
+  - 2x2 category discovery grid (Ăn tối, Cafe & Chill, Đi dạo, Xem phim)
+  - Horizontal scroll cards cho Movies và Trends
+- **Bottom Nav Redesign**: Thay purple → rose primary (#894c5c), floating circle active indicator, glass-card background, Material Symbols icons.
+- **Chat FAB**: Cập nhật màu từ purple gradient sang primary rose.
+- **CSS**: Thêm `.category-card` overlay + `.scroll-hidden` scrollbar utilities.
+- **Verification**: TSC 0 errors cả client + server.
+- Files đã sửa: `App.tsx`, `index.css`, `ExploreView.tsx` (rewrite).
+
+---
+
