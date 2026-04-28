@@ -10,7 +10,7 @@
 | Trường | Giá trị |
 |---|---|
 | **Ngày** | 2026-04-28 |
-| **Phiên làm việc** | #12 — Bug Fixes + Weather Detail Screen |
+| **Phiên làm việc** | #15 — Fix GitHub MCP (Docker to npx) |
 | **Nhánh Git** | `main` |
 
 ---
@@ -273,3 +273,10 @@ npm run dev
 
 ---
 
+### Session #15 — 2026-04-28 (Autonomous)
+- **Fix GitHub MCP**: Chuyển cấu hình `github-mcp-server` từ Docker sang `npx` để fix lỗi "docker not found" trên Windows.
+- **MCP Config Cleanup**: Tối ưu lại file `mcp_config.json`, xóa bỏ các object `mcpServers` lồng nhau không cần thiết.
+- Files đã sửa: `c:\Users\cun\.gemini\antigravity\mcp_config.json`.
+- Status: GitHub MCP đã sẵn sàng chạy qua npx.
+
+---
