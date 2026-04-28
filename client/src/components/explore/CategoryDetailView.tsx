@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn, extractPlaceImage } from '../../lib/utils';
 import { calculateDistance } from '../../services/api';
 import { REAL_LOCATIONS } from '../../data/locations';
 import type { LocationItem } from '../../types';
@@ -62,7 +62,7 @@ export function CategoryDetailView({
     // Sort
     switch (sortMode) {
       case 'rating':
-        return filtered.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+        return filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       case 'distance':
         return filtered.sort((a, b) => (a.distance || 999) - (b.distance || 999));
       case 'best':
@@ -105,7 +105,7 @@ export function CategoryDetailView({
           <span className="text-on-surface-variant text-label-sm font-bold mr-1">Sắp xếp:</span>
           {([
             { mode: 'best' as SortMode, label: '⭐ Best Choice', desc: 'Gần + Sao cao' },
-            { mode: 'rating' as SortMode, label: '📊 Rate sao', desc: 'Thấp → Cao' },
+            { mode: 'rating' as SortMode, label: '📊 Rate sao', desc: 'Cao → Thấp' },
             { mode: 'distance' as SortMode, label: '📍 Khoảng cách', desc: 'Gần → Xa' },
           ]).map(s => (
             <button
@@ -162,7 +162,7 @@ export function CategoryDetailView({
                 {/* Cover */}
                 <div
                   className="relative h-36 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20 bg-cover bg-center"
-                  style={loc.imageUrl ? { backgroundImage: `url(${loc.imageUrl})` } : undefined}
+                  style={extractPlaceImage(loc.imageUrl) ? { backgroundImage: `url(${extractPlaceImage(loc.imageUrl)})` } : undefined}
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
                   {/* Rating badge */}

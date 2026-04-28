@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { cn } from '../../lib/utils';
+import { cn, extractPlaceImage } from '../../lib/utils';
 import { calculateDistance, getTrends } from '../../services/api';
 import { REAL_LOCATIONS } from '../../data/locations';
 import { MOVIES } from '../../data/movies';
@@ -197,7 +197,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
                 {/* Cover Image */}
                 <div
                   className="relative h-44 bg-gradient-to-br from-primary/20 via-surface-container to-secondary/20 bg-cover bg-center"
-                  style={loc.imageUrl ? { backgroundImage: `url(${loc.imageUrl})` } : undefined}
+                  style={extractPlaceImage(loc.imageUrl) ? { backgroundImage: `url(${extractPlaceImage(loc.imageUrl)})` } : undefined}
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent z-10" />
                   {/* Favorite Button */}
