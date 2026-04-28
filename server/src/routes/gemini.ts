@@ -1,7 +1,8 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { fetchNearbyPlaces, generateCombos, chatWithAI } from '../services/geminiService.js';
 import { optionalAuth } from '../middleware/authMiddleware.js';
 import { aiLimiter, guestLimiter } from '../middleware/rateLimiter.js';
+import type { AuthenticatedRequest } from '../types/index.js';
 
 export const geminiRouter = Router();
 
@@ -9,8 +10,8 @@ export const geminiRouter = Router();
  * Dual-track rate limiter: authenticated users get aiLimiter (20/hr),
  * guests get guestLimiter (3/hr). No 401 for missing/expired tokens.
  */
-const dualLimiter = (req: Request, res: Response, next: NextFunction) => {
-  if ((req as any).user) {
+const dualLimiter = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (req.user) {
     return aiLimiter(req, res, next);
   }
   return guestLimiter(req, res, next);

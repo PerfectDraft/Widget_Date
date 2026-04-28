@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit';
+import type { AuthenticatedRequest } from '../types/index.js';
 
 // Guest limiter (3 per hour per IP)
 export const guestLimiter = rateLimit({
@@ -17,6 +18,6 @@ export const aiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
-    return (req as any).user?.googleId || req.ip;
+    return (req as AuthenticatedRequest).user?.googleId || req.ip || 'unknown';
   }
 });

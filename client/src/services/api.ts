@@ -1,5 +1,15 @@
 import type { Combo, LocationItem } from '../types';
 
+/** API error with HTTP status code */
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+    this.name = 'ApiError';
+  }
+}
+
 const API_BASE = '/api';
 
 async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
@@ -17,9 +27,7 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({ error: 'Network error' }));
-    const error = new Error(errorBody.error || `API error: ${res.status}`);
-    (error as any).status = res.status;
-    throw error;
+    throw new ApiError(errorBody.error || `API error: ${res.status}`, res.status);
   }
 
   return res.json();
@@ -78,8 +86,15 @@ export async function fetchPlaceImage(mapsUrl: string): Promise<string | null> {
 
 // --- Weather Endpoint ---
 
-export async function fetchWeather(city: string = 'Hanoi') {
-  return apiRequest<any>(`/weather?city=${encodeURIComponent(city)}`);
+export interface WeatherData {
+  name: string;
+  main: { temp: number; feels_like: number; humidity: number };
+  weather: Array<{ description: string; icon: string }>;
+  wind: { speed: number };
+}
+
+export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherData> {
+  return apiRequest<WeatherData>(`/weather?city=${encodeURIComponent(city)}`);
 }
 
 // --- User Endpoints (W6) ---
@@ -98,11 +113,19 @@ export async function syncUser(params: UserSyncParams): Promise<{ status: string
   });
 }
 
-export async function getUserProfile(phone: string): Promise<any> {
-  return apiRequest<any>(`/user/profile?phone=${encodeURIComponent(phone)}`);
+export interface UserProfile {
+  phone: string;
+  googleId?: string;
+  preferences?: string[];
+  lastTab?: string;
+  createdAt?: string;
 }
 
-export async function saveUserPlace(phone: string, placeId: string, placeData: any): Promise<{ status: string }> {
+export async function getUserProfile(phone: string): Promise<UserProfile> {
+  return apiRequest<UserProfile>(`/user/profile?phone=${encodeURIComponent(phone)}`);
+}
+
+export async function saveUserPlace(phone: string, placeId: string, placeData: Record<string, unknown>): Promise<{ status: string }> {
   return apiRequest<{ status: string }>('/user/place', {
     method: 'POST',
     body: JSON.stringify({ phone, placeId, placeData }),
@@ -130,7 +153,7 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
 export interface AuthResponse {
   success: boolean;
   message?: string;
-  user?: any;
+  user?: { phone: string; googleId?: string };
   error?: string;
 }
 

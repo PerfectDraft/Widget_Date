@@ -247,3 +247,13 @@ npm run dev
 ---
 
 
+### Session #13 — 2026-04-28 (Autonomous)
+- **Type Safety Cleanup**: Loại bỏ toàn bộ 8 chỗ `as any` trong codebase (7 server + 1 client).
+- **New**: Tạo `server/src/types/index.ts` chứa `AuthenticatedRequest`, `HttpError` interfaces.
+- **Client**: Tạo `ApiError` class thay thế `(error as any).status`. Thêm `WeatherData`, `UserProfile` interfaces. Type `AuthResponse.user` đầy đủ.
+- **Server**: Thay `(req as any).user` bằng `req.user` qua `AuthenticatedRequest` type mở rộng.
+- **Verification**: TSC 0 errors cả client + server. Zero `as any` còn lại.
+- Files đã sửa: `server/src/types/index.ts` (NEW), `authMiddleware.ts`, `errorHandler.ts`, `rateLimiter.ts`, `gemini.ts`, `client/src/services/api.ts`.
+
+---
+
