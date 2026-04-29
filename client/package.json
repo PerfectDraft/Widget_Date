@@ -24,8 +24,11 @@
     "vite": "^6.2.0"
   },
   "optionalDependencies": {
+    "@esbuild/linux-x64": "^0.25.12",
     "@rollup/rollup-linux-x64-gnu": "^4.9.6",
-    "@rollup/rollup-linux-x64-musl": "^4.9.6"
+    "@rollup/rollup-linux-x64-musl": "^4.9.6",
+    "lightningcss-linux-x64-gnu": "^1.31.1",
+    "lightningcss-linux-x64-musl": "^1.31.1"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
