@@ -167,6 +167,10 @@ export default function App() {
     showToast('Tạo combo mới thành công. Hãy thêm địa điểm từ Khám phá!');
   };
 
+  const handleAddSlot = () => {
+    setComboSlots(prev => [...prev, null]);
+  };
+
   const handleClearCombo = () => {
     setActiveCombo(null);
     setComboSlots([]);
@@ -313,6 +317,7 @@ export default function App() {
               onConfirmCombo={handleConfirmCombo}
               onRemoveSlot={(idx) => setComboSlots(prev => { const n = [...prev]; n[idx] = null; return n; })}
               onManualCombo={handleManualCombo}
+              onAddSlot={handleAddSlot}
               setActiveCombo={setActiveCombo}
             />
           )}

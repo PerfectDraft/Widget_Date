@@ -290,7 +290,7 @@ npm run dev
 ### Session #16 — 2026-04-29
 - **ComboActionModal**: Tạo modal xác nhận hỏi ý kiến người dùng khi chọn AI Combo ("Bạn có muốn tự chọn thêm không?").
 - **Bug Fix (Pre-population)**: Sửa lỗi mất dữ liệu khi vào Focus Mode. Tự động map các hoạt động từ AI Combo vào `comboSlots`.
-- **Manual Combo**: Thêm tính năng "Tự tạo combo" (3 slot trống mặc định), cho phép đổi tên Combo tùy ý.
+- **Manual Combo**: Thêm tính năng "Tự tạo combo" (3 slot trống mặc định), cho phép đổi tên Combo tùy ý và hỗ trợ thêm không giới hạn các điểm đến mới bằng nút "Thêm địa điểm".
 - **UI Full-screen Focus Mode**: Chuyển giao diện Focus Mode thành Overlay toàn màn hình (`fixed inset-0`), bao gồm progress bar, header sticky.
 - **TypeScript Fixes**: Sửa lỗi `TS2739` ở `HomeView.tsx` bằng cách pass `onManualCombo` và `setActiveCombo` từ `App.tsx`. Đã fix logic override sai của `handleSelectCombo` trong `HomeView.tsx`.
 - **Files đã sửa**: `App.tsx`, `HomeDashboardUI.tsx`, `HomeView.tsx`, `ComboActionModal.tsx` (mới).

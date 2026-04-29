@@ -49,6 +49,7 @@ export interface HomeDashboardUIProps {
   onConfirmCombo: () => void;
   onRemoveSlot: (idx: number) => void;
   onManualCombo: () => void;
+  onAddSlot: () => void;
   setActiveCombo: (combo: Combo) => void;
 }
 
@@ -59,7 +60,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
     startTime, endTime, onTimeChange, preferences, categories, onPreferenceToggle,
     isGenerating, onGenerate,
     combos, error, onSelectCombo, onSelectVenue, formatVND,
-    activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, setActiveCombo
+    activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, onAddSlot, setActiveCombo
   } = props;
 
   const isFocusMode = activeCombo !== null;
@@ -191,6 +192,15 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                     );
                   })}
                 </div>
+
+                {/* Add Slot Button */}
+                <button
+                  onClick={onAddSlot}
+                  className="w-full mt-4 py-3 rounded-2xl border-2 border-dashed border-primary/40 text-primary font-bold hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">add</span>
+                  Thêm địa điểm
+                </button>
 
                 {/* CTA */}
                 <button
