@@ -12,11 +12,9 @@
 
 ## 🗓️ Cập nhật lần cuối
 
-| Trường | Giá trị |
-|---|---|
-| **Ngày** | 2026-04-29 |
-| **Phiên làm việc** | #16 — Upgrade AI Combo Planner & Focus Mode |
-| **Nhánh Git** | `main` |
+| Ngày | 2026-04-29 |
+| Phiên làm việc | #17 — Fix Vercel Oxide Native Binary |
+| Nhánh Git | `main` |
 
 ---
 
@@ -298,3 +296,8 @@ npm run dev
 - **Verification**: `npx tsc --noEmit` hoàn thành không lỗi.
 
 ---
+### Session #17 — 2026-04-29
+- **Fix Vercel Build**: Bổ sung `@tailwindcss/oxide-linux-x64-gnu` và `@tailwindcss/oxide-linux-x64-musl` vào `optionalDependencies`.
+- **Context**: Build Vercel (Linux) thất bại do thiếu native binary của Tailwind v4 Oxide engine.
+- Files đã sửa: `client/package.json`, `package.json`, `PROGRESS.md`.
+- Status: Đã push và chờ Vercel auto-deploy.

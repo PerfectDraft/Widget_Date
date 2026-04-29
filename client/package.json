@@ -28,7 +28,9 @@
     "@rollup/rollup-linux-x64-gnu": "^4.9.6",
     "@rollup/rollup-linux-x64-musl": "^4.9.6",
     "lightningcss-linux-x64-gnu": "^1.31.1",
-    "lightningcss-linux-x64-musl": "^1.31.1"
+    "lightningcss-linux-x64-musl": "^1.31.1",
+    "@tailwindcss/oxide-linux-x64-gnu": "4.2.1",
+    "@tailwindcss/oxide-linux-x64-musl": "4.2.1"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
