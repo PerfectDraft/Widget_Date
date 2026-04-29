@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { getDatabaseFileId, createDatabaseFile, readDatabase, writeDatabase, AppDatabase } from '../services/driveService';
+import { UserReward } from '../types';
 
 export function useDriveSync(
   combos: any[],
-  userReward: { miles: number; completedDates: number; badges: string[] },
+  userReward: UserReward,
   chatMessages: { role: string; text: string }[],
   setCombos: (combos: any[]) => void,
   setUserReward: (reward: any) => void,
@@ -53,7 +54,7 @@ export function useDriveSync(
         // Create new empty DB
         const initialData: AppDatabase = { 
           combos: [], 
-          userReward: { miles: 0, completedDates: 0, badges: [] },
+          userReward: { totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [] },
           chatMessages: []
         };
         currentFileId = await createDatabaseFile(accessToken, initialData);
@@ -131,7 +132,7 @@ export function useDriveSync(
 
     // Reset app state to clear sensitive data
     setCombos([]);
-    setUserReward({ miles: 0, completedDates: 0, badges: [] });
+    setUserReward({ totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [] });
     setChatMessages([
       { role: 'model', text: 'Chào đằng ấy 👋! Mình là trợ lý AI Hẹn Hò. Đằng ấy muốn ăn món Việt, đồ Âu sang chảnh, hay đi một nơi nào đó thật Chill? Cứ tâm sự chi tiết ở đây nha!' }
     ]);

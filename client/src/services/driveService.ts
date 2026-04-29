@@ -1,13 +1,11 @@
+import { UserReward } from '../types';
+
 const DRIVE_FILE_NAME = 'database.json';
 
 export interface AppDatabase {
   phoneNumber?: string;
   combos: any[];
-  userReward: {
-    miles: number;
-    completedDates: number;
-    badges: string[];
-  };
+  userReward: UserReward;
   preferences?: string[];
   chatMessages?: { role: string; text: string }[];
 }

@@ -4,7 +4,7 @@ This file is the persistent memory for the Widget Date project.
 All agents must read this at the start of any session.
 Update this file when conventions change, decisions are made, or new constraints are discovered.
 
-Last updated: 2026-04-27
+Last updated: 2026-04-29
 
 ---
 
@@ -109,7 +109,7 @@ Widget_Date/
 - [x] Database: Google Drive AppData (decentralized, confirmed)
 - [x] Auth: Google OAuth + Native Phone/Password (confirmed)
 - [ ] Testing framework and coverage targets
-- [ ] Deployment pipeline details (Vercel deferred)
+- [x] Deployment pipeline details (Vercel Client integrated, automated via Git push)
 
 ---
 

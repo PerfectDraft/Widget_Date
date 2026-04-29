@@ -115,7 +115,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
-              className="fixed inset-0 z-50 bg-background overflow-y-auto pb-8"
+              className="fixed inset-0 z-50 bg-background overflow-y-auto pb-safe"
             >
               {/* Header with cancel */}
               <div className="sticky top-0 z-10 glass-card px-6 py-4 flex items-center justify-between border-b border-outline-variant/30">
