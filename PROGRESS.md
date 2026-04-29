@@ -319,7 +319,7 @@ npm run dev
 - **Files đã sửa**: `api.ts`, `useDriveSync.ts`, `ExploreView.tsx`, `useWeather.ts`.
 
 
-### Session #9 — 2026-04-29
+### Session #20 — 2026-04-29
 - Xóa bỏ tính năng "Outfit Gợi ý" và các dữ liệu liên quan (OUTFIT_STYLES, RENTAL_STYLES) để làm gọn ứng dụng.
 - Tối ưu danh sách Category trong ExploreView để lấy động từ database (REAL_LOCATIONS), loại bỏ các mục hardcode thừa (Lãng mạn, Sang trọng, Xem phim).
 - Đồng bộ hằng số giữa data.tsx và constants.ts.
