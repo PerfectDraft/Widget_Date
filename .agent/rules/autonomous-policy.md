@@ -9,11 +9,31 @@ All agents operating in autonomous or semi-unattended mode MUST read this file b
 
 Autonomous mode is active when:
 - The user has run `/autonomous` explicitly
+- The user has run `/scan` to trigger a full-project scan
 - The user is away and the AI is executing a multi-step plan
 - The AI is running a background maintenance or bug-fix pass
 
 In autonomous mode: do NOT prompt for confirmation on allowed-scope tasks.
 Stop and write a proposal for anything outside allowed scope.
+
+---
+
+## Step 0 — Proactive Scan (MANDATORY before every autonomous run)
+
+This step MUST run before any issue is addressed. It is not optional.
+
+```
+Proactive Scan Protocol:
+  1. Run: python .agent/scripts/verify_all.py   → collect TS/lint errors across entire project
+  2. Run: python .agent/scripts/checklist.py    → collect known pending issues
+  3. Load: .agent/skills/lint-and-validate/     → apply lint classification rules
+  4. Load: .agent/skills/systematic-debugging/  → apply debug methodology to findings
+  5. Optional (if /scan was used): Load .agent/skills/vulnerability-scanner/
+  6. Produce: a prioritized issue list with risk level for each item
+  7. Announce findings to user BEFORE executing any fix
+```
+
+If `verify_all.py` returns zero errors: state "Project health: CLEAN. No issues found." and exit autonomous mode.
 
 ---
 
@@ -30,6 +50,7 @@ Stop and write a proposal for anything outside allowed scope.
 | Code cleanup | Dead console.log, unused imports, commented-out code |
 | Targeted tests | Unit tests for a function that was just changed |
 | Accessibility | aria-label, role, alt text additions |
+| Console severity | Upgrading console.log → console.error/info/warn where appropriate |
 
 ---
 
@@ -83,10 +104,12 @@ Start at 50%, adjust with these factors:
 | Single file change | +15% |
 | Similar issue handled in previous session | +10% |
 | Verified by reading type definitions | +10% |
+| Issue found directly by `verify_all.py` output | +10% |
 | Multiple possible root causes | -20% |
 | Change touches shared utilities | -15% |
 | Tests missing for affected code | -10% |
 | File was recently changed by human | -10% |
+| `verify_all.py` errors are ambiguous | -15% |
 
 If final score is below 80%: stop, write handoff note.
 
@@ -95,10 +118,12 @@ If final score is below 80%: stop, write handoff note.
 ## Autonomous Loop Execution Order
 
 ```
-FOR each issue in task list:
+STEP 0: Run Proactive Scan (MANDATORY — see above)
+
+FOR each issue in prioritized scan results:
   1. CLASSIFY risk level
   2. ASSESS confidence
-  3. IF high risk OR confidence below threshold: WRITE proposal, STOP
+  3. IF high risk OR confidence below threshold: WRITE proposal, SKIP
   4. ELSE: implement, verify
   5. IF verification fails: retry once
   6. IF retry fails: WRITE proposal, STOP
@@ -106,8 +131,45 @@ FOR each issue in task list:
   8. CONTINUE to next issue
 
 AT END of run:
-  UPDATE progress-tracking.md with full run summary
+  - Run: python .agent/scripts/verify_all.py  (confirm zero new errors)
+  - UPDATE progress-tracking.md with full run summary
+  - APPEND summary line to AUTONOMOUS_LOG.md
 ```
+
+---
+
+## /scan Command Policy
+
+When `/scan` is invoked (separate from `/autonomous`):
+
+1. Run `python .agent/scripts/verify_all.py` — full project scan
+2. Run `python .agent/scripts/checklist.py` — pending issue check
+3. Load `skills/lint-and-validate/` — lint assessment
+4. Load `skills/vulnerability-scanner/` — security scan
+5. Load `skills/systematic-debugging/` — error analysis
+6. Summon `@debugger` + `@qa-automation-engineer` for deep analysis
+7. Produce a structured report:
+
+```
+## /scan Report — [timestamp]
+
+### 🔴 High Risk Issues (requires human review)
+- [issue] — [file:line] — [why high risk]
+
+### 🟡 Medium Risk Issues (autonomous can fix)
+- [issue] — [file:line] — [proposed fix]
+
+### 🟢 Low Risk Issues (autonomous will fix)
+- [issue] — [file:line] — [fix applied or planned]
+
+### ✅ Clean Areas
+- [module/area]: no issues detected
+
+### Recommended next command
+- [/autonomous to fix Low+Medium] or [specific action]
+```
+
+8. Ask user: "Run `/autonomous` to fix Low and Medium issues automatically?"
 
 ---
 
@@ -131,6 +193,7 @@ Every autonomous action must produce a log entry in `AUTONOMOUS_LOG.md`:
 
 - **Maximum 10 files modified per autonomous run.** If approaching this limit, stop and hand off remaining issues.
 - **Maximum 5 issues addressed per autonomous run.** Quality over quantity.
+- **`/scan` does not count as a fix run.** It is report-only. Fixes only happen in `/autonomous`.
 
 ---
 
@@ -143,3 +206,4 @@ Immediately stop and write a handoff note if any of these occur:
 3. A secret, token, or credential is visible in any file being edited
 4. Two consecutive verification failures on the same issue
 5. A "simple" fix has unexpectedly grown to touch 5+ files
+6. `verify_all.py` final check shows NEW errors introduced by the autonomous run
