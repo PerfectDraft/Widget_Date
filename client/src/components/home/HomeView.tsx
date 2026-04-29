@@ -25,13 +25,15 @@ interface Props {
   onClearCombo: () => void;
   onConfirmCombo: () => void;
   onRemoveSlot: (idx: number) => void;
+  onManualCombo: () => void;
+  setActiveCombo: (c: Combo) => void;
 }
 
 export function HomeView({ 
   weatherData, showToast, setSelectedCombo, setShowPaymentModal, 
   setRideModalLoc, setRealImageLoc, combos, setCombos, 
   openChat, onAvatarClick, onWeatherClick, formatVND, location, preferences, setPreferences,
-  activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot
+  activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, setActiveCombo
 }: Props) {
   
   const { formState, dataState, actions } = useAIPlanner({
@@ -50,11 +52,6 @@ export function HomeView({
   }, [dataState.combos, setCombos]);
 
   const categories = Array.from(new Set(REAL_LOCATIONS.map(loc => loc.category).filter(Boolean))) as string[];
-
-  const handleSelectCombo = useCallback((combo: Combo) => {
-    setSelectedCombo(combo);
-    setShowPaymentModal(true);
-  }, [setSelectedCombo, setShowPaymentModal]);
 
   const handleSelectVenue = useCallback((venue: Activity) => {
     const mapsUri = venue.websiteUri 
@@ -99,7 +96,7 @@ export function HomeView({
       onGenerate={actions.generate}
       combos={dataState.combos}
       error={dataState.error}
-      onSelectCombo={handleSelectCombo}
+      onSelectCombo={setSelectedCombo}
       onSelectVenue={handleSelectVenue}
       formatVND={formatVND}
       activeCombo={activeCombo}
@@ -107,6 +104,8 @@ export function HomeView({
       onClearCombo={onClearCombo}
       onConfirmCombo={onConfirmCombo}
       onRemoveSlot={onRemoveSlot}
+      onManualCombo={onManualCombo}
+      setActiveCombo={setActiveCombo}
     />
   );
 }

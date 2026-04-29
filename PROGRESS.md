@@ -3,14 +3,19 @@
 > **Mục đích:** File theo dõi tiến độ dự án. Cập nhật sau **mỗi lần chỉnh sửa**.
 > **Cách dùng:** Đọc file này trước khi bắt đầu một session làm việc. Commit file này cùng với code.
 
+# 📋 PROGRESS.md — Widget Date
+
+> **Mục đích:** File theo dõi tiến độ dự án. Cập nhật sau **mỗi lần chỉnh sửa**.
+> **Cách dùng:** Đọc file này trước khi bắt đầu một session làm việc. Commit file này cùng với code.
+
 ---
 
 ## 🗓️ Cập nhật lần cuối
 
 | Trường | Giá trị |
 |---|---|
-| **Ngày** | 2026-04-28 |
-| **Phiên làm việc** | #15 — Fix GitHub MCP (Docker to npx) |
+| **Ngày** | 2026-04-29 |
+| **Phiên làm việc** | #16 — Upgrade AI Combo Planner & Focus Mode |
 | **Nhánh Git** | `main` |
 
 ---
@@ -44,6 +49,7 @@ Data & Database    ████████░░░░░░░░░░░░ 
 - [x] **Toast Notification** — Component dùng chung với auto-dismiss 3 giây
 - [x] **Payment Modal** — Xác nhận thanh toán + confetti + +100 Miles
 - [x] **Image Viewer Modal** — Xem ảnh địa điểm (carousel)
+- [x] **Focus Mode & AI Combo** — Nâng cấp Focus Mode fullscreen, thêm Modal tùy chỉnh cho AI Combo, cho phép tạo Manual Combo.
 
 ### Kiến trúc / Refactor (theo PLAN-client-server.md)
 - [x] Tách monorepo npm workspaces: `client/` + `server/`
@@ -278,5 +284,17 @@ npm run dev
 - **MCP Config Cleanup**: Tối ưu lại file `mcp_config.json`, xóa bỏ các object `mcpServers` lồng nhau không cần thiết.
 - Files đã sửa: `c:\Users\cun\.gemini\antigravity\mcp_config.json`.
 - Status: GitHub MCP đã sẵn sàng chạy qua npx.
+
+---
+
+### Session #16 — 2026-04-29
+- **ComboActionModal**: Tạo modal xác nhận hỏi ý kiến người dùng khi chọn AI Combo ("Bạn có muốn tự chọn thêm không?").
+- **Bug Fix (Pre-population)**: Sửa lỗi mất dữ liệu khi vào Focus Mode. Tự động map các hoạt động từ AI Combo vào `comboSlots`.
+- **Manual Combo**: Thêm tính năng "Tự tạo combo" (3 slot trống mặc định), cho phép đổi tên Combo tùy ý.
+- **UI Full-screen Focus Mode**: Chuyển giao diện Focus Mode thành Overlay toàn màn hình (`fixed inset-0`), bao gồm progress bar, header sticky.
+- **TypeScript Fixes**: Sửa lỗi `TS2739` ở `HomeView.tsx` bằng cách pass `onManualCombo` và `setActiveCombo` từ `App.tsx`. Đã fix logic override sai của `handleSelectCombo` trong `HomeView.tsx`.
+- **Files đã sửa**: `App.tsx`, `HomeDashboardUI.tsx`, `HomeView.tsx`, `ComboActionModal.tsx` (mới).
+- **Tasks hoàn thành**: Focus Mode & AI Combo
+- **Verification**: `npx tsc --noEmit` hoàn thành không lỗi.
 
 ---

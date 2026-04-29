@@ -23,6 +23,7 @@ import { ImageViewer } from './components/modals/ImageViewer';
 import { AuthView } from './components/auth/AuthView';
 import { ProfileView } from './components/profile/ProfileView';
 import { WeatherDetailView } from './components/weather/WeatherDetailView';
+import { ComboActionModal } from './components/modals/ComboActionModal';
 
 import type { Tab, Combo, LocationItem, ComboSlot } from './types';
 import { CATEGORY_SLOT_MAP } from './types';
@@ -58,6 +59,7 @@ export default function App() {
   const [selectedCombo, setSelectedCombo] = useState<Combo | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [comboActionModal, setComboActionModal] = useState<Combo | null>(null);
 
   // Modal state
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
@@ -128,9 +130,41 @@ export default function App() {
   // --- Combo Focus Mode Handlers ---
 
   const handleSelectCombo = (combo: Combo) => {
+    setComboActionModal(combo);
+  };
+
+  const proceedWithCustomize = (combo: Combo) => {
     setActiveCombo(combo);
-    setComboSlots(combo.activities.map(() => null));
-    showToast(`Đã chọn combo "${combo.theme}" — Thêm địa điểm từ Khám phá!`);
+    setComboActionModal(null);
+    setComboSlots(combo.activities.map((act) => ({
+      id: Math.random().toString(36).substring(7),
+      name: act.name,
+      address: act.address,
+      category: act.category || '',
+      price: act.cost,
+      lat: act.lat,
+      lng: act.lng,
+      imageUrl: act.imageUrl || ''
+    })));
+    showToast(`Đã chọn combo "${combo.theme}" để tùy chỉnh!`);
+  };
+
+  const proceedWithPayNow = (combo: Combo) => {
+    setSelectedCombo(combo);
+    setShowPaymentModal(true);
+    setComboActionModal(null);
+  };
+
+  const handleManualCombo = () => {
+    setActiveCombo({
+      id: Math.random().toString(36).substring(7),
+      theme: 'Tự tạo Combo',
+      score: 10,
+      totalCost: 0,
+      activities: []
+    });
+    setComboSlots([null, null, null]);
+    showToast('Tạo combo mới thành công. Hãy thêm địa điểm từ Khám phá!');
   };
 
   const handleClearCombo = () => {
@@ -278,6 +312,8 @@ export default function App() {
               onClearCombo={handleClearCombo}
               onConfirmCombo={handleConfirmCombo}
               onRemoveSlot={(idx) => setComboSlots(prev => { const n = [...prev]; n[idx] = null; return n; })}
+              onManualCombo={handleManualCombo}
+              setActiveCombo={setActiveCombo}
             />
           )}
           {activeTab === 'explore' && (
@@ -387,6 +423,13 @@ export default function App() {
         onClose={() => setShowPaymentModal(false)}
         onPay={handlePayment}
         formatVND={formatVND}
+      />
+      <ComboActionModal
+        show={!!comboActionModal}
+        combo={comboActionModal}
+        onClose={() => setComboActionModal(null)}
+        onCustomize={proceedWithCustomize}
+        onPayNow={proceedWithPayNow}
       />
       <RideModal loc={rideModalLoc} onClose={() => setRideModalLoc(null)} onRide={handleRide} />
       <ImageViewer loc={realImageLoc} onClose={() => setRealImageLoc(null)} />
