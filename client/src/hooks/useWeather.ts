@@ -20,9 +20,15 @@ export function useWeather() {
 
   useEffect(() => {
     fetchWeather('Hanoi')
-      .then(setData)
+      .then(result => {
+        if (result) {
+          setData(result);
+        } else {
+          setData(MOCK_WEATHER);
+        }
+      })
       .catch(err => {
-        console.error('Weather fetch failed, using fallback:', err);
+        console.error('Weather fetch error in hook:', err);
         setData(MOCK_WEATHER);
       });
   }, []);

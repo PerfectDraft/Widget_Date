@@ -111,8 +111,13 @@ export interface WeatherWithForecast {
   forecast: ForecastDay[];
 }
 
-export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherWithForecast> {
-  return apiRequest<WeatherWithForecast>(`/weather?city=${encodeURIComponent(city)}`);
+export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherWithForecast | null> {
+  try {
+    return await apiRequest<WeatherWithForecast>(`/weather?city=${encodeURIComponent(city)}`);
+  } catch (error) {
+    console.error('Weather fetch error:', error);
+    return null;
+  }
 }
 
 // --- User Endpoints (W6) ---
@@ -125,10 +130,15 @@ export interface UserSyncParams {
 }
 
 export async function syncUser(params: UserSyncParams): Promise<{ status: string }> {
-  return apiRequest<{ status: string }>('/user/sync', {
-    method: 'POST',
-    body: JSON.stringify(params),
-  });
+  try {
+    return await apiRequest<{ status: string }>('/user/sync', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  } catch (error) {
+    console.warn('User sync failed (background):', error);
+    return { status: 'failed' };
+  }
 }
 
 export interface UserProfile {
@@ -139,15 +149,25 @@ export interface UserProfile {
   createdAt?: string;
 }
 
-export async function getUserProfile(phone: string): Promise<UserProfile> {
-  return apiRequest<UserProfile>(`/user/profile?phone=${encodeURIComponent(phone)}`);
+export async function getUserProfile(phone: string): Promise<UserProfile | null> {
+  try {
+    return await apiRequest<UserProfile>(`/user/profile?phone=${encodeURIComponent(phone)}`);
+  } catch (error) {
+    console.warn('Get user profile failed:', error);
+    return null;
+  }
 }
 
 export async function saveUserPlace(phone: string, placeId: string, placeData: Record<string, unknown>): Promise<{ status: string }> {
-  return apiRequest<{ status: string }>('/user/place', {
-    method: 'POST',
-    body: JSON.stringify({ phone, placeId, placeData }),
-  });
+  try {
+    return await apiRequest<{ status: string }>('/user/place', {
+      method: 'POST',
+      body: JSON.stringify({ phone, placeId, placeData }),
+    });
+  } catch (error) {
+    console.error('Save user place failed:', error);
+    return { status: 'error' };
+  }
 }
 
 // --- Utilities (kept client-side) ---
@@ -176,6 +196,7 @@ export interface AuthResponse {
 }
 
 export async function login(phone: string, password: string): Promise<AuthResponse> {
+  // Auth should NOT have catch here, the UI handles it
   return apiRequest<AuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ phone, password }),
@@ -183,15 +204,23 @@ export async function login(phone: string, password: string): Promise<AuthRespon
 }
 
 export async function register(phone: string, password: string): Promise<AuthResponse> {
+  // Auth should NOT have catch here, the UI handles it
   return apiRequest<AuthResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify({ phone, password }),
   });
 }
 
+
 // --- Trends Endpoints ---
 
 export async function getTrends(): Promise<TrendItem[]> {
-  const result = await apiRequest<{ trends: TrendItem[] }>('/trends');
-  return result.trends;
+  try {
+    const result = await apiRequest<{ trends: TrendItem[] }>('/trends');
+    return result?.trends || [];
+  } catch (error) {
+    console.error('Trends fetch error:', error);
+    return [];
+  }
 }
+

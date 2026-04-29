@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-04-29 |
-| Phiên làm việc | #18 — Final Validation & Live Deploy |
+| Phiên làm việc | #19 — API Hardening & Background Resilience |
 | Nhánh Git | `main` |
 
 ---
@@ -306,3 +306,14 @@ npm run dev
 - **Final Validation**: Chạy `npx tsc --noEmit` cho client, kết quả 0 lỗi.
 - **Live Deploy**: Xác nhận commit "fix: add ErrorBoundary + weather fallback..." đã được Vercel build thành công.
 - **Status**: READY. App live tại https://widget-date-client.vercel.app
+
+---
+
+### Session #19 — 2026-04-29
+- **API Hardening**: Thêm try-catch và fallbacks cho toàn bộ endpoints trong `api.ts` (Weather, Trends, User Sync, Profile).
+- **Background Resilience**: Cập nhật `useDriveSync` để cô lập lỗi đồng bộ ngầm, không gây crash UI.
+- **Hook Optimization**: Refactor `useWeather` check null API response.
+- **UI Logic**: Chuyển trends fetch trong `ExploreView.tsx` sang `useEffect` để quản lý side-effect an toàn.
+- **Verification**: `npx tsc --noEmit` Pass.
+- **Files đã sửa**: `api.ts`, `useDriveSync.ts`, `ExploreView.tsx`, `useWeather.ts`.
+

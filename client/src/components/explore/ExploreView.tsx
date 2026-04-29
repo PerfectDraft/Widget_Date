@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn, extractPlaceImage } from '../../lib/utils';
 import { calculateDistance, getTrends } from '../../services/api';
@@ -39,8 +39,14 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   const [selectedCategoryGrid, setSelectedCategoryGrid] = useState<typeof CATEGORY_GRID[number] | null>(null);
 
   // Fetch trends on mount
-  useMemo(() => {
-    getTrends().then(setTrends).catch(err => console.error('Failed to fetch trends:', err));
+  useEffect(() => {
+    let mounted = true;
+    getTrends().then(data => {
+      if (mounted) setTrends(data);
+    }).catch(err => {
+      console.error('Failed to fetch trends:', err);
+    });
+    return () => { mounted = false; };
   }, []);
 
   const handleFetchPlaces = () => {

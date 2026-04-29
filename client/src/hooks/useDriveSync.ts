@@ -48,29 +48,34 @@ export function useDriveSync(
 
     const initializeDrive = async () => {
       setIsInitializing(true);
-      let currentFileId = await getDatabaseFileId(accessToken);
-      
-      if (!currentFileId) {
-        // Create new empty DB
-        const initialData: AppDatabase = { 
-          combos: [], 
-          userReward: { totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [] },
-          chatMessages: []
-        };
-        currentFileId = await createDatabaseFile(accessToken, initialData);
-      } else {
-        // Load existing DB
-        const dbData = await readDatabase(accessToken, currentFileId);
-        if (dbData) {
-          if (dbData.combos) setCombos(dbData.combos);
-          if (dbData.userReward) setUserReward(dbData.userReward);
-          if (dbData.chatMessages) setChatMessages(dbData.chatMessages);
-          if (dbData.phoneNumber) setPhoneNumber(dbData.phoneNumber);
+      try {
+        let currentFileId = await getDatabaseFileId(accessToken);
+        
+        if (!currentFileId) {
+          // Create new empty DB
+          const initialData: AppDatabase = { 
+            combos: [], 
+            userReward: { totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [] },
+            chatMessages: []
+          };
+          currentFileId = await createDatabaseFile(accessToken, initialData);
+        } else {
+          // Load existing DB
+          const dbData = await readDatabase(accessToken, currentFileId);
+          if (dbData) {
+            if (dbData.combos) setCombos(dbData.combos);
+            if (dbData.userReward) setUserReward(dbData.userReward);
+            if (dbData.chatMessages) setChatMessages(dbData.chatMessages);
+            if (dbData.phoneNumber) setPhoneNumber(dbData.phoneNumber);
+          }
         }
+        
+        setFileId(currentFileId);
+      } catch (err) {
+        console.error('Failed to initialize Drive sync:', err);
+      } finally {
+        setIsInitializing(false);
       }
-      
-      setFileId(currentFileId);
-      setIsInitializing(false);
     };
 
     initializeDrive();
@@ -82,25 +87,29 @@ export function useDriveSync(
 
     const timeout = setTimeout(async () => {
       setIsSyncing(true);
-      const dataToSave: AppDatabase = { phoneNumber: phoneNumber || '', combos, userReward, chatMessages };
-      await writeDatabase(accessToken, fileId, dataToSave);
+      try {
+        const dataToSave: AppDatabase = { phoneNumber: phoneNumber || '', combos, userReward, chatMessages };
+        await writeDatabase(accessToken, fileId, dataToSave);
 
-      // Sync to Server (W6)
-      if (phoneNumber) {
-        try {
-          const { syncUser } = await import('../services/api');
-          await syncUser({
-            phone: phoneNumber,
-            googleId: userIdentifier || undefined,
-            preferences,
-            lastTab: 'home' // default or current active tab
-          });
-        } catch (err) {
-          console.error('Server sync failed:', err);
+        // Sync to Server (W6)
+        if (phoneNumber) {
+          try {
+            const { syncUser } = await import('../services/api');
+            await syncUser({
+              phone: phoneNumber,
+              googleId: userIdentifier || undefined,
+              preferences,
+              lastTab: 'home' // default or current active tab
+            });
+          } catch (err) {
+            console.warn('Server sync failed:', err);
+          }
         }
+      } catch (err) {
+        console.error('Background sync failed:', err);
+      } finally {
+        setIsSyncing(false);
       }
-
-      setIsSyncing(false);
     }, 5000); // 5 seconds debounce
 
     return () => clearTimeout(timeout);
