@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-04-29 |
-| Phiên làm việc | #17 — Fix Vercel Oxide Native Binary |
+| Phiên làm việc | #18 — Final Validation & Live Deploy |
 | Nhánh Git | `main` |
 
 ---
@@ -301,3 +301,8 @@ npm run dev
 - **Context**: Build Vercel (Linux) thất bại do thiếu native binary của Tailwind v4 Oxide engine.
 - Files đã sửa: `client/package.json`, `package.json`, `PROGRESS.md`.
 - Status: Đã push và chờ Vercel auto-deploy.
+
+### Session #18 — 2026-04-29
+- **Final Validation**: Chạy `npx tsc --noEmit` cho client, kết quả 0 lỗi.
+- **Live Deploy**: Xác nhận commit "fix: add ErrorBoundary + weather fallback..." đã được Vercel build thành công.
+- **Status**: READY. App live tại https://widget-date-client.vercel.app
