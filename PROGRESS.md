@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-04-29 |
-| Phiên làm việc | #19 — API Hardening & Background Resilience |
+| Phiên làm việc | #9 — Maintenance |
 | Nhánh Git | `main` |
 
 ---
@@ -48,6 +48,7 @@ Data & Database    ████████░░░░░░░░░░░░ 
 - [x] **Payment Modal** — Xác nhận thanh toán + confetti + +100 Miles
 - [x] **Image Viewer Modal** — Xem ảnh địa điểm (carousel)
 - [x] **Focus Mode & AI Combo** — Nâng cấp Focus Mode fullscreen, thêm Modal tùy chỉnh cho AI Combo, cho phép tạo Manual Combo.
+- [x] **Outfit Gợi ý** — Bỏ tính năng này theo yêu cầu (W7)
 
 ### Kiến trúc / Refactor (theo PLAN-client-server.md)
 - [x] Tách monorepo npm workspaces: `client/` + `server/`
@@ -90,11 +91,11 @@ Data & Database    ████████░░░░░░░░░░░░ 
 | W1 | Backend | Expose REST endpoint từ `data-service` để client React lấy data Trends thực tế | `server/src/routes/trends.ts` |
 | W2 | Huy hiệu | Auto-unlock badge theo hành động (chỉ có "First Date" tự động, các badge khác chưa có logic) | `useReward.ts` |
 - [x] Home | Bỏ phần "kỷ niệm" buổi sáng, làm to phần thời tiết, hiển thị ngày tháng (W3)
-- [ ] Sở thích | Chỉ hiện category có trong database, không hiện các mục thừa (W4)
+- [x] Sở thích | Chỉ hiện category có trong database, không hiện các mục thừa (W4)
 | W5 | Trang chủ | Bổ sung thêm địa điểm vào mục Sở thích / Workspace | `data/locations.ts` |
 - [x] **Database** — Tạo user database riêng (key = số điện thoại): lưu sở thích, địa điểm, lịch sử tab (W6)
 - [x] **Authentication** — Triển khai hệ thống Đăng nhập/Đăng ký (Login/Register) bảo mật với mật khẩu hashed (W8)
-| W7 | Outfit | Bỏ tính năng "Outfit Gợi ý" | `HomeView.tsx` |
+- [x] **Outfit** — Bỏ tính năng "Outfit Gợi ý" (W7)
 
 ---
 
@@ -317,3 +318,11 @@ npm run dev
 - **Verification**: `npx tsc --noEmit` Pass.
 - **Files đã sửa**: `api.ts`, `useDriveSync.ts`, `ExploreView.tsx`, `useWeather.ts`.
 
+
+### Session #9 — 2026-04-29
+- Xóa bỏ tính năng "Outfit Gợi ý" và các dữ liệu liên quan (OUTFIT_STYLES, RENTAL_STYLES) để làm gọn ứng dụng.
+- Tối ưu danh sách Category trong ExploreView để lấy động từ database (REAL_LOCATIONS), loại bỏ các mục hardcode thừa (Lãng mạn, Sang trọng, Xem phim).
+- Đồng bộ hằng số giữa data.tsx và constants.ts.
+- Kiểm tra tính nhất quán của dữ liệu locations.json.
+- Files đã sửa: client/src/data.tsx, client/src/data/constants.ts, client/src/components/explore/ExploreView.tsx, AUTONOMOUS_LOG.md, PROGRESS.md
+- Tasks hoàn thành: W7, W4

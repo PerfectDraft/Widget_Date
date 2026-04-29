@@ -18,13 +18,12 @@ interface Props {
   comboSlots: ComboSlot[];
 }
 
-const CATEGORIES = ['Tất cả', 'Cafe', 'Food', 'Lãng mạn', 'Sang trọng'] as const;
+const CATEGORIES = ['Tất cả', ...Array.from(new Set(REAL_LOCATIONS.map(loc => loc.category).filter(Boolean)))] as string[];
 
 const CATEGORY_GRID = [
   { label: 'Ăn tối', icon: 'dinner_dining', gradient: 'from-rose-600 to-orange-500' },
   { label: 'Cafe & Chill', icon: 'local_cafe', gradient: 'from-amber-700 to-yellow-500' },
   { label: 'Đi dạo', icon: 'directions_walk', gradient: 'from-emerald-700 to-teal-500' },
-  { label: 'Xem phim', icon: 'movie', gradient: 'from-slate-800 to-slate-600' },
 ] as const;
 
 export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, formatVND, onAddToCombo, savedPlacesCount, activeCombo, comboSlots }: Props) {
@@ -77,13 +76,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   const filteredPlaces = useMemo(() => {
     let places = [...dynamicPlaces];
     if (activeCategory !== 'Tất cả') {
-      if (activeCategory === 'Lãng mạn') {
-        places = places.filter(p => p.theme?.toLowerCase().includes('lãng mạn') || p.theme?.toLowerCase().includes('romantic'));
-      } else if (activeCategory === 'Sang trọng') {
-        places = places.filter(p => p.theme?.toLowerCase().includes('sang trọng') || (p.price && p.price >= 500000));
-      } else {
-        places = places.filter(p => p.category === activeCategory);
-      }
+      places = places.filter(p => p.category === activeCategory);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();

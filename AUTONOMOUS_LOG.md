@@ -26,3 +26,10 @@ Format per entry:
 - Verification: lint [pass] / types [pass] / tests [n/a]
 - Result: Resolved — 0 `as any` remaining in entire codebase
 
+## 2026-04-29T07:48 — Cleanup Outfit feature and refine categories
+- Files: `client/src/data.tsx`, `client/src/data/constants.ts`, `client/src/components/explore/ExploreView.tsx`
+- Change type: Low
+- Root cause: User requested removal of redundant "Outfit Gợi ý" feature and refinement of category lists to match actual database content.
+- Fix applied: Removed `OUTFIT_STYLES`, `RENTAL_STYLES`, and `THEME_TO_OUTFIT_STYLE` from data files. Updated `ExploreView.tsx` to derive category pills dynamically from `REAL_LOCATIONS` and removed hardcoded/empty category grid items.
+- Verification: types [pass] / lint [pass] / build [n/a]
+- Result: Resolved — W7 completed, W4 refined.
