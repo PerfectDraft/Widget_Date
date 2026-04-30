@@ -119,16 +119,24 @@ export function useDriveSync(
     scope: 'https://www.googleapis.com/auth/drive.appdata openid email profile',
     onSuccess: (tokenResponse) => {
       setAccessToken(tokenResponse.access_token);
-      localStorage.setItem('google_access_token', tokenResponse.access_token);
+      try {
+        localStorage.setItem('google_access_token', tokenResponse.access_token);
+      } catch (err) {
+        console.warn('Failed to save token to localStorage:', err);
+      }
     },
     onError: (error) => console.error('Login Failed:', error),
   });
 
   // Restore session on mount
   useEffect(() => {
-    const savedToken = localStorage.getItem('google_access_token');
-    if (savedToken) {
-      setAccessToken(savedToken);
+    try {
+      const savedToken = localStorage.getItem('google_access_token');
+      if (savedToken) {
+        setAccessToken(savedToken);
+      }
+    } catch (err) {
+      console.warn('Failed to read token from localStorage:', err);
     }
   }, []);
 
@@ -137,7 +145,11 @@ export function useDriveSync(
     setFileId(null);
     setUserIdentifier(null);
     setPhoneNumber(null);
-    localStorage.removeItem('google_access_token');
+    try {
+      localStorage.removeItem('google_access_token');
+    } catch (err) {
+      console.warn('Failed to remove token from localStorage:', err);
+    }
 
     // Reset app state to clear sensitive data
     setCombos([]);
