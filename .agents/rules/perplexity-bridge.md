@@ -30,3 +30,14 @@ python D:/UET/ask.py "câu hỏi"
 ## Khi xong task
 python -c "open('D:/UET/output.txt','w').write('[TASK_DONE] mô tả')"
 Đọc báo cáo tại D:/UET/input.txt
+
+## QUAN TRỌNG — Phân biệt 2 lệnh
+
+### Hỏi Perplexity (dùng thường xuyên):
+python D:/UET/ask.py "câu hỏi"
+
+### Báo kết thúc toàn bộ session (CHỈ dùng khi hoàn thành MỌI task):
+python -c "open('D:/UET/output.txt','w').write('[TASK_DONE] mô tả')"
+
+KHÔNG được ghi [TASK_DONE] sau mỗi câu hỏi đơn lẻ.
+Chỉ ghi [TASK_DONE] khi user xác nhận đã xong toàn bộ công việc trong session.
