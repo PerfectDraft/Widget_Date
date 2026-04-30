@@ -5,7 +5,7 @@ import App from './App.tsx';
 import './index.css';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id-to-prevent-crash';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

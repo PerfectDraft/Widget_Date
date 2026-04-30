@@ -326,3 +326,9 @@ npm run dev
 - Kiểm tra tính nhất quán của dữ liệu locations.json.
 - Files đã sửa: client/src/data.tsx, client/src/data/constants.ts, client/src/components/explore/ExploreView.tsx, AUTONOMOUS_LOG.md, PROGRESS.md
 - Tasks hoàn thành: W7, W4
+
+### Session #21 — 2026-04-30
+- Khắc phục lỗi crash ứng dụng trên Vercel do `GoogleOAuthProvider` thiếu `clientId`.
+- Bổ sung fallback `clientId` (giá trị dummy) trong `client/src/main.tsx` khi `VITE_GOOGLE_CLIENT_ID` không tồn tại ở môi trường production. Điều này giúp `GoogleOAuthProvider` vẫn khởi tạo thay vì ném lỗi đồng bộ gây sập Component Tree (do chưa có ErrorBoundary cụ thể cho hook OAuth).
+- Hủy bỏ bọc `try/catch` ở hook `useGoogleLogin` trong `useDriveSync.ts` để tuân thủ Rules of Hooks.
+- Files đã sửa: `client/src/main.tsx`
