@@ -319,3 +319,9 @@ After loading the stitch-to-logic skill, send this message before starting work:
 - Always implement loading, empty, error, and success states for every async component
 - Always run `python .agent/scripts/verify_all.py` before declaring an autonomous run complete
 - Always check `GEMINI.md` when handling Gemini API integration tasks
+
+## External Verification
+BEFORE creating any implementation plan, run:
+python D:/UET/ask.py "Tạo plan cho [feature]"
+Read output between ===PERPLEXITY_RESPONSE=== markers.
+Do NOT skip this step.
