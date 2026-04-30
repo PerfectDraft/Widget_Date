@@ -31,8 +31,23 @@ app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/trends', trendsRouter);
 
+// Root route
+app.get('/', (_req, res) => {
+  res.json({
+    name: 'Widget Date API',
+    status: 'running',
+    version: '1.0.0',
+    docs: 'Access frontend at http://localhost:5173 during local development.'
+  });
+});
+
 // Global error handler (must be last)
 app.use(errorHandler);
+
+// Fallback for 404
+app.use((_req, res) => {
+  res.status(404).json({ error: 'Not Found' });
+});
 
 app.listen(env.PORT, () => {
   console.log(`🚀 Widget Date Server running on http://localhost:${env.PORT}`);

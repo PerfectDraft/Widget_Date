@@ -50,7 +50,7 @@ export const SAMPLE_COMBOS: Combo[] = [
   {
     id: 'c3',
     theme: 'Bí Ẩn',
-    icon: <Compass className="w-5 h-5 text-purple-500" />,
+    icon: <Compass className="w-5 h-5 text-teal-500" />,
     totalCost: 350000,
     score: 9.0,
     activities: [
@@ -87,7 +87,7 @@ export const TRENDS = [
   { id: 5, icon: '🌭', name: 'Lạp Xưởng Nướng Đá', badge: 'VIRAL', badgeColor: 'bg-pink-100 text-pink-600', desc: 'Khu Chợ Đêm', price: '15K/chiếc' },
   { id: 6, icon: '🍮', name: 'Trà Sữa Vân Nam', badge: 'HOT', badgeColor: 'bg-yellow-100 text-yellow-600', desc: 'Cầu Giấy', price: '40K/ly' },
   { id: 7, icon: '🍵', name: 'Cà Phê Trứng Giảng', badge: 'CLASSIC', badgeColor: 'bg-slate-100 text-slate-800', desc: 'Hoàn Kiếm', price: '35K/ly' },
-  { id: 8, icon: '🥟', name: 'Bánh Trôi Tàu Đê La Thành', badge: 'WINTER', badgeColor: 'bg-purple-100 text-purple-600', desc: 'Đê La Thành', price: '20K/bát' },
+  { id: 8, icon: '🥟', name: 'Bánh Trôi Tàu Đê La Thành', badge: 'WINTER', badgeColor: 'bg-teal-100 text-teal-600', desc: 'Đê La Thành', price: '20K/bát' },
 ];
 
 export const MOVIES = [
@@ -127,7 +127,7 @@ export interface UserReward {
 export const MILESTONE_LEVELS = [
   { name: 'Newbie', min: 0, color: 'from-gray-400 to-slate-500', icon: '🌱' },
   { name: 'Explorer', min: 500, color: 'from-blue-400 to-cyan-500', icon: '🗺️' },
-  { name: 'Dating Pro', min: 2000, color: 'from-purple-500 to-indigo-600', icon: '🏆' },
+  { name: 'Dating Pro', min: 2000, color: 'from-teal-500 to-emerald-600', icon: '🏆' },
   { name: 'Master', min: 5000, color: 'from-rose-500 to-orange-500', icon: '👑' },
 ];
 

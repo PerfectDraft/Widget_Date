@@ -116,6 +116,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]">search</span>
           <input
             type="text"
+            aria-label="Tìm kiếm địa điểm"
             placeholder="Tìm địa điểm lãng mạn..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}

@@ -43,7 +43,7 @@ export const SAMPLE_COMBOS: Combo[] = [
 export const MILESTONE_LEVELS = [
   { name: 'Newbie', min: 0, color: 'from-gray-400 to-slate-500', icon: '🌱' },
   { name: 'Explorer', min: 500, color: 'from-blue-400 to-cyan-500', icon: '🗺️' },
-  { name: 'Dating Pro', min: 2000, color: 'from-purple-500 to-indigo-600', icon: '🏆' },
+  { name: 'Dating Pro', min: 2000, color: 'from-teal-500 to-emerald-600', icon: '🏆' },
   { name: 'Master', min: 5000, color: 'from-rose-500 to-orange-500', icon: '👑' },
 ];
 

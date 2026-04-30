@@ -14,7 +14,7 @@ export function DateMilesView({ userReward, historyOnly }: Props) {
   if (historyOnly) {
     return (
       <motion.div key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><History className="w-6 h-6 text-purple-500" /> Lịch Sử Miles</h2>
+        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><History className="w-6 h-6 text-teal-500" /> Lịch Sử Miles</h2>
         {userReward.history.length === 0 ? (
           <div className="bg-white rounded-3xl p-8 text-center text-slate-400 border border-slate-100">Chưa có lịch sử nào</div>
         ) : (

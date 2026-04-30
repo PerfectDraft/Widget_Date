@@ -63,9 +63,10 @@ export function AuthView({ onAuthSuccess }: AuthViewProps) {
         <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-8 border border-white/50 shadow-[0_20px_50px_rgba(212,163,115,0.1)]">
           <form action={formAction} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#6B6662] ml-1">Số điện thoại</label>
+              <label htmlFor="phone" className="text-sm font-medium text-[#6B6662] ml-1">Số điện thoại</label>
               <div className="relative">
                 <input
+                  id="phone"
                   type="tel"
                   name="phone"
                   placeholder="098..."
@@ -78,9 +79,10 @@ export function AuthView({ onAuthSuccess }: AuthViewProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#6B6662] ml-1">Mật khẩu</label>
+              <label htmlFor="password" className="text-sm font-medium text-[#6B6662] ml-1">Mật khẩu</label>
               <div className="relative">
                 <input
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   placeholder="••••••••"

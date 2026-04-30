@@ -122,6 +122,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                 <div className="flex flex-col flex-1 mr-4">
                   <input
                     type="text"
+                    aria-label="Tên combo"
                     value={activeCombo.theme}
                     onChange={(e) => setActiveCombo({ ...activeCombo, theme: e.target.value })}
                     className="text-headline-md font-bold text-on-surface bg-transparent border-none focus:ring-0 p-0 w-full"
@@ -379,6 +380,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                 <p className="text-label-sm text-on-surface-variant">Từ</p>
                 <input 
                   type="time" 
+                  aria-label="Giờ bắt đầu"
                   value={startTime} 
                   onChange={e => onTimeChange(e.target.value, endTime)} 
                   className="w-full bg-transparent border-none text-center text-body-lg font-bold text-on-surface p-0 focus:ring-0 [&::-webkit-calendar-picker-indicator]:opacity-50 cursor-pointer"
@@ -389,6 +391,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                 <p className="text-label-sm text-on-surface-variant">Đến</p>
                  <input 
                   type="time" 
+                  aria-label="Giờ kết thúc"
                   value={endTime} 
                   onChange={e => onTimeChange(startTime, e.target.value)} 
                   className="w-full bg-transparent border-none text-center text-body-lg font-bold text-on-surface p-0 focus:ring-0 [&::-webkit-calendar-picker-indicator]:opacity-50 cursor-pointer"
