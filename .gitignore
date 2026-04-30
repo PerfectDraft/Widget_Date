@@ -12,3 +12,5 @@ _archive/
 !.env.example
 
 # Agent tools
+client/dist/
+dist/
