@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Date History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#d9b784",
+                        "surface-bright": "#fff8f4",
+                        "inverse-on-surface": "#f8efe8",
+                        "surface-container": "#f5ece5",
+                        "surface": "#fff8f4",
+                        "surface-container-highest": "#eae1da",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-tint": "#894c5c",
+                        "surface-dim": "#e1d9d2",
+                        "primary": "#894c5c",
+                        "on-tertiary-fixed": "#281900",
+                        "on-secondary-fixed-variant": "#484741",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#e3c18d",
+                        "surface-variant": "#eae1da",
+                        "surface-container-high": "#efe7e0",
+                        "primary-fixed": "#ffd9e0",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#5f471e",
+                        "secondary-fixed-dim": "#c9c6be",
+                        "surface-container-low": "#fbf2eb",
+                        "on-tertiary-fixed-variant": "#5a431a",
+                        "primary-container": "#f4a7b9",
+                        "inverse-primary": "#ffb1c3",
+                        "on-secondary-fixed": "#1c1c17",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#380a1a",
+                        "background": "#fff8f4",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#745a2f",
+                        "outline-variant": "#d6c1c5",
+                        "primary-fixed-dim": "#ffb1c3",
+                        "inverse-surface": "#34302b",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#733949",
+                        "on-surface": "#1f1b17",
+                        "outline": "#847376",
+                        "on-secondary-container": "#66645e",
+                        "on-surface-variant": "#524346",
+                        "on-background": "#1f1b17",
+                        "secondary-container": "#e6e2d9",
+                        "secondary": "#605e58",
+                        "secondary-fixed": "#e6e2d9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#6e3545"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "stack-gap": "16px",
+                        "section-gap": "48px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Epilogue"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Epilogue"],
+                        "headline-lg": ["Epilogue"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen pb-32 pt-24 md:pt-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm grid grid-cols-[48px_1fr_48px] items-center px-6 py-4">
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 flex items-center justify-start">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-['Epilogue'] font-bold text-[20px] uppercase tracking-[0.2em] text-primary text-center whitespace-nowrap">
+            Date History
+        </h1><div class="w-12"></div>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-3xl mx-auto px-container-padding space-y-section-gap">
+<!-- Mini Calendar (Horizontal Scroll) -->
+<section class="space-y-gutter">
+<div class="flex items-center justify-between mb-2">
+<h2 class="font-headline-md text-headline-md text-primary">This Week</h2>
+<button class="text-primary hover:text-primary-container transition-colors flex items-center gap-1 font-label-md text-label-md">
+                    Oct 2023 <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide -mx-container-padding px-container-padding">
+<!-- Day 1 -->
+<button class="flex-shrink-0 w-[64px] h-[80px] rounded-lg bg-surface-container flex flex-col items-center justify-center snap-center hover:bg-surface-variant transition-colors border border-transparent">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Mon</span>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">12</span>
+</button>
+<!-- Day 2 -->
+<button class="flex-shrink-0 w-[64px] h-[80px] rounded-lg bg-surface-container flex flex-col items-center justify-center snap-center hover:bg-surface-variant transition-colors border border-transparent">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Tue</span>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">13</span>
+</button>
+<!-- Day 3 (Selected) -->
+<button class="flex-shrink-0 w-[64px] h-[80px] rounded-lg bg-primary text-on-primary flex flex-col items-center justify-center snap-center shadow-[0_4px_12px_rgba(137,76,92,0.2)] transform scale-105 transition-all">
+<span class="font-label-sm text-label-sm text-primary-fixed uppercase">Wed</span>
+<span class="font-headline-md text-headline-md text-on-primary mt-1">14</span>
+</button>
+<!-- Day 4 -->
+<button class="flex-shrink-0 w-[64px] h-[80px] rounded-lg bg-surface-container flex flex-col items-center justify-center snap-center hover:bg-surface-variant transition-colors border border-transparent">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Thu</span>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">15</span>
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container mt-1"></div>
+</button>
+<!-- Day 5 -->
+<button class="flex-shrink-0 w-[64px] h-[80px] rounded-lg bg-surface-container flex flex-col items-center justify-center snap-center hover:bg-surface-variant transition-colors border border-transparent">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Fri</span>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">16</span>
+</button>
+<!-- Day 6 -->
+<button class="flex-shrink-0 w-[64px] h-[80px] rounded-lg bg-surface-container flex flex-col items-center justify-center snap-center hover:bg-surface-variant transition-colors border border-transparent">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Sat</span>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">17</span>
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container mt-1"></div>
+</button>
+<!-- Day 7 -->
+<button class="flex-shrink-0 w-[64px] h-[80px] rounded-lg bg-surface-container flex flex-col items-center justify-center snap-center hover:bg-surface-variant transition-colors border border-transparent">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Sun</span>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">18</span>
+</button>
+</div>
+</section>
+<!-- Events for Selected Date -->
+<section class="space-y-stack-gap">
+<h3 class="font-headline-md text-headline-md text-on-surface">Events for Oct 14</h3>
+<!-- Event Card 1 -->
+<div class="bg-surface-container-lowest rounded-[32px] p-6 shadow-[0_4px_20px_rgba(137,76,92,0.05)] flex flex-col sm:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-fixed/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+<div class="flex-shrink-0 w-20 h-20 rounded-[24px] overflow-hidden">
+<img alt="Coffee shop" class="w-full h-full object-cover" data-alt="A warm, inviting interior of a modern coffee shop with soft natural light streaming in, focusing on a wooden table with two lattes featuring latte art. The mood is relaxed and intimate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZtgrdENCY-vS8uS_J9LgKDfMgJsq0qrhfgs6GS6xMhxYurJ4IRukaA2u9f1KoQGt8Q-fJcgoIH106o80te3NxqP5IVFpAFXI8WR2YdE-aS7Or0I-b6S7t5bKv1SXKEjmYimEpkNJf4UuMQGKwgBPyCWfc11iQ44hLYzlvfeesakT9AP3oXbXU3VYjF5HS3Q1_g9zN1FxIHkRtvqnH7Pw7hgbGN69kDwsL_g6VHvuaMQQgHQYvKrdtcA_65syOrQ71V8dNaAxeC-Qb"/>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-[10px] uppercase tracking-wider">Coffee Date</span>
+<span class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 10:00 AM
+                        </span>
+</div>
+<h4 class="font-headline-lg text-[20px] text-on-surface leading-tight mb-2">Morning Brew &amp; Chat</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-primary">location_on</span>
+                        Lumina Café, Downtown
+                    </p>
+</div>
+<div class="flex-shrink-0 flex items-start sm:items-center justify-end sm:justify-start">
+<div class="relative">
+<img alt="Partner Avatar" class="w-12 h-12 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="A close-up portrait of a young man smiling warmly. Soft, natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApHbbXTI68w3UzCS1IDDuIMcl2Fpf2gQR1KUWR4coA1hc30g_059ZwyAh0E2IVDp5Cb_DUKun0pdPr_g7sP-8Owh_cqwa6mJzs8GNEgnVdmYXNFmzrZGnWdQWhLGfSqLZealnAJ4dV-OZBCEKAJrOLRKP7PGm5zF6W3WJJz3ltM3iBdZfOk-1LYLa0g-ZhRR8oh1AndhYWIbxp3uljAcutzYygfcldZw7GA1LSElm1p89ggZUfJ3giiszNRVVnEOMzl2P1i3VBfBfF"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px] text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State for later in the day -->
+<div class="border-2 border-dashed border-surface-variant rounded-[32px] p-8 flex flex-col items-center justify-center text-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary/50">
+<span class="material-symbols-outlined text-[24px]">add</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">No plans for the evening yet.<br/>Maybe a dinner date?</p>
+<button class="mt-2 font-label-md text-label-md text-primary bg-primary-fixed/50 hover:bg-primary-fixed px-4 py-2 rounded-full transition-colors">
+                    Plan Something
+                </button>
+</div>
+</section>
+<!-- Past Dates Grouped by Month -->
+<section class="space-y-stack-gap pt-8 border-t border-surface-variant">
+<h3 class="font-headline-md text-[20px] text-on-surface-variant mb-6">September 2023</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Past Card 1 -->
+<div class="bg-surface-container-lowest rounded-lg p-4 shadow-sm border border-surface-variant/50 flex gap-4 items-center">
+<div class="w-14 h-14 rounded-lg bg-surface-container flex flex-col items-center justify-center flex-shrink-0">
+<span class="font-label-sm text-label-sm text-primary uppercase">Sep</span>
+<span class="font-headline-md text-[18px] text-on-surface">28</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-md text-label-md text-on-surface truncate">Dinner at Bella's</h4>
+<p class="font-body-md text-[14px] text-on-surface-variant truncate">Italian Cuisine • 7:30 PM</p>
+</div>
+<img alt="Partner Avatar" class="w-8 h-8 rounded-full flex-shrink-0 object-cover" data-alt="A close-up portrait of a young man smiling warmly. Soft, natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMa2TuxwUmv8weqwQJW5eTzfX3x-bw5KCKnXEgofbblPWm6bOQMAlzCLvg3M_N6euopgTdh388kdpr8f-VmyVxb9w7A6eYL2CSlxnXLN5nXz1O0G-uA2OcBmjsODJjpS8uT_OnuXpDWtPuD47oI5w_vScOI6nw5ZkHQHTF2k7FjHvij6ox4xqMwWeDomhzs3y73cBYjGT9dxuAlRd-TLDgOZvbvqdXQV4d6aMSyxk1XhAp4pPrjAR15_5dInSeFmoFf-CkZFnSGCEc"/>
+</div>
+<!-- Past Card 2 -->
+<div class="bg-surface-container-lowest rounded-lg p-4 shadow-sm border border-surface-variant/50 flex gap-4 items-center">
+<div class="w-14 h-14 rounded-lg bg-surface-container flex flex-col items-center justify-center flex-shrink-0">
+<span class="font-label-sm text-label-sm text-primary uppercase">Sep</span>
+<span class="font-headline-md text-[18px] text-on-surface">15</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-md text-label-md text-on-surface truncate">Art Museum Walk</h4>
+<p class="font-body-md text-[14px] text-on-surface-variant truncate">City Gallery • 2:00 PM</p>
+</div>
+<img alt="Partner Avatar" class="w-8 h-8 rounded-full flex-shrink-0 object-cover" data-alt="A close-up portrait of a young man smiling warmly. Soft, natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMF3OIyg2xGnThct5GhlrYG1gffvKPzV0kViznIzQ7xeWcbsC7MbHFe_A61KOtRWk44xA3J166mTcDF0N-1NRqzCxHzqVe0l40eP-QaYC3311ovOFgKSWTfDD4Upe9qC337L4NFaYNZXvx2B5mPtX5rSd6KIlQLxV30alV3NChsrlEmsYaIG9et2tP3lXdU1JPe3JGBCEpY6_XeytkeOFFZsE-ZC3K3zQrgkVzzvQSRkasTqie_5e37wc70FTqSqJ7rRFnyDKtWPZ_"/>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-[32px] bg-[#FFFBF2]/80 dark:bg-rose-950/80 backdrop-blur-md shadow-[0_-8px_30px_rgba(244,167,185,0.15)] fixed bottom-0 left-0 w-full h-24 flex justify-around items-center px-4 pb-4">
+<button class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform">favorite</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Explore</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-rose-50 dark:bg-rose-900/40 text-[#F4A7B9] rounded-full px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Dates</span>
+</button>
+<button class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform">chat_bubble</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Messages</span>
+</button>
+<button class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform">person</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Profile</span>
+</button>
+</nav>
+</body></html>

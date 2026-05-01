@@ -13,7 +13,7 @@ export interface UserProfile {
 export interface SavedPlace {
   phone: string;
   place_id: string;
-  place_data: any;
+  place_data: Record<string, unknown>;
   added_at: string;
 }
 
@@ -53,15 +53,19 @@ export const userService = {
 
   getUser(phone: string): UserProfile | null {
     const stmt = db.prepare('SELECT * FROM users WHERE phone = ?');
-    const row: any = stmt.get(phone);
+    const row = stmt.get(phone) as (Record<string, unknown> & { preferences?: string });
     if (!row) return null;
     return {
-      ...row,
-      preferences: row.preferences ? JSON.parse(row.preferences) : []
-    };
+      phone: row.phone as string,
+      password_hash: row.password_hash as string | undefined,
+      google_id: row.google_id as string | undefined,
+      preferences: row.preferences ? JSON.parse(row.preferences) : [],
+      last_tab: row.last_tab as string | undefined,
+      updated_at: row.updated_at as string | undefined,
+    } as UserProfile;
   },
 
-  savePlace(phone: string, placeId: string, placeData: any) {
+  savePlace(phone: string, placeId: string, placeData: Record<string, unknown>) {
     const dataJson = JSON.stringify(placeData);
     const stmt = db.prepare(`
       INSERT INTO user_saved_places (phone, place_id, place_data, added_at)
@@ -75,14 +79,16 @@ export const userService = {
 
   getSavedPlaces(phone: string): SavedPlace[] {
     const stmt = db.prepare('SELECT * FROM user_saved_places WHERE phone = ? ORDER BY added_at DESC');
-    const rows: any[] = stmt.all(phone);
+    const rows = stmt.all(phone) as (Record<string, unknown> & { place_data: string })[];
     return rows.map(r => ({
-      ...r,
-      place_data: JSON.parse(r.place_data)
+      phone: r.phone as string,
+      place_id: r.place_id as string,
+      place_data: JSON.parse(r.place_data),
+      added_at: r.added_at as string
     }));
   },
 
-  logAction(phone: string, action: string, metadata?: any) {
+  logAction(phone: string, action: string, metadata?: Record<string, unknown>) {
     const metaJson = metadata ? JSON.stringify(metadata) : null;
     const stmt = db.prepare(`
       INSERT INTO user_history (phone, action, metadata)

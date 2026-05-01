@@ -24,6 +24,7 @@ import { AuthView } from './components/auth/AuthView';
 import { ProfileView } from './components/profile/ProfileView';
 import { WeatherDetailView } from './components/weather/WeatherDetailView';
 import { ComboActionModal } from './components/modals/ComboActionModal';
+import { HistoryView } from './components/history/HistoryView';
 
 import type { Tab, Combo, LocationItem, ComboSlot } from './types';
 import { CATEGORY_SLOT_MAP } from './types';
@@ -102,7 +103,7 @@ export default function App() {
     setCurrentUserId(phone || drive.userIdentifier);
   }, [drive.userIdentifier, phone]);
 
-  const handleAuthSuccess = (phone: string, _userData: any) => {
+  const handleAuthSuccess = (phone: string, _userData?: { phone: string; googleId?: string }) => {
     setPhone(phone);
     setIsAuthenticated(true);
     showToast(`Chào mừng trở lại, ${phone}!`);
@@ -293,7 +294,7 @@ export default function App() {
       <Toast message={toastMessage} onClose={hideToast} />
 
       {/* Main Content — No top-level header, each view has its own */}
-      <main className="max-w-md mx-auto w-full">
+      <main id="main-content" className="max-w-md mx-auto w-full">
         <AnimatePresence mode="wait">
           {activeTab === 'home' && (
             <HomeView
@@ -335,7 +336,7 @@ export default function App() {
             />
           )}
           {activeTab === 'wallet' && <DateMilesView userReward={userReward} />}
-          {activeTab === 'history' && <DateMilesView userReward={userReward} historyOnly />}
+          {activeTab === 'history' && <HistoryView />}
         </AnimatePresence>
       </main>
 

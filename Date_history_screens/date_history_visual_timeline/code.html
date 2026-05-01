@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Widget Date - Date History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#d9b784",
+                        "surface-bright": "#fff8f4",
+                        "inverse-on-surface": "#f8efe8",
+                        "surface-container": "#f5ece5",
+                        "surface": "#fff8f4",
+                        "surface-container-highest": "#eae1da",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-tint": "#894c5c",
+                        "surface-dim": "#e1d9d2",
+                        "primary": "#894c5c",
+                        "on-tertiary-fixed": "#281900",
+                        "on-secondary-fixed-variant": "#484741",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#e3c18d",
+                        "surface-variant": "#eae1da",
+                        "surface-container-high": "#efe7e0",
+                        "primary-fixed": "#ffd9e0",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#5f471e",
+                        "secondary-fixed-dim": "#c9c6be",
+                        "surface-container-low": "#fbf2eb",
+                        "on-tertiary-fixed-variant": "#5a431a",
+                        "primary-container": "#f4a7b9",
+                        "inverse-primary": "#ffb1c3",
+                        "on-secondary-fixed": "#1c1c17",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#380a1a",
+                        "background": "#fff8f4",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#745a2f",
+                        "outline-variant": "#d6c1c5",
+                        "primary-fixed-dim": "#ffb1c3",
+                        "inverse-surface": "#34302b",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#733949",
+                        "on-surface": "#1f1b17",
+                        "outline": "#847376",
+                        "on-secondary-container": "#66645e",
+                        "on-surface-variant": "#524346",
+                        "on-background": "#1f1b17",
+                        "secondary-container": "#e6e2d9",
+                        "secondary": "#605e58",
+                        "secondary-fixed": "#e6e2d9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#6e3545"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "stack-gap": "16px",
+                        "section-gap": "48px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Epilogue"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Epilogue"],
+                        "headline-lg": ["Epilogue"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<!-- TopAppBar from JSON -->
+<header class="bg-[#FFFBF2]/60 dark:bg-rose-950/60 backdrop-blur-xl border-b border-rose-100/20 dark:border-rose-900/20 shadow-[0_4px_20px_rgba(244,167,185,0.1)] fixed top-0 w-full z-50">
+<div class="flex items-center px-6 py-4 w-full justify-start gap-4">
+<button aria-label="menu" class="text-[#F4A7B9] dark:text-[#F4A7B9] hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<h1 class="text-primary dark:text-primary-fixed-dim font-['Epilogue'] font-bold tracking-[0.08em] text-xl uppercase italic">Date History</h1>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow pt-[88px] pb-[120px] px-container-padding max-w-3xl mx-auto w-full relative">
+<!-- Vertical Timeline Line -->
+<div class="absolute left-8 md:left-12 top-[120px] bottom-[120px] w-0.5 bg-gradient-to-b from-primary-container via-surface-container-high to-transparent rounded-full opacity-60 z-0"></div>
+<div class="flex flex-col gap-section-gap relative z-10 mt-8">
+<!-- Timeline Item 1 -->
+<article class="relative pl-10 md:pl-16">
+<!-- Timeline Marker -->
+<div class="absolute left-[-5px] md:left-3 top-6 w-3 h-3 rounded-full bg-primary ring-4 ring-surface shadow-[0_0_10px_rgba(137,76,92,0.3)]"></div>
+<div class="bg-surface-container-lowest rounded-lg overflow-hidden shadow-[0_8px_30px_rgba(137,76,92,0.06)] hover:shadow-[0_12px_40px_rgba(137,76,92,0.1)] transition-shadow duration-300">
+<div class="relative h-56 md:h-64 w-full">
+<img alt="West Lake sunset" class="w-full h-full object-cover" data-alt="A serene lakeside path at golden hour, bathed in warm, romantic sunlight. The scene reflects a modern romanticism aesthetic, with soft, glowing light reflecting off the calm water. Gentle pastel colors dominate the sky, perfectly matching the UI's primary rose and cream palette. High-quality, cinematic composition prioritizing a feeling of calm and intimate connection." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeDKuQke_Avc5sCBDzmtYhVQTgnC4wJlm9nt272gPbFKcCzYSHVJ3A9n0GuE8sRfc4LY5kzadLpDJE-lFtYFfw9HLqLgB_6Y9p7kgkP99V6MPd2UrjQSCSU2ntZhSaO28k9dDMCOLSXWEiCfZL9irjrUYEMnU3hZuKvCg9lefAV1HQSgPWRP3KjnzS9QjOfZM2D4Cm4HBVSrVWHDgaQNOKqggDPBk5FfCeAi1MNep-UVFFA7nSJiPjsIxE_nSiDZP7OmCX0qWkBH2u"/>
+<!-- Date Bubble -->
+<div class="absolute top-4 right-4 bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label-md text-label-md backdrop-blur-md bg-opacity-90 shadow-sm">
+                            Oct 14, 2023
+                        </div>
+</div>
+<div class="p-container-padding">
+<h2 class="font-headline-md text-headline-md text-primary mb-2">Sunset Walk at West Lake</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">A beautiful evening strolling along the water, watching the sky change colors. Perfect weather and great conversation.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant px-4 py-1.5 rounded-full font-label-sm text-label-sm flex items-center gap-1.5 border border-surface-dim">
+<span class="material-symbols-outlined text-[16px]">directions_walk</span> Walking
+                            </span>
+<span class="bg-surface-container text-on-surface-variant px-4 py-1.5 rounded-full font-label-sm text-label-sm flex items-center gap-1.5 border border-surface-dim">
+<span class="material-symbols-outlined text-[16px]">local_cafe</span> Coffee
+                            </span>
+<span class="bg-surface-container text-on-surface-variant px-4 py-1.5 rounded-full font-label-sm text-label-sm flex items-center gap-1.5 border border-surface-dim">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span> Photography
+                            </span>
+</div>
+</div>
+</div>
+</article>
+<!-- Timeline Item 2 -->
+<article class="relative pl-10 md:pl-16">
+<!-- Timeline Marker -->
+<div class="absolute left-[-5px] md:left-3 top-6 w-3 h-3 rounded-full bg-tertiary-container ring-4 ring-surface shadow-[0_0_10px_rgba(217,183,132,0.3)]"></div>
+<div class="bg-surface-container-lowest rounded-lg overflow-hidden shadow-[0_8px_30px_rgba(137,76,92,0.06)] hover:shadow-[0_12px_40px_rgba(137,76,92,0.1)] transition-shadow duration-300">
+<div class="relative h-56 md:h-64 w-full">
+<img alt="Cozy Cafe" class="w-full h-full object-cover" data-alt="An intimate corner of an aesthetic modern cafe, featuring two artisanal coffee cups and a shared pastry on a light wooden table. The lighting is soft and airy, creating a high-key, minimalist atmosphere. The color grading leans into warm creams and subtle earthy tones, echoing the application's clean, breathable design system. A perfect embodiment of a cozy, organized date setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFx9E1vHVFsXEdxBLEdWAReitHxFDNFBSNVzyX7C-2vKttJflZQmu9_cqXtqXsBNU7EDAOjM7OzpiP1qFUXbiYHQ1BpJs02oaPsPlOeHCKoKAkrzE3b0HK4HZlG76Taf-fr7rzx4UOlo_wcKkfIqly3Od64qW6u52GgqPVjT8ms3t_l9ubvy_AcZEQoUy1ncK6_TMTYmjHRcDCPfawVZ5l6f3WoR_Z3yNpS8zKrIyK1rG7spqE42t-xK-79KgG3KHgoBJc5Sxyrtkk"/>
+<!-- Date Bubble -->
+<div class="absolute top-4 right-4 bg-tertiary-container text-on-tertiary-container px-4 py-2 rounded-full font-label-md text-label-md backdrop-blur-md bg-opacity-90 shadow-sm">
+                            Sep 28, 2023
+                        </div>
+</div>
+<div class="p-container-padding">
+<h2 class="font-headline-md text-headline-md text-primary mb-2">Sunday Morning Cafe</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Found this hidden gem in the arts district. The hazelnut lattes were incredible and we spent hours just talking.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant px-4 py-1.5 rounded-full font-label-sm text-label-sm flex items-center gap-1.5 border border-surface-dim">
+<span class="material-symbols-outlined text-[16px]">restaurant</span> Breakfast
+                            </span>
+<span class="bg-surface-container text-on-surface-variant px-4 py-1.5 rounded-full font-label-sm text-label-sm flex items-center gap-1.5 border border-surface-dim">
+<span class="material-symbols-outlined text-[16px]">forum</span> Deep Talks
+                            </span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="md:hidden bg-[#FFFBF2]/80 dark:bg-rose-950/80 backdrop-blur-md fixed bottom-0 w-full z-50 rounded-t-[32px] border-t border-rose-100/30 dark:border-rose-900/30 shadow-[0_-8px_30px_rgba(244,167,185,0.15)] fixed bottom-0 left-0 w-full h-24 flex justify-around items-center px-4 pb-4">
+<!-- Explore -->
+<a class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:scale-110 transition-transform">favorite</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Explore</span>
+</a>
+<!-- Dates (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-rose-50 dark:bg-rose-900/40 text-[#F4A7B9] rounded-full px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Dates</span>
+</a>
+<!-- Messages -->
+<a class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:scale-110 transition-transform">chat_bubble</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Messages</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:scale-110 transition-transform">person</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Profile</span>
+</a>
+</nav>
+</body></html>

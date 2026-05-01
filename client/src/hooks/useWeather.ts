@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { WeatherWithForecast } from '../services/api';
+import type { WeatherWithForecast } from '../types';
 import { fetchWeather } from '../services/api';
 
 const MOCK_WEATHER: WeatherWithForecast = {

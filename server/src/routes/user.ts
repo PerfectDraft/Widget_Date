@@ -15,8 +15,9 @@ userRouter.post('/user/sync', (req, res) => {
     userService.upsertUser(phone, googleId, preferences, lastTab);
     userService.logAction(phone, 'sync_data', { lastTab });
     res.json({ status: 'ok' });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    res.status(500).json({ error: message });
   }
 });
 
@@ -30,8 +31,9 @@ userRouter.get('/user/profile', (req, res) => {
     
     const savedPlaces = userService.getSavedPlaces(phone);
     res.json({ ...user, savedPlaces });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    res.status(500).json({ error: message });
   }
 });
 
@@ -45,7 +47,8 @@ userRouter.post('/user/place', (req, res) => {
     userService.savePlace(phone, placeId, placeData);
     userService.logAction(phone, 'save_place', { placeId, title: placeData.title });
     res.json({ status: 'ok' });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    res.status(500).json({ error: message });
   }
 });

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { generateCombos } from '../services/api';
+import { generateCombos, ApiError } from '../services/api';
 import { SAMPLE_COMBOS } from '../data/constants';
 import type { Combo } from '../types';
 
@@ -41,12 +41,17 @@ export function useAIPlanner({
       showToast('AI đang tìm và thiết kế các combo thật cho bạn...');
       const liveCombos = await generateCombos({ location, budget, companion, startTime, endTime, preferences });
       setCombos(liveCombos);
-    } catch (err: any) {
-      const status = err?.status;
-      const msg = err?.message || '';
+    } catch (err: unknown) {
       let friendlyError = "Có lỗi khi tạo combo. Thử lại nhé.";
-      if (status === 429 || msg.includes('limit exceeded') || msg.includes('[FALLBACK LỖI AI]')) {
-         friendlyError = "Bạn đã hết lượt dùng AI. Đăng nhập Google Drive để có thêm lượt nhé!";
+      
+      if (err instanceof ApiError) {
+        if (err.status === 429 || err.message.includes('limit exceeded') || err.message.includes('[FALLBACK LỖI AI]')) {
+          friendlyError = "Bạn đã hết lượt dùng AI. Đăng nhập Google Drive để có thêm lượt nhé!";
+        }
+      } else if (err instanceof Error) {
+        if (err.message.includes('[FALLBACK LỖI AI]')) {
+          friendlyError = "Bạn đã hết lượt dùng AI. Đăng nhập Google Drive để có thêm lượt nhé!";
+        }
       }
       
       setError(friendlyError);

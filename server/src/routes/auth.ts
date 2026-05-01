@@ -24,8 +24,9 @@ router.post('/register', async (req, res) => {
 
     await userService.createUser(phone, password);
     res.json({ success: true, message: 'Registration successful' });
-  } catch (err: any) {
-    console.error('Registration error:', err);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Registration error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -47,8 +48,9 @@ router.post('/login', async (req, res) => {
     // Success - return user info (excluding password hash)
     const { password_hash, ...profile } = user;
     res.json({ success: true, user: profile });
-  } catch (err: any) {
-    console.error('Login error:', err);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

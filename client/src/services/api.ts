@@ -1,4 +1,4 @@
-import type { Combo, LocationItem, TrendItem } from '../types';
+import type { Combo, LocationItem, TrendItem, WeatherData, ForecastDay, WeatherWithForecast } from '../types';
 
 /** API error with HTTP status code */
 export class ApiError extends Error {
@@ -86,30 +86,7 @@ export async function fetchPlaceImage(mapsUrl: string): Promise<string | null> {
 
 // --- Weather Endpoint ---
 
-export interface WeatherData {
-  name: string;
-  main: { temp: number; feels_like: number; humidity: number; pressure: number; temp_min: number; temp_max: number };
-  weather: Array<{ main: string; description: string; icon: string }>;
-  wind: { speed: number };
-  clouds?: { all: number };
-  visibility?: number;
-  sys?: { sunset: number; sunrise: number };
-}
-
-export interface ForecastDay {
-  date: string;
-  dayLabel: string;
-  tempMin: number;
-  tempMax: number;
-  icon: string;
-  main: string;
-  description: string;
-}
-
-export interface WeatherWithForecast {
-  current: WeatherData;
-  forecast: ForecastDay[];
-}
+// Types moved to types/index.ts
 
 export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherWithForecast | null> {
   try {

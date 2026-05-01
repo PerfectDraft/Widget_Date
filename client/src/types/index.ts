@@ -69,6 +69,31 @@ export interface LocationItem {
   dist?: string;
 }
 
+export interface WeatherData {
+  name: string;
+  main: { temp: number; feels_like: number; humidity: number; pressure: number; temp_min: number; temp_max: number };
+  weather: Array<{ main: string; description: string; icon: string }>;
+  wind: { speed: number };
+  clouds?: { all: number };
+  visibility?: number;
+  sys?: { sunset: number; sunrise: number };
+}
+
+export interface ForecastDay {
+  date: string;
+  dayLabel: string;
+  tempMin: number;
+  tempMax: number;
+  icon: string;
+  main: string;
+  description: string;
+}
+
+export interface WeatherWithForecast {
+  current: WeatherData;
+  forecast: ForecastDay[];
+}
+
 export type Tab = 'home' | 'explore' | 'history' | 'wallet';
 export type ExploreTab = 'map' | 'movies' | 'trends' | 'swipe';
 

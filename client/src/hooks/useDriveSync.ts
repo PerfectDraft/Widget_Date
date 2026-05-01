@@ -1,15 +1,15 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { getDatabaseFileId, createDatabaseFile, readDatabase, writeDatabase, AppDatabase } from '../services/driveService';
-import { UserReward } from '../types';
+import { Combo, UserReward } from '../types';
 
 export function useDriveSync(
-  combos: any[],
+  combos: Combo[],
   userReward: UserReward,
   chatMessages: { role: string; text: string }[],
-  setCombos: (combos: any[]) => void,
-  setUserReward: (reward: any) => void,
-  setChatMessages: (msgs: any[]) => void,
+  setCombos: (combos: Combo[]) => void,
+  setUserReward: (reward: UserReward) => void,
+  setChatMessages: (msgs: { role: string; text: string }[]) => void,
   preferences: string[] = []
 ) {
   const [accessToken, setAccessToken] = useState<string | null>(null);

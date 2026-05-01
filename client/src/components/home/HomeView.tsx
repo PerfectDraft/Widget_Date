@@ -2,10 +2,10 @@ import { useCallback, useEffect } from 'react';
 import { HomeDashboardUI } from './HomeDashboardUI';
 import { useAIPlanner } from '../../hooks/useAIPlanner';
 import { REAL_LOCATIONS } from '../../data/locations';
-import type { Combo, Activity, ComboSlot } from '../../types';
+import type { Combo, Activity, ComboSlot, WeatherData } from '../../types';
 
 interface Props {
-  weatherData: any;
+  weatherData: WeatherData | null;
   showToast: (msg: string) => void;
   setSelectedCombo: (c: Combo) => void;
   setShowPaymentModal: (v: boolean) => void;

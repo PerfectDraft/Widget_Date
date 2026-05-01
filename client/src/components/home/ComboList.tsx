@@ -136,10 +136,11 @@ export function ComboList({ combos, isLoading, error, onSelectCombo, onSelectVen
                   const groupHoverClass = isPrimary ? "group-hover:text-primary" : "group-hover:text-tertiary";
 
                   return (
-                    <div 
+                    <button 
                       key={i} 
-                      className="flex gap-4 items-start relative z-10 p-3 rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer group"
+                      className="w-full text-left flex gap-4 items-start relative z-10 p-3 rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       onClick={() => onSelectVenue && onSelectVenue(act)}
+                      aria-label={`Xem chi tiết ${act.name} lúc ${act.time}`}
                     >
                       <div className={`size-8 rounded-full ${dotColorClass} text-white flex items-center justify-center border-4 border-surface shadow-sm shrink-0 mt-0.5`}>
                         <span className="text-[14px] font-bold">{i + 1}</span>
@@ -152,15 +153,16 @@ export function ComboList({ combos, isLoading, error, onSelectCombo, onSelectVen
                         <p className={`font-bold text-on-surface ${groupHoverClass} transition-colors`}>{act.name}</p>
                         <p className="text-label-sm text-on-surface-variant line-clamp-1">{act.address}</p>
                       </div>
-                      <span className={`material-symbols-outlined text-outline-variant ${groupHoverClass} self-center transition-colors`}>chevron_right</span>
-                    </div>
+                      <span className={`material-symbols-outlined text-outline-variant ${groupHoverClass} self-center transition-colors`} aria-hidden="true">chevron_right</span>
+                    </button>
                   );
                 })}
               </div>
 
               <button 
                 onClick={() => onSelectCombo(combo)}
-                className="w-full py-4 rounded-full bg-primary/10 text-primary font-bold text-body-md border-2 border-primary/20 hover:bg-primary hover:text-on-primary transition-all cursor-pointer"
+                className="w-full py-4 rounded-full bg-primary/10 text-primary font-bold text-body-md border-2 border-primary/20 hover:bg-primary hover:text-on-primary transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
+                aria-label={`Chọn combo ${combo.theme}`}
               >
                 Select This Combo
               </button>

@@ -5,14 +5,21 @@ import { login, register } from '../../services/api';
 import { cn } from '../../lib/utils';
 
 interface AuthViewProps {
-  onAuthSuccess: (phone: string, userData: any) => void;
+  onAuthSuccess: (phone: string, userData?: { phone: string; googleId?: string }) => void;
+}
+
+interface AuthState {
+  error: string | null;
+  success: boolean;
+  phone: string;
+  password: string;
 }
 
 export function AuthView({ onAuthSuccess }: AuthViewProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [showPassword, setShowPassword] = useState(false);
   
-  const [state, formAction, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+  const [state, formAction, isPending] = useActionState(async (prevState: AuthState, formData: FormData): Promise<AuthState> => {
     const formPhone = formData.get('phone') as string;
     const formPassword = formData.get('password') as string;
 
@@ -34,8 +41,9 @@ export function AuthView({ onAuthSuccess }: AuthViewProps) {
           return { error: res.error || 'Đăng ký thất bại', success: false, phone: formPhone, password: formPassword };
         }
       }
-    } catch (err: any) {
-      return { error: err.message || 'Lỗi kết nối server', success: false, phone: formPhone, password: formPassword };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Lỗi kết nối server';
+      return { error: message, success: false, phone: formPhone, password: formPassword };
     }
   }, { error: null, success: false, phone: '', password: '' });
 

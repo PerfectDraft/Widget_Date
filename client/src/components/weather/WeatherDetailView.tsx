@@ -1,9 +1,9 @@
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
-import type { ForecastDay } from '../../services/api';
+import type { ForecastDay, WeatherData } from '../../types';
 
 interface WeatherDetailViewProps {
-  weatherData: { current: any; forecast: ForecastDay[] } | null;
+  weatherData: { current: WeatherData; forecast: ForecastDay[] } | null;
   onBack: () => void;
 }
 

@@ -19,8 +19,10 @@ openChat, formatVND, location
 Props bắt buộc: showToast, setRideModalLoc, setRealImageLoc, formatVND
 
 ## DateMilesView.tsx
-Props bắt buộc: userReward, historyOnly?
+Props bắt buộc: userReward
 
+## HistoryView.tsx
+Props: upcomingDates? (optional), pastDates? (optional)
 ## PaymentModal.tsx
 Props bắt buộc: show, combo, paymentSuccess, userReward, 
 onClose, onPay, formatVND

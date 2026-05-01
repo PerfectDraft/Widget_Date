@@ -94,9 +94,10 @@ async function callOpenRouter(
         }
         return content;
       }
-    } catch (e: any) {
-      console.warn(`[OpenRouter] Model "${model}" error:`, e.message);
-      lastError = e.message;
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      console.warn(`[OpenRouter] Model "${model}" error:`, message);
+      lastError = message;
     }
   }
 
@@ -207,9 +208,9 @@ CRITICAL RULES FOR JSON:
       const jsonStr = extractJson(text);
 
       // Try parsing as array first from extracted block
-      let parsedResult;
+      let parsedResult: Combo[];
       const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-      let targetJson = arrayMatch?.[0] || jsonStr;
+      const targetJson = arrayMatch?.[0] || jsonStr;
 
       // Clean up common AI JSON mistakes (trailing commas)
       const cleanedJson = targetJson
@@ -217,29 +218,30 @@ CRITICAL RULES FOR JSON:
         .replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1'); // Remove comments
 
       try {
-        parsedResult = JSON.parse(cleanedJson);
-      } catch (parseError: any) {
+        const parsed = JSON.parse(cleanedJson);
+        if (!Array.isArray(parsed)) {
+          throw new Error('Response is not an array.');
+        }
+        parsedResult = parsed as Combo[];
+      } catch (parseError: unknown) {
         console.error('[JSON Parse Error Source]:', cleanedJson);
         throw parseError;
       }
 
-      if (!Array.isArray(parsedResult)) {
-        throw new Error('Response is not an array.');
-      }
-
-      parsedResult.forEach((combo: Combo, idx: number) => {
+      parsedResult.forEach((combo, idx: number) => {
         combo.id = `live-combo-${idx}-${Date.now()}`;
       });
 
-      return parsedResult as Combo[];
-    } catch (e: any) {
-      console.warn(`[API Retry ${attempt}/${MAX_RETRIES}] Error:`, e.message);
+      return parsedResult;
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      console.warn(`[API Retry ${attempt}/${MAX_RETRIES}] Error:`, message);
 
       if (attempt === MAX_RETRIES) {
-        throw new Error(`AI generation failed after ${MAX_RETRIES + 1} attempts: ${e.message}`);
+        throw new Error(`AI generation failed after ${MAX_RETRIES + 1} attempts: ${message}`);
       }
 
-      const is503 = e.message?.includes('503') || e.message?.includes('UNAVAILABLE');
+      const is503 = message.includes('503') || message.includes('UNAVAILABLE');
       const sleepMs = is503 ? 5000 * (attempt + 1) : 1500 * (attempt + 1);
       await new Promise(resolve => setTimeout(resolve, sleepMs));
     }
@@ -268,10 +270,11 @@ export async function chatWithAI(
   try {
     const text = await callOpenRouter(messages, 0.8);
     return text || 'Mình bị rớt mạng rồi, bạn thử lại sau nhe!!';
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Chat error:', e);
+    const message = e instanceof Error ? e.message : '';
 
-    const isRateLimit = e?.message?.includes('429');
+    const isRateLimit = message.includes('429');
     if (isRateLimit) {
       const offlineReplies = [
         'Đằng ấy ơi, bộ não AI của mình đang xử lý quá tải thông tin (nhiều cặp đôi hỏi quá 😅). Đằng ấy chờ 1 lát rồi hỏi lại mình nhé 💖',
@@ -281,6 +284,6 @@ export async function chatWithAI(
       return offlineReplies[Math.floor(Math.random() * offlineReplies.length)];
     }
 
-    throw new Error(`Chat failed: ${e.message}`);
+    throw new Error(`Chat failed: ${message}`);
   }
 }

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Widget Date - Date History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#d9b784",
+                        "surface-bright": "#fff8f4",
+                        "inverse-on-surface": "#f8efe8",
+                        "surface-container": "#f5ece5",
+                        "surface": "#fff8f4",
+                        "surface-container-highest": "#eae1da",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-tint": "#894c5c",
+                        "surface-dim": "#e1d9d2",
+                        "primary": "#894c5c",
+                        "on-tertiary-fixed": "#281900",
+                        "on-secondary-fixed-variant": "#484741",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#e3c18d",
+                        "surface-variant": "#eae1da",
+                        "surface-container-high": "#efe7e0",
+                        "primary-fixed": "#ffd9e0",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#5f471e",
+                        "secondary-fixed-dim": "#c9c6be",
+                        "surface-container-low": "#fbf2eb",
+                        "on-tertiary-fixed-variant": "#5a431a",
+                        "primary-container": "#f4a7b9",
+                        "inverse-primary": "#ffb1c3",
+                        "on-secondary-fixed": "#1c1c17",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#380a1a",
+                        "background": "#fff8f4",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#745a2f",
+                        "outline-variant": "#d6c1c5",
+                        "primary-fixed-dim": "#ffb1c3",
+                        "inverse-surface": "#34302b",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#733949",
+                        "on-surface": "#1f1b17",
+                        "outline": "#847376",
+                        "on-secondary-container": "#66645e",
+                        "on-surface-variant": "#524346",
+                        "on-background": "#1f1b17",
+                        "secondary-container": "#e6e2d9",
+                        "secondary": "#605e58",
+                        "secondary-fixed": "#e6e2d9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#6e3545"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "stack-gap": "16px",
+                        "section-gap": "48px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Epilogue"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Epilogue"],
+                        "headline-lg": ["Epilogue"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 20px rgba(244, 167, 185, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/60 dark:bg-surface-dim/60 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center px-6 py-5">
+<button class="text-[#F4A7B9] dark:text-[#F4A7B9] hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu</span>
+</button>
+<h1 class="font-['Epilogue'] font-bold tracking-[0.15em] text-sm uppercase text-primary/80 dark:text-primary-fixed-dim absolute left-1/2 -translate-x-1/2">Date History</h1>
+</header>
+<main class="pt-[100px] px-container-padding max-w-4xl mx-auto space-y-section-gap">
+<!-- Stats Section -->
+<section>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-stack-gap">Your Journey</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Total Dates Card -->
+<div class="glass-card rounded-lg p-6 relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-primary-container/20 rounded-full blur-2xl"></div>
+<div class="flex items-start justify-between relative z-10">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Total Dates</p>
+<p class="font-headline-xl text-headline-xl text-primary">24</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-primary-container/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+</div>
+</div>
+<!-- Date Miles Card -->
+<div class="glass-card rounded-lg p-6 relative overflow-hidden">
+<div class="absolute -left-10 -bottom-10 w-32 h-32 bg-tertiary-container/20 rounded-full blur-2xl"></div>
+<div class="flex items-start justify-between relative z-10">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Moments Shared</p>
+<p class="font-headline-xl text-headline-xl text-tertiary">128</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Hours of connection</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">schedule</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- History List -->
+<section>
+<div class="flex justify-between items-end mb-stack-gap">
+<h2 class="font-headline-md text-headline-md text-on-surface">Recent Dates</h2>
+<button class="font-label-sm text-label-sm text-primary hover:text-primary-fixed-dim transition-colors">View All</button>
+</div>
+<div class="space-y-gutter">
+<!-- History Item 1 -->
+<div class="bg-surface-container-lowest rounded-lg p-4 shadow-[0_2px_10px_rgba(244,167,185,0.05)] border border-surface-variant flex items-center gap-4 hover:shadow-[0_4px_15px_rgba(244,167,185,0.1)] transition-shadow">
+<div class="w-16 h-16 rounded-DEFAULT overflow-hidden shrink-0">
+<img alt="Coffee date" class="w-full h-full object-cover" data-alt="A warm, inviting shot of two cups of artisan coffee on a light wooden table. Soft morning sunlight streams across the scene, creating gentle shadows. The aesthetic is modern minimal romantic, utilizing soft cream and warm brown tones to evoke a cozy, intimate morning date setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIAFBdxpaGnW-UJxtTQ5aeANvhqy5O0BxGC7JkbWUsJBNuUoXFDctXzmMQKdhU-nns4IFSa8u53L2Ll3KdrjyTn7ksuYuLkz-dLeKqWusdlrOdW00dCNS3mO8p2s85NSGhIHEHl_hG63pkbkx1zywszLat4nVUDHC0w5fXCSUhPWVQzZaZ03fgQJL8pSiOyDUC5w_erJ2zEgv076cTpkt_cs0MczI9gzety4i-kR2lj0TTlyNbBTKIcRO1SHHUOy3F0xttsou1yLtK"/>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-md text-label-md text-on-surface">Morning Coffee Walk</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Oct 24</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-1 mb-2">Blue Bottle Coffee to the Pier</p>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-surface-container rounded-full font-label-sm text-label-sm text-on-surface text-[10px]">Casual</span>
+<span class="px-2 py-1 bg-surface-container rounded-full font-label-sm text-label-sm text-on-surface text-[10px]">Outdoor</span>
+</div>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="bg-surface-container-lowest rounded-lg p-4 shadow-[0_2px_10px_rgba(244,167,185,0.05)] border border-surface-variant flex items-center gap-4 hover:shadow-[0_4px_15px_rgba(244,167,185,0.1)] transition-shadow">
+<div class="w-16 h-16 rounded-DEFAULT overflow-hidden shrink-0">
+<img alt="Dinner date" class="w-full h-full object-cover" data-alt="An elegant dinner setting at a modern restaurant. Focus on beautifully plated food on pristine white ceramics, with blurred ambient string lights in the background. The lighting is low but warm, emphasizing a sophisticated romantic evening with soft cream and subtle gold highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdxkpj9TUgssDyPeJxRkZ1-imnwx1UwrVaSIMnA7i-EF0kR3jcRXB5Cf2PuALDei6Vt_ZvqOZZPka1OIcjdypDilDjAx1psVxlQDyJE8vt1yGsMTH8JtjfrmMvGPU-Tj5L6YZKZXXgKfM5LOpPAQMWx4ESGmEIdAw5Ss5N1yieRY8BLaeDVgiRiCrioNv-TtgKVwQcW345iPvSv36TL872W7eHFsu7kiYVKmTrvndjHOR8HsT5Tr-c69BhXDI_kObU5zXErUmypeN6"/>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-label-md text-label-md text-on-surface">Anniversary Dinner</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Oct 15</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-1 mb-2">L'Artusi in West Village</p>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-primary-container/20 text-primary-container rounded-full font-label-sm text-label-sm text-[10px]">Special</span>
+<span class="px-2 py-1 bg-surface-container rounded-full font-label-sm text-label-sm text-on-surface text-[10px]">Dining</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-[32px] bg-[#FFFBF2]/80 dark:bg-rose-950/80 backdrop-blur-md border-t border-rose-100/30 dark:border-rose-900/30 shadow-[0_-8px_30px_rgba(244,167,185,0.15)] fixed bottom-0 left-0 w-full h-24 flex justify-around items-center px-4 pb-4">
+<button class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform">favorite</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Explore</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-rose-50 dark:bg-rose-900/40 text-[#F4A7B9] rounded-full px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Dates</span>
+</button>
+<button class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform">chat_bubble</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Messages</span>
+</button>
+<button class="flex flex-col items-center justify-center text-rose-300 dark:text-rose-700 px-5 py-2 hover:text-[#F4A7B9] transition-colors active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform">person</span>
+<span class="font-['Epilogue'] text-[10px] font-medium uppercase tracking-widest">Profile</span>
+</button>
+</nav>
+</body></html>
