@@ -1,3 +1,8 @@
+---
+trigger: on_demand
+load_when: ["COMPLEX CODE", "DESIGN"]
+---
+
 # GEMINI-routing.md - Routing Rules
 
 > This file defines request classification, agent routing, and Socratic Gate.

@@ -2,7 +2,7 @@
 trigger: always_on
 ---
 
-# GEMINI.md - Antigravity Kit
+# GEMINI.md - Widget Date
 
 > This file defines how the AI behaves in this workspace.
 
@@ -44,13 +44,23 @@ When user's prompt is NOT in English:
 2. **Respond in user's language** - match their communication
 3. **Code comments/variables** remain in English
 
-### 📉 Token Budget Rule
+### 💾 Token Budget Rule (MANDATORY)
 
-**Minimize token usage at all times:**
-1. Do NOT repeat or echo user prompts.
-2. Provide concise, direct answers.
-3. Reference external files instead of duplicating their content.
-4. Avoid conversational filler ("I understand", "Here is the code", etc.).
+**Context budget for infrastructure files per session: MAX 20KB total**
+(across all agent + rule + skill files combined — excluding source code)
+
+**Load priority order (strict):**
+1. `GEMINI.md` (always_on — already loaded)
+2. Active agent file (the one matching current task domain)
+3. Task-relevant skills ONLY (listed in active agent's frontmatter)
+4. `ARCHITECTURE.md` — skip if already read earlier this session
+
+**Rules:**
+- Do NOT load skills not listed in frontmatter of the active agent
+- If a skill file exceeds 5KB: read its INDEX/SKILL.md first, load sections on demand
+- Do NOT load `GEMINI-routing.md` for QUESTION-type requests (TIER 0 only)
+- Do NOT load `GEMINI-scripts.md` unless user triggers final checks / deploy flow
+- If total loaded infrastructure approaches 20KB: stop loading, proceed with what's available
 
 ### 🧹 Clean Code (Global Mandatory)
 

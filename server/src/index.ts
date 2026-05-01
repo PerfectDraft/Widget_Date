@@ -9,6 +9,11 @@ import { authRouter } from './routes/auth.js';
 import { trendsRouter } from './routes/trends.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { initSchema } from './db/client.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Init DB
 initSchema();
@@ -31,20 +36,25 @@ app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/trends', trendsRouter);
 
-// Root route
-app.get('/', (_req, res) => {
-  res.json({
-    name: 'Widget Date API',
-    status: 'running',
-    version: '1.0.0',
-    docs: 'Access frontend at http://localhost:5173 during local development.'
+// Serve static frontend
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
+app.use(express.static(clientDistPath));
+
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(clientDistPath, 'index.html'), (err) => {
+    if (err) {
+      res.status(404).json({ error: 'Frontend build not found. Run "npm run build" in client.' });
+    }
   });
 });
 
 // Global error handler (must be last)
 app.use(errorHandler);
 
-// Fallback for 404
+// Fallback for 404 API routes
 app.use((_req, res) => {
   res.status(404).json({ error: 'Not Found' });
 });

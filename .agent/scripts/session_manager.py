@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Session Manager - Antigravity Kit
+Session Manager - Widget Date
 =================================
 Analyzes project state, detects tech stack, tracks file statistics, and provides
 a summary of the current session.
@@ -18,7 +18,7 @@ import argparse
 from pathlib import Path
 from typing import Dict, Any, List
 
-# Force UTF-8 output so emoji render correctly in all terminals (incl. Antigravity)
+# Force UTF-8 output so emoji render correctly in all terminals (incl. Widget Date)
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 
