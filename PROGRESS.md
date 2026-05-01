@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-01 |
-| Phiên làm việc | #27 — Infrastructure Cleanup Pass #3 (Correction) |
+| Phiên làm việc | #28 — Infrastructure Cleanup Pass #4 |
 | Nhánh Git | `main` |
 
 ---
@@ -379,3 +379,9 @@ npm run dev
   - Kiểm tra và đảm bảo không còn "Antigravity Kit" trong toàn bộ project (ngoại trừ changelog log).
 - Files đã sửa: `.agent/rules/GEMINI-routing.md`, `.agent/CHANGELOG.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
 - Tasks hoàn thành: Cleanup pass #3 (Final Refinement).
+### Session #28 — 2026-05-01
+- **Agent Infrastructure Cleanup Pass #4**:
+  - Thêm Hard Stop #7 để thực thi việc phân tách domain (infra vs code).
+  - Bổ sung ví dụ BAD/GOOD cho quy tắc đặt tên commit trong Commit Discipline.
+- Files đã sửa: `.agent/rules/autonomous-policy.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
+- Tasks hoàn thành: Cleanup pass #4.

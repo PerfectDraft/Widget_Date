@@ -270,11 +270,19 @@ Each autonomous commit MUST touch only ONE domain. Mixed commits are forbidden.
 
 **Rules:**
 - If a session touches both agent infra AND source code: make TWO separate commits
-- Commit message must reflect the actual domain: 
-  - Agent infra: `docs: ...` or `chore(agent): ...`
-  - Source code: `feat: ...`, `fix: ...`, `refactor: ...`
-- A commit named "feat: add agent scripts..." that also modifies server routes = HARD STOP
-  → Split before committing. If already committed, flag in next session's handoff note.
+- Commit message must reflect the actual domain:
+  - Agent infra (`.agent/` only): `chore(agent): ...` or `docs(agent): ...`
+  - Source code changes: `feat: ...`, `fix: ...`, `refactor: ...`
+  - Documentation only (`docs/`, root `*.md`): `docs: ...`
+
+- ❌ BAD (mixed message for infra work):
+  - `feat: add agent scripts and server routes`  ← mixed domain + wrong prefix
+  - `feat: establish autonomous agent governance` ← infra work, not a feature
+
+- ✅ GOOD:
+  - `chore(agent): cleanup pass #4 — add scope enforcement Hard Stop`
+  - `fix: resolve null check in trends.ts route`
+  - `docs: update README with widget setup instructions`
 
 ---
 
@@ -294,3 +302,9 @@ Immediately stop and write a handoff note if any of these occur:
    → Recommend: `git diff HEAD` to identify changes, `git stash` to revert
    → Log entry: "Session rolled back — see handoff note"
    → Do NOT attempt to fix the new errors within the same autonomous run
+7. Session was declared as `infra-only` but diff contains files outside `.agent/`,
+   OR declared as `code-only` but diff contains `.agent/` files
+   → This is a Hard Stop
+   → Do NOT commit
+   → Split changes into separate commits by domain
+   Log: "Scope violation detected — commit split required"

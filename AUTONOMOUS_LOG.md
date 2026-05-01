@@ -96,3 +96,11 @@ Do NOT edit manually. Updated automatically by @super-manager during autonomous 
 - **Fix applied**: Updated `load_when` in `GEMINI-routing.md`, moved unreleased changes to release section in `CHANGELOG.md`, and updated progress trackers.
 - **Verification**: manual check [pass]
 - **Result**: Resolved
+
+## 2026-05-01T23:58 — Session #28: Agent Infrastructure Cleanup Pass #4
+- **Files**: `.agent/rules/autonomous-policy.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`
+- **Change type**: Low (Infrastructure)
+- **Root cause**: Lack of automated enforcement for scope declaration and inconsistent commit prefixes.
+- **Fix applied**: Added Hard Stop #7 for scope enforcement and updated Commit Discipline with explicit BAD/GOOD examples and prefix rules.
+- **Verification**: manual check [pass], confirmed 7 hard stops.
+- **Result**: Resolved
