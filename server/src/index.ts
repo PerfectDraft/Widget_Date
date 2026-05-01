@@ -38,15 +38,26 @@ app.use('/api/trends', trendsRouter);
 
 // Serve static frontend
 const clientDistPath = path.resolve(__dirname, '../../client/dist');
+
+// Log the resolved path for debugging B6
+console.log(`📂 Static files path: ${clientDistPath}`);
+
 app.use(express.static(clientDistPath));
 
 app.get('*', (req, res, next) => {
+  // If it's an API route that wasn't caught by the routers above, let it fall through to 404 handler
   if (req.path.startsWith('/api')) {
     return next();
   }
-  res.sendFile(path.join(clientDistPath, 'index.html'), (err) => {
+  
+  const indexPath = path.join(clientDistPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
     if (err) {
-      res.status(404).json({ error: 'Frontend build not found. Run "npm run build" in client.' });
+      console.error(`❌ Failed to serve index.html: ${indexPath}`);
+      res.status(404).json({ 
+        error: 'Frontend build not found',
+        message: 'Please run "npm run build" in the client directory to generate the dist folder.'
+      });
     }
   });
 });

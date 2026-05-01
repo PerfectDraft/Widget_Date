@@ -94,7 +94,7 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
               aria-label={t.history.avatar_alt}
             >
               <img 
-                alt="" 
+                alt={t.history.avatar_alt || "User Avatar"} 
                 className="w-full h-full object-cover" 
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfzO86RwwwsuM8iEO1FzR2l8osSHy9xlX1vt7ez3W_g1--8nud3XmPJbbQIf7o3K01fvh5jVBQtQyRT3jqigT813QQwK08bZ6iAM30xg3DbrM-zhoS-SHKZ0cKbhclT8ZRU5Upx2eDIEBVI0KZyDjktvpbUfWk7ug2lowR1BB9413kljJ6d-QqsdSS9Hmz524HRyJ07Aqmfpzcn6yy0efOW9SxBUhAzHYZBQFh0y0-DXIRVW9RiK47CJn0c7He79SPjue18zUB-sKC"
               />

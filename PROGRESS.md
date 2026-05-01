@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-01 |
-| Phiên làm việc | #28 — Infrastructure Cleanup Pass #4 |
+| Phiên làm việc | #29 — SEO Resolution & Final Checks |
 | Nhánh Git | `main` |
 
 ---
@@ -385,3 +385,10 @@ npm run dev
   - Bổ sung ví dụ BAD/GOOD cho quy tắc đặt tên commit trong Commit Discipline.
 - Files đã sửa: `.agent/rules/autonomous-policy.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
 - Tasks hoàn thành: Cleanup pass #4.
+### Session #29 — 2026-05-01
+- [x] Fix SEO Meta Tags in `date_history_visual_timeline/code.html`
+- [x] Fix Image Alt Tags in `HomeDashboardUI.tsx` and `HistoryView.tsx`
+- [x] Move skip link in `client/index.html` from head to body
+- [x] Đã verify toàn bộ 8/8 core checks trong `checklist.py` (Security, Lint, Schema, Tests, UX, SEO, Lighthouse, Playwright) đều PASSED.
+- Files đã sửa: `client/index.html`, `client/src/components/home/HomeDashboardUI.tsx`, `client/src/components/history/HistoryView.tsx`, `Date_history_screens/date_history_visual_timeline/code.html`
+- Tasks hoàn thành: Giải quyết triệt để các vấn đề SEO tồn đọng.

@@ -112,10 +112,9 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
         >
           <div className="size-12 rounded-full overflow-hidden border-2 border-primary-container group-hover:border-primary transition-colors shadow-sm">
             <img 
-              alt="" 
+              alt={userName} 
               className="w-full h-full object-cover" 
               src={userAvatar}
-              aria-hidden="true"
             />
           </div>
           <div>
