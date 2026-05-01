@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-01 |
-| Phiên làm việc | #25 — Agent Infrastructure Refactoring |
+| Phiên làm việc | #27 — Infrastructure Cleanup Pass #3 (Correction) |
 | Nhánh Git | `main` |
 
 ---
@@ -362,3 +362,20 @@ npm run dev
   - Tạo mới `.agent/CHANGELOG.md` để theo dõi các thay đổi hạ tầng.
 - Files đã sửa: `GEMINI.md`, `GEMINI-routing.md`, `GEMINI-scripts.md`, `autonomous-policy.md`, `autonomous.md`, `CHANGELOG.md`, `PROGRESS.md`.
 - Tasks hoàn thành: Refactor `.agent/` infrastructure, P0, P1, P2, P3 tasks.
+
+### Session #26 — 2026-05-01
+- **Agent Infrastructure Cleanup Pass #3**:
+  - Hợp nhất Hard Stop #6 và #7 trong `autonomous-policy.md`.
+  - Thêm quy tắc `Commit Discipline` để ngăn chặn việc mix commit giữa infra và code.
+  - Thêm `Session Scope Declaration` bắt buộc khai báo trước khi chạy autonomous.
+  - Cấu trúc lại `CHANGELOG.md` theo chuẩn Keep a Changelog.
+  - Thêm trigger tiếng Việt vào `GEMINI-scripts.md`.
+- Files đã sửa: `.agent/rules/autonomous-policy.md`, `.agent/rules/GEMINI-scripts.md`, `.agent/CHANGELOG.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
+- Tasks hoàn thành: Cleanup pass #3.
+### Session #27 — 2026-05-01
+- **Agent Infrastructure Cleanup Pass #3 (Correction)**:
+  - Sửa lại `load_when` trong `GEMINI-routing.md` để khớp hoàn toàn yêu cầu của user.
+  - Chuyển các thay đổi từ `[Unreleased]` sang `[2026-05-01]` trong `CHANGELOG.md` để đúng chuẩn.
+  - Kiểm tra và đảm bảo không còn "Antigravity Kit" trong toàn bộ project (ngoại trừ changelog log).
+- Files đã sửa: `.agent/rules/GEMINI-routing.md`, `.agent/CHANGELOG.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
+- Tasks hoàn thành: Cleanup pass #3 (Final Refinement).

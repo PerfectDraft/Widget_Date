@@ -1,6 +1,6 @@
 ---
 trigger: on_demand
-load_when: ["COMPLEX CODE", "DESIGN"]
+load_when: ["COMPLEX CODE", "DESIGN TASK", "MULTIPLE AGENTS"]
 ---
 
 # GEMINI-routing.md - Routing Rules

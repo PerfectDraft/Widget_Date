@@ -7,6 +7,21 @@ All agents operating in autonomous or semi-unattended mode MUST read this file b
 
 ## What Autonomous Mode Means
 
+### Session Scope Declaration (MANDATORY)
+
+Before executing ANY change, the agent must declare:
+
+```
+Session Scope: [infra-only | code-only | docs-only]
+Domain: [.agent/ | src/ | server/ | client/ | docs/]
+Estimated files to touch: [N]
+Out-of-scope trigger: [what would cause a Hard Stop for this session]
+```
+
+If a task requires touching multiple domains → STOP.
+Split into separate sessions, one per domain.
+Declare the split plan to the user before proceeding.
+
 Autonomous mode is active when:
 - The user has run `/autonomous` explicitly
 - The user has run `/scan` to trigger a full-project scan
@@ -243,6 +258,26 @@ If a Hard Stop is triggered during an autonomous run, or if the user explicitly 
 
 ---
 
+## Commit Discipline
+
+Each autonomous commit MUST touch only ONE domain. Mixed commits are forbidden.
+
+| Domain | Includes | Forbidden to mix with |
+|--------|----------|-----------------------|
+| Agent Infrastructure | `.agent/` files only | Source code |
+| Source Code | `src/`, `server/`, `client/`, config files | `.agent/` files |
+| Documentation | `*.md` outside `.agent/`, `docs/` | Source code or agent infra |
+
+**Rules:**
+- If a session touches both agent infra AND source code: make TWO separate commits
+- Commit message must reflect the actual domain: 
+  - Agent infra: `docs: ...` or `chore(agent): ...`
+  - Source code: `feat: ...`, `fix: ...`, `refactor: ...`
+- A commit named "feat: add agent scripts..." that also modifies server routes = HARD STOP
+  → Split before committing. If already committed, flag in next session's handoff note.
+
+---
+
 ## Hard Stops — Non-negotiable
 
 Immediately stop and write a handoff note if any of these occur:
@@ -252,8 +287,7 @@ Immediately stop and write a handoff note if any of these occur:
 3. A secret, token, or credential is visible in any file being edited
 4. Two consecutive verification failures on the same issue
 5. A "simple" fix has unexpectedly grown to touch 5+ files
-6. `verify_all.py` final check shows NEW errors introduced by the autonomous run
-7. Before modifying any file, mentally note the current state (or record git status).
+6. Before modifying any file, mentally note the current state (or record git status).
    If post-run `verify_all.py` shows NEW errors introduced by this session:
    → This is a Hard Stop
    → List every file modified this session in the handoff note

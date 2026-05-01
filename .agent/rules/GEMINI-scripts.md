@@ -10,7 +10,7 @@ trigger: always_on
 
 ## 🏁 Final Checklist Protocol
 
-**Trigger:** When the user requests final checks, e.g., "final checks", "run all tests", or before marking a major task as complete.
+**Trigger:** When the user requests final checks, e.g., "final checks", "run all tests", "kiểm tra cuối", "chạy test", "kiểm tra lần cuối", "chạy toàn bộ test", or before marking a major task as complete.
 
 | Task Stage       | Command                                            | Purpose                        |
 | ---------------- | -------------------------------------------------- | ------------------------------ |

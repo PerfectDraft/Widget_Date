@@ -80,3 +80,19 @@ Do NOT edit manually. Updated automatically by @super-manager during autonomous 
 - **Fix applied**: Hợp nhất logs từ `.agent/` vào root, bổ sung lịch sử commit gần đây, chuẩn hoá format theo chuẩn ISO.
 - **Verification**: manual check [pass]
 - **Result**: Resolved
+
+## 2026-05-01T23:35 — Session #26: Agent Infrastructure Cleanup Pass #3
+- **Files**: `.agent/rules/autonomous-policy.md`, `.agent/rules/GEMINI-scripts.md`, `.agent/CHANGELOG.md`
+- **Change type**: Low (Infrastructure)
+- **Root cause**: Hard Stop duplication, missing commit discipline, missing session scope declaration, and incorrect changelog convention.
+- **Fix applied**: Merged Hard Stop #6/7, added Commit Discipline and Session Scope Declaration to autonomous-policy.md, added Vietnamese triggers to GEMINI-scripts.md, and restructured CHANGELOG.md.
+- **Verification**: manual check [pass]
+- **Result**: Resolved
+
+## 2026-05-01T23:55 — Session #27: Infrastructure Cleanup Pass #3 (Correction)
+- **Files**: `.agent/rules/GEMINI-routing.md`, `.agent/CHANGELOG.md`, `PROGRESS.md`
+- **Change type**: Low (Infrastructure refinement)
+- **Root cause**: Incomplete alignment with cleanup pass #3 specific requirements (missing load_when values, unreleased items not migrated).
+- **Fix applied**: Updated `load_when` in `GEMINI-routing.md`, moved unreleased changes to release section in `CHANGELOG.md`, and updated progress trackers.
+- **Verification**: manual check [pass]
+- **Result**: Resolved
