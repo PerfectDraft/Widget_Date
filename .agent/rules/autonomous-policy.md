@@ -18,6 +18,20 @@ Stop and write a proposal for anything outside allowed scope.
 
 ---
 
+## Socratic Gate Override
+
+During `/autonomous` mode, the Socratic Gate defined in GEMINI.md is SUSPENDED for:
+- All Level 1 (Low risk) tasks within allowed scope
+- All Level 2 (Medium risk) tasks with confidence >= 85%
+
+Socratic Gate REMAINS ACTIVE for:
+- Any High-risk (Level 3) task
+- Any task touching Protected Scope
+- Any ambiguous scope request (confidence < 80%)
+- Any out-of-scope request requiring proposal
+
+---
+
 ## Step 0 — Proactive Scan (MANDATORY before every autonomous run)
 
 This step MUST run before any issue is addressed. It is not optional.
@@ -175,9 +189,14 @@ When `/scan` is invoked (separate from `/autonomous`):
 
 ## Logging Format
 
+Session numbering: Each `/autonomous` run increments the session counter by 1.
+Read AUTONOMOUS_LOG.md to find the last session number before starting.
+Format: "Session #[N]" where N = (last session number + 1)
+If AUTONOMOUS_LOG.md is empty or has no session numbers: start at #1
+
 Every autonomous action must produce a log entry in `AUTONOMOUS_LOG.md`:
 
-```
+```markdown
 ## [ISO timestamp] — [issue description]
 - Files: [list of files touched]
 - Change type: Low / Medium risk
@@ -186,6 +205,33 @@ Every autonomous action must produce a log entry in `AUTONOMOUS_LOG.md`:
 - Verification: lint [pass/fail] / types [pass/fail] / tests [pass/fail]
 - Result: Resolved / Handed off
 ```
+
+---
+
+## Progress Tracking Format
+
+After every autonomous run, append to `.agent/rules/progress-tracking.md`:
+
+```markdown
+## Session #[N] — [ISO timestamp]
+- Run type: /autonomous | /scan
+- Scope: [declared scope or "default: all Low-risk"]
+- Issues resolved: [count] ([list titles])
+- Issues handed off: [count] ([list titles])  
+- verify_all.py result: CLEAN | [N errors remain] | SKIPPED
+- Next recommended action: [/autonomous | human review of X | NONE]
+```
+
+---
+
+## Rollback Protocol
+
+If a Hard Stop is triggered during an autonomous run, or if the user explicitly requests a rollback due to unwanted changes, follow this procedure:
+
+1. **Identify Changes:** Use `git diff HEAD` or `git status` to review modified files.
+2. **Revert Changes:** Use `git restore <file>` or `git reset --hard HEAD` to discard the changes.
+3. **Log the Revert:** Add an entry in `AUTONOMOUS_LOG.md` detailing why the rollback occurred and what files were restored.
+4. **Handoff:** Document the rollback in `progress-tracking.md` and explicitly ask the user for further instructions. Do not attempt a secondary fix.
 
 ---
 
@@ -207,3 +253,10 @@ Immediately stop and write a handoff note if any of these occur:
 4. Two consecutive verification failures on the same issue
 5. A "simple" fix has unexpectedly grown to touch 5+ files
 6. `verify_all.py` final check shows NEW errors introduced by the autonomous run
+7. Before modifying any file, mentally note the current state (or record git status).
+   If post-run `verify_all.py` shows NEW errors introduced by this session:
+   → This is a Hard Stop
+   → List every file modified this session in the handoff note
+   → Recommend: `git diff HEAD` to identify changes, `git stash` to revert
+   → Log entry: "Session rolled back — see handoff note"
+   → Do NOT attempt to fix the new errors within the same autonomous run
