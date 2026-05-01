@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-01 |
-| Phiên làm việc | #24 — Autonomous Log Consolidation & Migration |
+| Phiên làm việc | #25 — Agent Infrastructure Refactoring |
 | Nhánh Git | `main` |
 
 ---
@@ -351,3 +351,14 @@ npm run dev
 - **Infrastructure Cleanup**: Xoá file log dư thừa trong `.agent/` và cập nhật reference path trong `PROJECT_CONTEXT.md`.
 - Files đã sửa: `AUTONOMOUS_LOG.md`, `PROJECT_CONTEXT.md`, `PROGRESS.md`.
 - Tasks hoàn thành: Log output fix & Migration.
+
+### Session #25 — 2026-05-01
+- **Agent Infrastructure Refactoring**: 
+  - Tách `GEMINI.md` thành `GEMINI-routing.md` và `GEMINI-scripts.md` để giảm token bloat.
+  - Bổ sung `Token Budget Rule` vào `GEMINI.md`.
+  - Hợp nhất quy tắc Autonomous vào `.agent/rules/autonomous-policy.md`.
+  - Làm gọn workflow tại `.agent/workflows/autonomous.md`.
+  - Cập nhật Rollback Protocol, Progress Tracking Format, Session ID format vào `autonomous-policy.md`.
+  - Tạo mới `.agent/CHANGELOG.md` để theo dõi các thay đổi hạ tầng.
+- Files đã sửa: `GEMINI.md`, `GEMINI-routing.md`, `GEMINI-scripts.md`, `autonomous-policy.md`, `autonomous.md`, `CHANGELOG.md`, `PROGRESS.md`.
+- Tasks hoàn thành: Refactor `.agent/` infrastructure, P0, P1, P2, P3 tasks.
