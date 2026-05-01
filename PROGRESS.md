@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-01 |
-| Phiên làm việc | #23 — Localization & A11y Finalization |
+| Phiên làm việc | #24 — Autonomous Log Consolidation & Migration |
 | Nhánh Git | `main` |
 
 ---
@@ -343,3 +343,11 @@ npm run dev
 - **Files đã sửa**: `vi.json`, `useLocale.ts` (mới), `index.css`, `HistoryView.tsx`, `ExploreView.tsx`.
 - **Tasks hoàn thành**: Localization & A11y Finalization.
 - **PROJECT_CONTEXT.md synced.**
+
+### Session #24 — 2026-05-01
+- **Autonomous Log Consolidation**: Hợp nhất toàn bộ log phân mảnh từ `.agent/AUTONOMOUS_LOG.md` vào file root `AUTONOMOUS_LOG.md`.
+- **Git History Integration**: Bổ sung lịch sử các phiên chạy từ Session #17 đến #22 dựa trên Git commit history để đảm bảo tính liên tục.
+- **Log Standardization**: Chuẩn hoá format log theo chuẩn ISO timestamp, chi tiết file thay đổi và root cause.
+- **Infrastructure Cleanup**: Xoá file log dư thừa trong `.agent/` và cập nhật reference path trong `PROJECT_CONTEXT.md`.
+- Files đã sửa: `AUTONOMOUS_LOG.md`, `PROJECT_CONTEXT.md`, `PROGRESS.md`.
+- Tasks hoàn thành: Log output fix & Migration.

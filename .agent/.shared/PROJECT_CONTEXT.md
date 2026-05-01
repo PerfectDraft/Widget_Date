@@ -115,5 +115,5 @@ Widget_Date/
 
 ## Autonomous Log Reference
 
-Autonomous run logs are stored in: `.agent/AUTONOMOUS_LOG.md`
-Session progress is tracked in: `.agent/rules/progress-tracking.md`
+Autonomous run logs are stored in: `AUTONOMOUS_LOG.md`
+Session progress is tracked in: `PROGRESS.md`
