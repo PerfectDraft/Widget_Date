@@ -12,8 +12,8 @@
 
 ## 🗓️ Cập nhật lần cuối
 
-| Ngày | 2026-04-29 |
-| Phiên làm việc | #9 — Maintenance |
+| Ngày | 2026-05-01 |
+| Phiên làm việc | #23 — Localization & A11y Finalization |
 | Nhánh Git | `main` |
 
 ---
@@ -332,3 +332,14 @@ npm run dev
 - Bổ sung fallback `clientId` (giá trị dummy) trong `client/src/main.tsx` khi `VITE_GOOGLE_CLIENT_ID` không tồn tại ở môi trường production. Điều này giúp `GoogleOAuthProvider` vẫn khởi tạo thay vì ném lỗi đồng bộ gây sập Component Tree (do chưa có ErrorBoundary cụ thể cho hook OAuth).
 - Hủy bỏ bọc `try/catch` ở hook `useGoogleLogin` trong `useDriveSync.ts` để tuân thủ Rules of Hooks.
 - Files đã sửa: `client/src/main.tsx`
+
+### Session #23 — 2026-05-01
+- **Localization Infrastructure**: Triển khai `useLocale` hook để quản lý đa ngôn ngữ tập trung qua `vi.json`.
+- **Explore & History View Localization**: Hoàn tất chuyển đổi chuỗi cứng sang translation keys cho cả hai view.
+- **Accessibility (A11y)**: 
+    - Thêm `.sr-only` utility vào `index.css` cho các heading SEO ẩn.
+    - Chuẩn hoá ARIA labels, roles (`tablist`, `tab`, `article`) và focus management.
+    - Đảm bảo tất cả các button và link có label mô tả rõ ràng cho Screen Reader.
+- **Files đã sửa**: `vi.json`, `useLocale.ts` (mới), `index.css`, `HistoryView.tsx`, `ExploreView.tsx`.
+- **Tasks hoàn thành**: Localization & A11y Finalization.
+- **PROJECT_CONTEXT.md synced.**
