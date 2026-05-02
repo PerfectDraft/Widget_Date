@@ -62,7 +62,6 @@ export async function generateCombos(params: ComboParams): Promise<Combo[]> {
     method: 'POST',
     body: JSON.stringify(params),
   });
-  // Handle both {combos: [...]} and [...] response formats
   if (Array.isArray(data)) return data;
   return (data as { combos: Combo[] }).combos || [];
 }
@@ -89,8 +88,6 @@ export async function fetchPlaceImage(mapsUrl: string): Promise<string | null> {
 
 // --- Weather Endpoint ---
 
-// Types moved to types/index.ts
-
 export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherWithForecast | null> {
   try {
     return await apiRequest<WeatherWithForecast>(`/weather?city=${encodeURIComponent(city)}`);
@@ -100,7 +97,7 @@ export async function fetchWeather(city: string = 'Hanoi'): Promise<WeatherWithF
   }
 }
 
-// --- User Endpoints (W6) ---
+// --- User Endpoints ---
 
 export interface UserSyncParams {
   phone: string;
@@ -111,7 +108,7 @@ export interface UserSyncParams {
 
 export async function syncUser(params: UserSyncParams): Promise<{ status: string }> {
   try {
-    return await apiRequest<{ status: string }>('/user/sync', {
+    return await apiRequest<{ status: string }>('/user?action=sync', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -126,12 +123,14 @@ export interface UserProfile {
   googleId?: string;
   preferences?: string[];
   lastTab?: string;
+  displayName?: string;
+  avatarUrl?: string;
   createdAt?: string;
 }
 
 export async function getUserProfile(phone: string): Promise<UserProfile | null> {
   try {
-    return await apiRequest<UserProfile>(`/user/profile?phone=${encodeURIComponent(phone)}`);
+    return await apiRequest<UserProfile>(`/user?action=profile&phone=${encodeURIComponent(phone)}`);
   } catch (error) {
     console.warn('Get user profile failed:', error);
     return null;
@@ -176,21 +175,18 @@ export interface AuthResponse {
 }
 
 export async function login(phone: string, password: string): Promise<AuthResponse> {
-  // Auth should NOT have catch here, the UI handles it
-  return apiRequest<AuthResponse>('/auth/login', {
+  return apiRequest<AuthResponse>('/auth?action=login', {
     method: 'POST',
     body: JSON.stringify({ phone, password }),
   });
 }
 
 export async function register(phone: string, password: string): Promise<AuthResponse> {
-  // Auth should NOT have catch here, the UI handles it
-  return apiRequest<AuthResponse>('/auth/register', {
+  return apiRequest<AuthResponse>('/auth?action=register', {
     method: 'POST',
     body: JSON.stringify({ phone, password }),
   });
 }
-
 
 // --- Trends Endpoints ---
 

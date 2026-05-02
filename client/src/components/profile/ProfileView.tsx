@@ -27,7 +27,6 @@ export function ProfileView({
   const [userName, setUserName] = useState(initialUserName);
   const [userAvatar, setUserAvatar] = useState(initialAvatar);
 
-  // Edit Profile modal
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [editName, setEditName] = useState(initialUserName);
   const [editLoading, setEditLoading] = useState(false);
@@ -36,7 +35,6 @@ export function ProfileView({
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Change Password modal
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -65,10 +63,9 @@ export function ProfileView({
     try {
       let newAvatarUrl = userAvatar;
 
-      // Upload avatar if changed
       if (avatarFile) {
         setUploadingAvatar(true);
-        const uploadRes = await fetch('/api/auth/upload-avatar', {
+        const uploadRes = await fetch('/api/auth?action=upload-avatar', {
           method: 'POST',
           headers: { 'Content-Type': avatarFile.type, 'x-phone': phone },
           body: avatarFile,
@@ -79,8 +76,7 @@ export function ProfileView({
         setUploadingAvatar(false);
       }
 
-      // Update name
-      const res = await fetch('/api/auth/update-profile', {
+      const res = await fetch('/api/auth?action=update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, userName: editName }),
@@ -111,7 +107,7 @@ export function ProfileView({
       return showToast('Mật khẩu mới phải từ 6 ký tự');
     setPwLoading(true);
     try {
-      const res = await fetch('/api/auth/change-password', {
+      const res = await fetch('/api/auth?action=change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, oldPassword, newPassword }),
@@ -137,7 +133,6 @@ export function ProfileView({
       className="fixed inset-0 z-50 bg-[#FFF8F4] overflow-y-auto"
     >
       <div className="max-w-md mx-auto px-6 py-6 pb-12">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button onClick={onBack} className="p-2 rounded-2xl hover:bg-[#F5ECE5] transition-colors">
             <ArrowLeft className="w-5 h-5 text-[#894C5C]" />
@@ -145,7 +140,6 @@ export function ProfileView({
           <h1 className="text-2xl font-semibold text-[#894C5C]" style={{ fontFamily: 'Epilogue, sans-serif' }}>Settings</h1>
         </div>
 
-        {/* Profile Card */}
         <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-6 shadow-[0_4px_20px_rgba(137,76,92,0.06)] mb-8">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -178,14 +172,12 @@ export function ProfileView({
           </div>
         </div>
 
-        {/* Account */}
         <SectionTitle>Account</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8 divide-y divide-[#EAE1DA]">
           <SettingsRow icon={<Phone className="w-5 h-5" />} label="Phone" value={maskedPhone} onClick={() => showToast('Số điện thoại không thể thay đổi')} />
           <SettingsRow icon={<Lock className="w-5 h-5" />} label="Change Password" onClick={() => { setOldPassword(''); setNewPassword(''); setConfirmPassword(''); setShowChangePassword(true); }} />
         </div>
 
-        {/* Sync */}
         <SectionTitle>Data Sync</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8">
           <div className="flex items-center justify-between px-5 py-4">
@@ -200,7 +192,6 @@ export function ProfileView({
           </div>
         </div>
 
-        {/* Notifications */}
         <SectionTitle>Notifications</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8 divide-y divide-[#EAE1DA]">
           <div className="flex items-center justify-between px-5 py-4">
@@ -219,7 +210,6 @@ export function ProfileView({
           </div>
         </div>
 
-        {/* App Info */}
         <SectionTitle>App Info</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8 divide-y divide-[#EAE1DA]">
           <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-[#F5ECE5]/50 rounded-t-[24px] transition-colors">
@@ -238,7 +228,6 @@ export function ProfileView({
           </div>
         </div>
 
-        {/* Logout */}
         <button
           onClick={onLogout}
           className="w-full py-4 rounded-full border-2 border-[#FFDAD6] text-[#BA1A1A] font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#FFDAD6]/30 transition-colors mb-6"
@@ -251,7 +240,7 @@ export function ProfileView({
         </p>
       </div>
 
-      {/* ── Edit Profile Modal ── */}
+      {/* Edit Profile Modal */}
       <AnimatePresence>
         {showEditProfile && (
           <motion.div
@@ -268,16 +257,10 @@ export function ProfileView({
                 <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Chỉnh sửa hồ sơ</h3>
                 <button onClick={() => setShowEditProfile(false)} className="text-[#847376] hover:text-[#524346]"><X className="w-5 h-5" /></button>
               </div>
-
-              {/* Avatar picker */}
               <div className="flex flex-col items-center mb-5">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full overflow-hidden border-[3px] border-[#F4A7B9] shadow-sm">
-                    <img
-                      src={previewAvatar ?? userAvatar}
-                      alt="avatar"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={previewAvatar ?? userAvatar} alt="avatar" className="w-full h-full object-cover" />
                   </div>
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -287,16 +270,8 @@ export function ProfileView({
                   </button>
                 </div>
                 <p className="text-xs text-[#847376] mt-2">Nhấn camera để đổi ảnh · Tối đa 5MB</p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarPick}
-                />
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarPick} />
               </div>
-
-              {/* Name input */}
               <div className="mb-4">
                 <label className="text-xs font-semibold text-[#524346] mb-1.5 block">Tên hiển thị</label>
                 <div className="relative">
@@ -309,7 +284,6 @@ export function ProfileView({
                   />
                 </div>
               </div>
-
               <button
                 onClick={handleEditProfile}
                 disabled={editLoading}
@@ -322,7 +296,7 @@ export function ProfileView({
         )}
       </AnimatePresence>
 
-      {/* ── Change Password Modal ── */}
+      {/* Change Password Modal */}
       <AnimatePresence>
         {showChangePassword && (
           <motion.div
