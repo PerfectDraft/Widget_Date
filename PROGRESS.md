@@ -8,7 +8,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-02 |
-| Phiên làm việc | #36 — HistoryView Logic |
+| Phiên làm việc | #37 — HistoryView Enriched Data & Calendar |
 | Nhánh Git | `main` |
 
 ---
@@ -44,7 +44,7 @@ Data & Database    ████████████████░░░░ 
 - [x] **Payment Modal** — Xác nhận thanh toán + confetti + +100 Miles
 - [x] **Image Viewer Modal** — Xem ảnh địa điểm (carousel)
 - [x] **Focus Mode & AI Combo** — Nâng cấp Focus Mode fullscreen, thêm Modal tùy chỉnh cho AI Combo, cho phép tạo Manual Combo.
-- [x] **HistoryView Logic** — Thêm logic chọn ngày, lọc danh sách, modal chi tiết và điều hướng tháng.
+- [x] **HistoryView Logic** — Thêm logic chọn ngày, lọc danh sách, modal chi tiết, điều hướng tháng, enriched mock data và Calendar Bottom Sheet.
 - [x] **DateMilesView Redesign** — Đồng bộ 100% với "Modern Romanticism" design system, áp dụng chuẩn design tokens (on-surface, etc.)
 - [x] **i18n** — Thêm keys cho empty state trang Lịch sử
 - [x] **Outfit Gợi ý** — Bỏ tính năng này theo yêu cầu (W7)
@@ -172,4 +172,10 @@ npm run dev
 - **Detail Modal**: Implement `DateDetailModal` với animation và đầy đủ thông tin.
 - **Mock Data**: Mở rộng dữ liệu mẫu để demo tính năng lọc.
 - **i18n**: Cập nhật `vi.json` với các nhãn mới cho modal và tháng.
+- **Files đã sửa**: `HistoryView.tsx`, `vi.json`, `PROGRESS.md`.
+
+### Session #37 — 2026-05-02
+- **HistoryView Enrichment**: Mở rộng mock data phong phú (2-3 event/ngày, đa dạng thể loại: shopping, movie, coffee...).
+- **Calendar Selection**: Triển khai `CalendarBottomSheet` cho phép chọn ngày cụ thể từ header.
+- **Past Tab Data**: Thêm dữ liệu mẫu cho tab "Đã đi" để giao diện không bị rỗng.
 - **Files đã sửa**: `HistoryView.tsx`, `vi.json`, `PROGRESS.md`.

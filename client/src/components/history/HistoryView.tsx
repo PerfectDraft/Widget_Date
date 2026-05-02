@@ -34,6 +34,15 @@ const MOCK_UPCOMING: DateEntry[] = [
     typeIcon: 'restaurant'
   },
   {
+    id: '1-2',
+    title: 'Late Walk at Lake',
+    dateLabel: '21:00 • Today',
+    location: 'Hoan Kiem Lake, Hanoi',
+    status: 'pending',
+    partnerName: 'Minh Anh',
+    typeIcon: 'directions_walk'
+  },
+  {
     id: '2',
     title: 'West Lake Walk',
     dateLabel: '21:30 • Sep 14',
@@ -45,28 +54,129 @@ const MOCK_UPCOMING: DateEntry[] = [
     typeIcon: 'directions_walk'
   },
   {
+    id: '2-2',
+    title: 'Movie Night',
+    dateLabel: '19:00 • Sep 14',
+    location: 'Lotte Cinema, Lieu Giai, Hanoi',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'movie'
+  },
+  {
     id: '3',
     title: 'Morning Coffee',
     dateLabel: '08:00 • Sep 13',
     location: 'The Note Coffee, Hoan Kiem, Hanoi',
     status: 'confirmed',
     partnerName: 'Minh Anh',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
     partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDs0MbF0SW4wg0y239gznRKNkV2_70V08BE2XnQ47KE5h2sCkkkf1PdyvQGkLgx_oGK7pqAmoQMjtvSuILye_RosX35YgJW5c3s_XVyJCrUtFF2U4TAJImErmB8zt4Y0xCUvAfKY_SeQqAgM_L-QsnH-5ssOwj2J76IXIKkD_MAswG00aEtjBXbVrf1B7aN6s033RdnjqxGIYqJXsXfwuwUuBFSqp-yCpoDlockf50is5KGo2_Wpk9zzvXBVeF_An1twKAbbwOZrK2Y',
     typeIcon: 'local_cafe'
+  },
+  {
+    id: '3-2',
+    title: 'Shopping at Vincom',
+    dateLabel: '15:00 • Sep 13',
+    location: 'Vincom Mega Mall, Royal City, Hanoi',
+    status: 'pending',
+    partnerName: 'Minh Anh',
+    typeIcon: 'shopping_bag'
   },
   {
     id: '4',
     title: 'Late Night Movie',
     dateLabel: '22:00 • Sep 15',
     location: 'CGV Vincom Center, Dong Da, Hanoi',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
     status: 'pending',
     partnerName: 'Minh Anh',
     partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDs0MbF0SW4wg0y239gznRKNkV2_70V08BE2XnQ47KE5h2sCkkkf1PdyvQGkLgx_oGK7pqAmoQMjtvSuILye_RosX35YgJW5c3s_XVyJCrUtFF2U4TAJImErmB8zt4Y0xCUvAfKY_SeQqAgM_L-QsnH-5ssOwj2J76IXIKkD_MAswG00aEtjBXbVrf1B7aN6s033RdnjqxGIYqJXsXfwuwUuBFSqp-yCpoDlockf50is5KGo2_Wpk9zzvXBVeF_An1twKAbbwOZrK2Y',
     typeIcon: 'movie'
+  },
+  {
+    id: '4-2',
+    title: 'Street Food Tour',
+    dateLabel: '18:30 • Sep 15',
+    location: 'Dong Xuan Market, Hanoi',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'restaurant'
+  },
+  {
+    id: '5',
+    title: 'Picnic at Park',
+    dateLabel: '10:00 • Sep 16',
+    location: 'Yen So Park, Hanoi',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'directions_walk'
+  },
+  {
+    id: '5-2',
+    title: 'Cozy Dinner',
+    dateLabel: '19:30 • Sep 16',
+    location: 'Home Cooked, Hanoi',
+    status: 'pending',
+    partnerName: 'Minh Anh',
+    typeIcon: 'restaurant'
   }
 ];
 
-const MOCK_PAST: DateEntry[] = [];
+const MOCK_PAST: DateEntry[] = [
+  {
+    id: 'p1',
+    title: 'First Date Coffee',
+    dateLabel: '09:00 • Sep 01',
+    location: 'Cafe Giảng, Old Quarter, Hanoi',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'local_cafe',
+    isPast: true
+  },
+  {
+    id: 'p2',
+    title: 'Museum Visit',
+    dateLabel: '14:00 • Sep 02',
+    location: 'Vietnam Museum of Ethnology, Hanoi',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'museum',
+    isPast: true
+  },
+  {
+    id: 'p3',
+    title: 'Shopping Trip',
+    dateLabel: '16:00 • Sep 05',
+    location: 'Aeon Mall Long Bien, Hanoi',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'shopping_bag',
+    isPast: true
+  },
+  {
+    id: 'p4',
+    title: 'Old Quarter Dinner',
+    dateLabel: '19:00 • Sep 10',
+    location: 'Ta Hien Street, Hanoi',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'restaurant',
+    isPast: true
+  },
+  {
+    id: 'p5',
+    title: 'Night Cinema',
+    dateLabel: '21:00 • Sep 11',
+    location: 'National Cinema Center, Hanoi',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    typeIcon: 'movie',
+    isPast: true
+  }
+];
 
 // TODO: Connect to real date filter logic — currently visual-only
 function DateItem({ day, date, active, onClick }: { day: string; date: string; active?: boolean; onClick?: () => void }) {
@@ -191,16 +301,69 @@ function DateDetailModal({ item, onClose }: { item: DateEntry; onClose: () => vo
   );
 }
 
+function CalendarBottomSheet({ selectedDay, onSelect, onClose }: { selectedDay: string; onSelect: (day: string) => void; onClose: () => void }) {
+  const { t } = useLocale();
+  const daysInMonth = Array.from({ length: 30 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end justify-center">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+      />
+      <motion.div 
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="relative w-full max-w-lg bg-surface-container-lowest rounded-t-[32px] overflow-hidden shadow-2xl z-10 p-6 pb-10"
+      >
+        <div className="w-12 h-1.5 bg-outline-variant/30 rounded-full mx-auto mb-6" />
+        <h3 className="text-headline-sm font-bold text-on-surface mb-6" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
+          {t.history.select_date}
+        </h3>
+        
+        <div className="grid grid-cols-7 gap-2">
+          {daysInMonth.map(d => (
+            <button
+              key={d}
+              onClick={() => {
+                onSelect(d);
+                onClose();
+              }}
+              className={cn(
+                "h-12 w-full rounded-2xl flex items-center justify-center font-bold transition-all",
+                selectedDay === d
+                  ? "bg-primary text-on-primary shadow-md"
+                  : "bg-surface-container-low text-on-surface hover:bg-primary-container/20"
+              )}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PAST }: HistoryViewProps) {
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
   const [selectedDay, setSelectedDay] = useState<string>('12');
   const [detailItem, setDetailItem] = useState<DateEntry | null>(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [monthOffset, setMonthOffset] = useState<number>(0);
   const { t } = useLocale();
 
   const currentDates = (tab === 'upcoming' ? upcomingDates : pastDates).filter(item => {
-    if (selectedDay === '12') return item.dateLabel.includes('Today') || item.dateLabel.includes('Sep 12');
-    return item.dateLabel.includes(`Sep ${selectedDay}`);
+    const dayStr = selectedDay.startsWith('0') ? selectedDay.substring(1) : selectedDay;
+    if (selectedDay === '12' && tab === 'upcoming') {
+      return item.dateLabel.includes('Today') || item.dateLabel.includes('Sep 12');
+    }
+    return item.dateLabel.includes(`Sep ${selectedDay}`) || item.dateLabel.includes(`Sep 0${dayStr}`) || item.dateLabel.includes(`Sep ${dayStr}`);
   });
 
   return (
@@ -214,6 +377,7 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
             {t.history.title}
           </div>
           <button 
+            onClick={() => setIsCalendarOpen(true)}
             className="bg-primary-container/40 p-2.5 rounded-full hover:bg-primary-container/60 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={t.history.calendar_label}
           >
@@ -228,7 +392,15 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
               role="tab"
               aria-selected={tab === tabId}
               aria-controls="timeline-panel"
-              onClick={() => setTab(tabId)}
+              onClick={() => {
+                setTab(tabId);
+                // Reset selected day when switching tabs to ensure valid data is shown
+                if (tabId === 'past' && selectedDay >= '12') {
+                  setSelectedDay('01');
+                } else if (tabId === 'upcoming' && selectedDay < '12') {
+                  setSelectedDay('12');
+                }
+              }}
               className={cn(
                 'px-5 py-2 rounded-full text-label-md font-semibold whitespace-nowrap transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                 tab === tabId
@@ -273,21 +445,39 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
             </div>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
-            {[
-              { d: 'T2', n: '12' },
-              { d: 'T3', n: '13' },
-              { d: 'T4', n: '14' },
-              { d: 'T5', n: '15' },
-              { d: 'T6', n: '16' }
-            ].map(item => (
-              <DateItem 
-                key={item.n}
-                day={item.d} 
-                date={item.n} 
-                active={selectedDay === item.n}
-                onClick={() => setSelectedDay(item.n)}
-              />
-            ))}
+            {tab === 'upcoming' ? (
+              [
+                { d: 'T2', n: '12' },
+                { d: 'T3', n: '13' },
+                { d: 'T4', n: '14' },
+                { d: 'T5', n: '15' },
+                { d: 'T6', n: '16' }
+              ].map(item => (
+                <DateItem 
+                  key={item.n}
+                  day={item.d} 
+                  date={item.n} 
+                  active={selectedDay === item.n}
+                  onClick={() => setSelectedDay(item.n)}
+                />
+              ))
+            ) : (
+              [
+                { d: 'CN', n: '01' },
+                { d: 'T2', n: '02' },
+                { d: 'T5', n: '05' },
+                { d: 'T3', n: '10' },
+                { d: 'T4', n: '11' }
+              ].map(item => (
+                <DateItem 
+                  key={item.n}
+                  day={item.d} 
+                  date={item.n} 
+                  active={selectedDay === item.n}
+                  onClick={() => setSelectedDay(item.n)}
+                />
+              ))
+            )}
           </div>
         </section>
 
@@ -406,6 +596,18 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
         <DateDetailModal 
           item={detailItem} 
           onClose={() => setDetailItem(null)} 
+        />
+      )}
+
+      {/* Calendar Bottom Sheet */}
+      {isCalendarOpen && (
+        <CalendarBottomSheet 
+          selectedDay={selectedDay}
+          onSelect={(day) => {
+            setSelectedDay(day);
+            // Auto switch tab based on date if needed, or just let user stay on current tab
+          }}
+          onClose={() => setIsCalendarOpen(false)}
         />
       )}
     </div>
