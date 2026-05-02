@@ -2,8 +2,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@5"
+    "client/api/**/*.ts": {      "runtime": "@vercel/node@5"
     }
   },
   "rewrites": [
