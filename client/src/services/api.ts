@@ -58,10 +58,13 @@ export interface ComboParams {
 }
 
 export async function generateCombos(params: ComboParams): Promise<Combo[]> {
-  return apiRequest<Combo[]>('/combos', {
+  const data = await apiRequest<{ combos: Combo[] } | Combo[]>('/combos', {
     method: 'POST',
     body: JSON.stringify(params),
   });
+  // Handle both {combos: [...]} and [...] response formats
+  if (Array.isArray(data)) return data;
+  return (data as { combos: Combo[] }).combos || [];
 }
 
 export async function chatWithAI(
@@ -200,4 +203,3 @@ export async function getTrends(): Promise<TrendItem[]> {
     return [];
   }
 }
-
