@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bot } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -33,7 +33,8 @@ import { CATEGORY_SLOT_MAP } from './types';
 const formatVND = (amount: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
-// localStorage helpers
+const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuD5fQvzhgWAnCEj7ACr7c_XPwX5u48krOmZuXxBChh911zOWYQRJcnaNtoQqplogf2AXUFicP9kn3TIbu-AI1FrobzW7zy73oO1v4ehbZKCtmSt1KXQJvIubhuBTzIGi1c0kzLLvt_Ykxn2ypNtz5YplxUHttU4mqRkMU9L82XDuoouQij2ZUUSpiP13o49_TSgYHOa0ZNTSCx4Am6e1gxZ83r7nQQ9uQpArgF6iu6SjN34NGisxjWTJ-xiImchPKYVctLQsyydIUBS';
+
 function loadJson<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -53,28 +54,27 @@ export default function App() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const chat = useChat(currentUserId);
 
-  // User Stats & Preferences (W6)
+  // User profile state
+  const [userName, setUserName] = useState<string>(() => loadJson('wd_username', ''));
+  const [userAvatar, setUserAvatar] = useState<string>(() => loadJson('wd_avatar', DEFAULT_AVATAR));
+
   const [preferences, setPreferences] = useState<string[]>(() => loadJson('wd_prefs', ['Cafe']));
 
-  // Combo state — restore from localStorage
   const [combos, setCombos] = useState<Combo[]>(() => loadJson('wd_combos', []));
   const [selectedCombo, setSelectedCombo] = useState<Combo | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [comboActionModal, setComboActionModal] = useState<Combo | null>(null);
 
-  // Modal state
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [realImageLoc, setRealImageLoc] = useState<{ name: string; mapsUri: string; desc?: string; imageUrl?: string } | null>(null);
 
-  // Saved places ("Thêm vào Combo" from Explore)
   const [savedPlaces, setSavedPlaces] = useState<LocationItem[]>([]);
 
-  // Combo Focus Mode
   const [activeCombo, setActiveCombo] = useState<Combo | null>(null);
   const [comboSlots, setComboSlots] = useState<ComboSlot[]>([]);
 
-  // Persist state to localStorage on changes
+  // Persist auth
   useEffect(() => {
     localStorage.setItem('wd_auth', JSON.stringify(isAuthenticated));
     localStorage.setItem('wd_phone', JSON.stringify(phone));
@@ -88,26 +88,56 @@ export default function App() {
     localStorage.setItem('wd_prefs', JSON.stringify(preferences));
   }, [preferences]);
 
-  // Sync state
+  // Persist userName & userAvatar to localStorage
+  useEffect(() => {
+    localStorage.setItem('wd_username', JSON.stringify(userName));
+  }, [userName]);
+  useEffect(() => {
+    localStorage.setItem('wd_avatar', JSON.stringify(userAvatar));
+  }, [userAvatar]);
+
+  // Load profile from DB when authenticated
+  const loadProfile = useCallback(async (phoneNum: string) => {
+    try {
+      const res = await fetch(`/api/user?action=profile&phone=${encodeURIComponent(phoneNum)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.display_name) {
+        setUserName(data.display_name);
+      } else if (!loadJson('wd_username', '')) {
+        setUserName(phoneNum);
+      }
+      if (data.avatar_url) setUserAvatar(data.avatar_url);
+    } catch (e) {
+      // silent fail — use cached values
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && phone) {
+      loadProfile(phone);
+    }
+  }, [isAuthenticated, phone, loadProfile]);
+
   const drive = useDriveSync(
-    combos, 
-    userReward, 
-    chat.chatMessages, 
-    setCombos, 
-    setUserReward, 
+    combos,
+    userReward,
+    chat.chatMessages,
+    setCombos,
+    setUserReward,
     chat.setChatMessages,
     preferences
   );
 
-  // Update userId when drive identifier or auth phone changes
   useEffect(() => {
     setCurrentUserId(phone || drive.userIdentifier);
   }, [drive.userIdentifier, phone]);
 
-  const handleAuthSuccess = (phone: string, _userData?: { phone: string; googleId?: string }) => {
-    setPhone(phone);
+  const handleAuthSuccess = (p: string, _userData?: { phone: string; googleId?: string }) => {
+    setPhone(p);
     setIsAuthenticated(true);
-    showToast(`Chào mừng trở lại, ${phone}!`);
+    showToast(`Chào mừng trở lại!`);
+    loadProfile(p);
   };
 
   const handleLogout = () => {
@@ -116,11 +146,15 @@ export default function App() {
     setCurrentUserId(null);
     setCombos([]);
     setPreferences(['Cafe']);
+    setUserName('');
+    setUserAvatar(DEFAULT_AVATAR);
     setShowProfile(false);
     localStorage.removeItem('wd_auth');
     localStorage.removeItem('wd_phone');
     localStorage.removeItem('wd_combos');
     localStorage.removeItem('wd_prefs');
+    localStorage.removeItem('wd_username');
+    localStorage.removeItem('wd_avatar');
     showToast('Đã đăng xuất');
   };
 
@@ -128,11 +162,7 @@ export default function App() {
     return <AuthView onAuthSuccess={handleAuthSuccess} />;
   }
 
-  // --- Combo Focus Mode Handlers ---
-
-  const handleSelectCombo = (combo: Combo) => {
-    setComboActionModal(combo);
-  };
+  const handleSelectCombo = (combo: Combo) => setComboActionModal(combo);
 
   const proceedWithCustomize = (combo: Combo) => {
     setActiveCombo(combo);
@@ -169,9 +199,7 @@ export default function App() {
     showToast('Tạo combo mới thành công. Hãy thêm địa điểm từ Khám phá!');
   };
 
-  const handleAddSlot = () => {
-    setComboSlots(prev => [...prev, null]);
-  };
+  const handleAddSlot = () => setComboSlots(prev => [...prev, null]);
 
   const handleClearCombo = () => {
     setActiveCombo(null);
@@ -205,13 +233,11 @@ export default function App() {
     const locCat = (loc.category || '').toLowerCase();
     const locName = loc.name.toLowerCase();
     const locTheme = (loc.theme || '').toLowerCase();
-
     for (let i = 0; i < comboSlots.length; i++) {
       if (comboSlots[i] !== null) continue;
       const act = activeCombo?.activities[i];
       if (!act) continue;
       const actName = act.name.toLowerCase();
-
       for (const keywords of Object.values(CATEGORY_SLOT_MAP)) {
         const locMatches = keywords.some(kw => locCat.includes(kw) || locName.includes(kw) || locTheme.includes(kw));
         const actMatches = keywords.some(kw => actName.includes(kw));
@@ -233,24 +259,11 @@ export default function App() {
       });
       return;
     }
-
     const allFilled = comboSlots.every(s => s !== null);
-    if (allFilled) {
-      showToast('Combo đã đầy đủ! Bấm "Chốt lịch" trên Home.');
-      return;
-    }
-
+    if (allFilled) { showToast('Combo đã đầy đủ! Bấm "Chốt lịch" trên Home.'); return; }
     const slotIdx = findMatchingSlotIndex(loc);
-    if (slotIdx === -1) {
-      showToast('Không còn slot trống!');
-      return;
-    }
-
-    setComboSlots(prev => {
-      const next = [...prev];
-      next[slotIdx] = loc;
-      return next;
-    });
+    if (slotIdx === -1) { showToast('Không còn slot trống!'); return; }
+    setComboSlots(prev => { const next = [...prev]; next[slotIdx] = loc; return next; });
     const filled = comboSlots.filter(s => s !== null).length + 1;
     showToast(`Đã thêm ${loc.name} vào slot ${slotIdx + 1}! (${filled}/${comboSlots.length})`);
   };
@@ -387,13 +400,13 @@ export default function App() {
         </div>
       </nav>
 
-      {/* Profile Screen (overlay) */}
+      {/* Profile Screen */}
       <AnimatePresence>
         {showProfile && (
           <ProfileView
             phone={phone || ''}
-            userName="Hưng"
-            userAvatar="https://lh3.googleusercontent.com/aida-public/AB6AXuD5fQvzhgWAnCEj7ACr7c_XPwX5u48krOmZuXxBChh911zOWYQRJcnaNtoQqplogf2AXUFicP9kn3TIbu-AI1FrobzW7zy73oO1v4ehbZKCtmSt1KXQJvIubhuBTzIGi1c0kzLLvt_Ykxn2ypNtz5YplxUHttU4mqRkMU9L82XDuoouQij2ZUUSpiP13o49_TSgYHOa0ZNTSCx4Am6e1gxZ83r7nQQ9uQpArgF6iu6SjN34NGisxjWTJ-xiImchPKYVctLQsyydIUBS"
+            userName={userName || phone || ''}
+            userAvatar={userAvatar}
             dateMiles={userReward.totalMiles}
             totalDates={userReward.completedDates}
             isDriveSynced={drive.isLoggedIn}
@@ -403,11 +416,15 @@ export default function App() {
             onLogout={handleLogout}
             onBack={() => setShowProfile(false)}
             showToast={showToast}
+            onProfileUpdated={(newName, newAvatar) => {
+              if (newName) setUserName(newName);
+              if (newAvatar) setUserAvatar(newAvatar);
+            }}
           />
         )}
       </AnimatePresence>
 
-      {/* Weather Detail Screen (overlay) */}
+      {/* Weather Detail Screen */}
       <AnimatePresence>
         {showWeatherDetail && (
           <WeatherDetailView
@@ -417,7 +434,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Modals */}
       <PaymentModal
         show={showPaymentModal}
         combo={selectedCombo}
@@ -437,7 +453,6 @@ export default function App() {
       <RideModal loc={rideModalLoc} onClose={() => setRideModalLoc(null)} onRide={handleRide} />
       <ImageViewer loc={realImageLoc} onClose={() => setRealImageLoc(null)} />
 
-      {/* Chat FAB + Panel */}
       <button onClick={() => chat.setIsChatOpen(true)} className="fixed bottom-24 right-4 z-40 bg-primary hover:bg-on-primary-container text-on-primary rounded-full p-4 shadow-lg shadow-primary/30 transition-all hover:scale-105 active:scale-95">
         <Bot className="w-6 h-6 animate-bounce" />
       </button>
