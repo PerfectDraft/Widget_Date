@@ -20,6 +20,9 @@ async function ensureTable() {
     avatar_url TEXT,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`;
+  // Ensure columns exist for older tables
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name TEXT`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT`;
 }
 
 export default async function handler(req: any, res: any) {
@@ -87,20 +90,15 @@ export default async function handler(req: any, res: any) {
     }
   }
 
-  // ── UPDATE PROFILE (name) ─────────────────────────────
+  // ── UPDATE PROFILE ─────────────────────────────────────
   if (action === 'update-profile') {
     if (req.method !== 'POST') return res.status(405).end();
     const { phone, userName } = req.body;
     if (!phone || !userName?.trim()) return res.status(400).json({ error: 'Thiếu thông tin' });
     try {
-      const result = await sql`
-        UPDATE users
-        SET display_name = ${userName.trim()}, updated_at = NOW()
-        WHERE phone = ${phone}
-        RETURNING display_name
-      `;
-      if (result.rowCount === 0) return res.status(404).json({ error: 'Không tìm thấy tài khoản' });
-      return res.json({ success: true, userName: result.rows[0].display_name });
+      await ensureTable();
+      await sql`UPDATE users SET display_name = ${userName.trim()}, updated_at = NOW() WHERE phone = ${phone}`;
+      return res.json({ success: true, userName: userName.trim() });
     } catch (err) {
       console.error('Update profile error:', err);
       return res.status(500).json({ error: 'Lỗi server, vui lòng thử lại' });
