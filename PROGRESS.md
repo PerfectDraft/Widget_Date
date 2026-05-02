@@ -8,7 +8,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-02 |
-| Phiên làm việc | #37 — HistoryView Enriched Data & Calendar |
+| Phiên làm việc | #38 — ExploreView Pagination & Load More |
 | Nhánh Git | `main` |
 
 ---
@@ -16,7 +16,7 @@
 ## 📊 Tổng quan tiến độ
 
 ```
-Tính năng chính    ████████████████░░░░  80%
+Tính năng chính    █████████████████░░░  85%
 Backend / Server   ████████████░░░░░░░░  60%
 Security / Refactor████████████████░░░░  80%
 Data & Database    ████████████████░░░░  80%
@@ -48,6 +48,7 @@ Data & Database    ████████████████░░░░ 
 - [x] **DateMilesView Redesign** — Đồng bộ 100% với "Modern Romanticism" design system, áp dụng chuẩn design tokens (on-surface, etc.)
 - [x] **i18n** — Thêm keys cho empty state trang Lịch sử
 - [x] **Outfit Gợi ý** — Bỏ tính năng này theo yêu cầu (W7)
+- [x] **ExploreView Pagination** — Giới hạn hiển thị 5 item và thêm nút "Load More" load 5 item mỗi lần bấm.
 
 ### Kiến trúc / Refactor (theo PLAN-client-server.md)
 - [x] Tách monorepo npm workspaces: `client/` + `server/`
@@ -179,3 +180,9 @@ npm run dev
 - **Calendar Selection**: Triển khai `CalendarBottomSheet` cho phép chọn ngày cụ thể từ header.
 - **Past Tab Data**: Thêm dữ liệu mẫu cho tab "Đã đi" để giao diện không bị rỗng.
 - **Files đã sửa**: `HistoryView.tsx`, `vi.json`, `PROGRESS.md`.
+
+### Session #38 — 2026-05-02
+- **ExploreView Pagination**: Giới hạn danh sách địa điểm hiển thị ban đầu xuống 5 item.
+- **Load More Logic**: Triển khai nút "Hiển thị thêm" để load thêm 5 item mỗi lần bấm.
+- **Auto Reset**: Tự động reset số lượng hiển thị về 5 khi thay đổi category hoặc tìm kiếm.
+- **Files đã sửa**: `ExploreView.tsx`, `PROGRESS.md`.

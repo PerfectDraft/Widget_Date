@@ -35,10 +35,15 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   const [dynamicPlaces, setDynamicPlaces] = useState<LocationItem[]>(REAL_LOCATIONS);
   const [loadingPlaces, setLoadingPlaces] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [expandedSection, setExpandedSection] = useState<'places' | 'movies' | 'trends' | null>('places');
+  const [visibleItemsCount, setVisibleItemsCount] = useState(5);
   const [favorites, setFavorites] = useState<Set<string | number>>(new Set());
   const [trends, setTrends] = useState<TrendItem[]>([]);
   const [selectedCategoryGrid, setSelectedCategoryGrid] = useState<typeof CATEGORY_GRID[number] | null>(null);
+
+  // Reset visible items when search or category changes
+  useEffect(() => {
+    setVisibleItemsCount(5);
+  }, [searchQuery, activeCategory]);
 
   useEffect(() => {
     let mounted = true;
@@ -203,7 +208,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
           </div>
 
           <div className="space-y-5">
-            {filteredPlaces.slice(0, expandedSection === 'places' ? filteredPlaces.length : 6).map((loc, i) => (
+            {filteredPlaces.slice(0, visibleItemsCount).map((loc, i) => (
               <motion.div
                 key={loc.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -324,13 +329,13 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
             ))}
           </div>
 
-          {filteredPlaces.length > 6 && (
+          {filteredPlaces.length > visibleItemsCount && (
             <button
-              onClick={() => setExpandedSection(expandedSection === 'places' ? null : 'places')}
+              onClick={() => setVisibleItemsCount(prev => prev + 5)}
               className="w-full mt-4 py-3 rounded-full border border-outline-variant/30 text-primary font-bold text-label-md flex items-center justify-center gap-2 hover:bg-primary-container/20 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{expandedSection === 'places' ? 'expand_less' : 'expand_more'}</span>
-              {expandedSection === 'places' ? t.explore.collapse : t.explore.view_more_places.replace('{count}', String(filteredPlaces.length - 6))}
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">expand_more</span>
+              {t.explore.view_more_places.replace('{count}', String(Math.min(5, filteredPlaces.length - visibleItemsCount)))}
             </button>
           )}
         </section>
