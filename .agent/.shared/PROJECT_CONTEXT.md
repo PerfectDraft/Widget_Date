@@ -4,7 +4,7 @@ This file is the persistent memory for the Widget Date project.
 All agents must read this at the start of any session.
 Update this file when conventions change, decisions are made, or new constraints are discovered.
 
-Last updated: 2026-04-29
+Last updated: 2026-05-02
 
 ---
 

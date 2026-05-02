@@ -24,7 +24,9 @@
     "today": "Hôm nay",
     "sep_14": "14 Tháng 9",
     "calendar_label": "Mở lịch",
-    "timeline_label": "Dòng thời gian hẹn hò"
+    "timeline_label": "Dòng thời gian hẹn hò",
+    "no_upcoming_hint": "Hãy lên lịch một buổi hẹn mới!",
+    "no_past_hint": "Các buổi hẹn đã hoàn thành sẽ hiển thị ở đây"
   },
   "explore": {
     "title": "Khám phá",

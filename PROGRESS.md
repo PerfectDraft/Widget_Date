@@ -12,8 +12,8 @@
 
 ## 🗓️ Cập nhật lần cuối
 
-| Ngày | 2026-05-01 |
-| Phiên làm việc | #29 — SEO Resolution & Final Checks |
+| Ngày | 2026-05-02 |
+| Phiên làm việc | #30 — HistoryView Redesign Execution |
 | Nhánh Git | `main` |
 
 ---
@@ -48,6 +48,8 @@ Data & Database    ████████░░░░░░░░░░░░ 
 - [x] **Payment Modal** — Xác nhận thanh toán + confetti + +100 Miles
 - [x] **Image Viewer Modal** — Xem ảnh địa điểm (carousel)
 - [x] **Focus Mode & AI Combo** — Nâng cấp Focus Mode fullscreen, thêm Modal tùy chỉnh cho AI Combo, cho phép tạo Manual Combo.
+- [x] **HistoryView Redesign** — Đồng bộ 100% với "Modern Romanticism" design system
+- [x] **i18n** — Thêm keys cho empty state trang Lịch sử
 - [x] **Outfit Gợi ý** — Bỏ tính năng này theo yêu cầu (W7)
 
 ### Kiến trúc / Refactor (theo PLAN-client-server.md)
@@ -392,3 +394,12 @@ npm run dev
 - [x] Đã verify toàn bộ 8/8 core checks trong `checklist.py` (Security, Lint, Schema, Tests, UX, SEO, Lighthouse, Playwright) đều PASSED.
 - Files đã sửa: `client/index.html`, `client/src/components/home/HomeDashboardUI.tsx`, `client/src/components/history/HistoryView.tsx`, `Date_history_screens/date_history_visual_timeline/code.html`
 - Tasks hoàn thành: Giải quyết triệt để các vấn đề SEO tồn đọng.
+
+### Session #30 — 2026-05-02
+- **HistoryView Redesign**: Thực hiện redesign toàn diện tab Lịch sử.
+- **Design System Sync**: Chuyển đổi toàn bộ `pink-*` sang `primary` tokens, thay `glass-panel` bằng `glass-card`.
+- **UI Polish**: Redesign Header (bỏ avatar/tên app), Tab Switcher (dùng pill buttons), Timeline Cards (staggered animation), và Empty State.
+- **i18n**: Cập nhật `vi.json` với các keys mới cho trạng thái trống.
+- **Verification**: Đã chạy `tsc` và pass 100% type safety.
+- Files đã sửa: `HistoryView.tsx`, `vi.json`, `PROGRESS.md`, `task.md`.
+- Tasks hoàn thành: Redesign HistoryView.
