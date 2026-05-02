@@ -2,66 +2,106 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Widget Date 💖
+# Widget Date 💖 | Modern Romanticism Dating App
 
-Widget Date là một siêu ứng dụng lên kế hoạch hẹn hò dành riêng cho người dùng Việt Nam. Ứng dụng nổi bật với các tính năng: tạo lịch trình bằng AI, hệ thống điểm thưởng "Date Miles" (Gamification), khám phá địa điểm theo phong cách vuốt thẻ Tinder, và tích hợp gọi xe công nghệ trực tiếp.
+**Widget Date** là một siêu ứng dụng lên kế hoạch hẹn hò thông minh dành riêng cho người dùng Việt Nam. Ứng dụng kết hợp giữa sức mạnh của trí tuệ nhân tạo (AI) và thiết kế hiện đại "Modern Romanticism" để tạo ra những trải nghiệm hẹn hò tinh tế, cá nhân hóa và đầy thú vị.
 
-## 🌟 Chức Năng
+---
 
-### ✅ Đã Hoàn Thành
-*   **Tạo Combo Hẹn Hò bằng AI:** Tự động lên lịch trình cá nhân hóa sử dụng mô hình Gemini 2.5 Flash, tính năng dự phòng fallback chuẩn xác.
-*   **Hệ thống Điểm Thưởng Date Miles (Gamification):** Nhận "Date Miles" mỗi khi thanh toán/hoàn thành chuyến đi. Thăng hạng (Newbie -> Master), mở khóa huy hiệu, và theo dõi lịch sử nhận điểm.
-*   **Khám Phá Địa Điểm & Giao Diện Quẹt Thẻ:** Tích hợp Gemini 2.5 Pro và Google Maps để tìm kiếm địa điểm quanh bạn. Cử chỉ kéo hình sang phải/trái như Tinder để "thả tim" địa điểm.
-*   **Trợ Lý AI Hẹn Hò:** Tư vấn chuyên sâu, vạch nhanh ý tưởng qua hệ thống Box Chat nổi thông minh sử dụng Gemini 2.5 Pro.
-*   **Tích Hợp Deep Link Gọi Xe:** Bấm gọi trực tiếp xe Grab, Be hoặc Xanh SM với tọa độ tự điền cho từng điểm đi.
-*   **Tích Hợp Thời Tiết Thực Tế:** Cập nhật thông tin thời tiết trực tiếp (Live Weather) và dự báo trong ngày dựa trên API của OpenWeather.
-*   **Bộ Lọc Sở Thích Động:** Lọc địa điểm trực tiếp dựa trên các danh mục thực tế (categories) có sẵn trong Database.
-*   **Cào Ảnh Thực Tế:** Lấy và hiển thị ảnh thực tế của mỗi địa điểm từ Database và cơ chế bóc tách thẻ meta `og:image` trên Google Maps.
-*   **Hệ Thống Crawler Backend (Node.js):** Một service độc lập (`data-service/`) chạy theo Cronjob mỗi đêm để Scrape các báo mạng tìm kiếm quán Hot Trend (Dùng `better-sqlite3`, `node-cron`, và `cheerio`).
+## 🌟 Chức Năng Nổi Bật
 
-### ⚠️ Đang Thực Hiện / Vấn Đề
-*   **Xây Dựng Combo Thủ Công:** Nút "Thêm vào Combo" ở chế độ Khám phá/Thẻ đang dừng ở mức `showToast`, thiếu `State` gom nhóm thành danh sách riêng.
-*   **Tích Hợp Server Data:** Dịch vụ `data-service/` vẫn hoạt động độc lập, chưa mở Endpoint /REST để gửi data cho phía React.
-*   **Logic Huy Hiệu Code Cứng:** Trừ huy hiệu First Date mặc định, các biểu tượng Badge khác ở "Date Miles" chưa liên kết chéo với hành động App (auto-unlock).
-*   **Lỗi Định Vị:** Nút "Sử dụng vị trí hiện tại" ở tab Khám phá đôi khi gặp lỗi thông báo quyền truy cập chưa chuẩn xác.
+### 🤖 AI Combo Generator
+Tự động lên lịch trình hẹn hò hoàn hảo dựa trên ngân sách, sở thích và thời gian rảnh. Sử dụng mô hình **Gemini 2.5 Flash** để tối ưu hóa gợi ý, kèm theo cơ chế dự phòng (fallback) thông minh.
 
-### 🔮 Dự Định
-*   Cung cấp API REST từ Backend để truyền Data Crawler về App.
-*   Hệ thống Giao Lưu / Lên bảng xếp hạng với các cặp đôi khác (Leaderboards / Challenges).
-*   Gửi push notification báo thức PWA vào sát giờ hẹn.
+### 🏆 Hệ Thống Date Miles (Gamification)
+Tích điểm thưởng cho mỗi chuyến đi hoàn thành. Hệ thống bao gồm:
+- **Thăng hạng:** Từ Newbie đến Master.
+- **Huy hiệu:** Tự động mở khóa các danh hiệu như *Night Owl*, *Combo King*, *First Date*.
+- **Streak:** Theo dõi chuỗi ngày hẹn hò liên tục để nhận thêm phần thưởng.
 
-## 🚀 Tech Stack
+### 🗺️ Khám Phá & Trải Nghiệm
+- **Tinder-style Swipe:** Khám phá địa điểm bằng cử chỉ vuốt thẻ trực quan.
+- **Hot Trends & Movies:** Cập nhật các quán xá đang "hot" và lịch chiếu phim thực tế thông qua hệ thống Crawler tự động.
+- **Deep Link Gọi Xe:** Kết nối trực tiếp với Grab, Be, Xanh SM để đặt xe chỉ với một chạm.
 
-*   **Frontend:** React 19, Vite, TailwindCSS 4, Framer Motion, canvas-confetti, Lucide React
-*   **Backend (Data Service):** Node.js, Express, Axios, Cheerio, better-sqlite3, node-cron
-*   **AI:** Gemini 2.5 Pro, Gemini 2.5 Flash (sử dụng `@google/genai` tân tiến nhất)
+### 💬 Trợ Lý AI Hẹn Hò
+Box chat thông minh sử dụng **Gemini 2.5 Pro** tích hợp sẵn, giúp giải đáp mọi thắc mắc và vạch nhanh ý tưởng hẹn hò ngay lập tức.
 
-## 🛠 Hướng Dẫn Chạy Dịch Vụ Cục Bộ (Local)
+### 📅 Lịch Sử & Lịch Trình (New!)
+- **Timeline Lịch Sử:** Theo dõi lại các buổi hẹn hò đã qua và sắp tới.
+- **Calendar Bottom Sheet:** Dễ dàng chọn và lọc buổi hẹn theo ngày cụ thể.
 
-**Yêu cầu môi trường:** Node.js v18+ 
+---
 
-1. Cài đặt các thư viện gói:
-   ```bash
-   npm install
-   ```
-2. Cấu hình khóa bảo mật (Environment):
-   * Nhân bản file `.env.example` trỏ tên thành `.env.local`
-   * Thay API Key Gemini của bạn vào trong:
-     ```env
-     GEMINI_API_KEY="your-gemini-key-here"
-     VITE_OPENWEATHER_API_KEY="your-openweather-key-here"
-     ```
-3. Khởi xướng máy chủ Frontend UI (Mặc định chạy ở cổng 5173):
-   ```bash
-   npm run dev
-   ```
+## 🚀 Công Nghệ Sử Dụng
 
-*(Tuỳ chọn)* Chạy kèm Module Crawler (Data Backend):
-```bash
-cd data-service
-# Nếu chưa install packet, hãy run "npm install" nhé
-node scraper.js
+### Frontend
+- **Core:** React 19, Vite.
+- **Styling:** Tailwind CSS 4, Glassmorphism, Modern Design Tokens.
+- **Animation:** Framer Motion (motion/react), Canvas Confetti.
+- **Icons:** Material Symbols (Google Fonts).
+
+### Backend & Data
+- **Engine:** Node.js (Express) tích hợp npm workspaces.
+- **Database:** SQLite (better-sqlite3) cho mobile-first performance.
+- **Crawler:** Cheerio + Node-cron cho service tự động hóa dữ liệu.
+- **Security:** Rate limiting, Server-side API handling (ẩn hoàn toàn API keys khỏi client).
+
+### AI Services
+- **Google Gemini API:** Sử dụng song song Gemini 2.5 Pro (cho logic phức tạp) và Gemini 2.5 Flash (cho tốc độ phản hồi nhanh).
+
+---
+
+## 📂 Cấu Trúc Dự Án
+
+```text
+Widget_Date/
+├── client/          # Giao diện React (Vite)
+├── server/          # REST API & Business Logic
+├── data-service/    # Crawler & Cron jobs dữ liệu
+├── docs/            # Tài liệu kiến trúc & kế hoạch
+└── vercel.json      # Cấu hình triển khai Cloud
 ```
 
 ---
-*Widget Date - Lên kế hoạch hẹn hò thông minh cho cặp đôi.*
+
+## 🛠️ Hướng Dẫn Cài Đặt
+
+### Yêu cầu
+- Node.js v18+ 
+- npm hoặc yarn
+
+### Các bước thực hiện
+1. **Cài đặt dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Cấu hình Environment:**
+   Tạo file `.env` tại thư mục gốc hoặc trong `server/` (tham khảo `.env.example`):
+   ```env
+   GEMINI_API_KEY="your-api-key"
+   OPENWEATHER_API_KEY="your-api-key"
+   CLIENT_ORIGIN="http://localhost:5173"
+   ```
+
+3. **Chạy ở chế độ Phát triển (Development):**
+   ```bash
+   npm run dev
+   ```
+   *Lệnh này sẽ khởi động đồng thời cả Client (Vite) và Server (Express).*
+
+4. **Build cho Production:**
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 🔐 Bảo mật & Hiệu năng
+- Toàn bộ các tác vụ gọi AI và thời tiết đều được xử lý qua Server-side để bảo vệ API Keys.
+- Hệ thống Rate Limiter giúp ngăn chặn việc lạm dụng tài nguyên API.
+- Tối ưu hóa SEO và Core Web Vitals theo tiêu chuẩn 2025.
+
+---
+*Widget Date - Thổi bùng ngọn lửa lãng mạn bằng công nghệ.*

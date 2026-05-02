@@ -8,7 +8,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-02 |
-| Phiên làm việc | #38 — ExploreView Pagination & Load More |
+| Phiên làm việc | #39 — README Rewrite & Project Sync |
 | Nhánh Git | `main` |
 
 ---
@@ -186,3 +186,8 @@ npm run dev
 - **Load More Logic**: Triển khai nút "Hiển thị thêm" để load thêm 5 item mỗi lần bấm.
 - **Auto Reset**: Tự động reset số lượng hiển thị về 5 khi thay đổi category hoặc tìm kiếm.
 - **Files đã sửa**: `ExploreView.tsx`, `PROGRESS.md`.
+
+### Session #39 — 2026-05-02
+- **README Rewrite**: Viết lại toàn bộ `README.md` để cập nhật tech stack (React 19, Tailwind 4), cấu trúc monorepo và các tính năng mới hoàn thiện.
+- **Project Sync**: Loại bỏ các hạng mục "Đang làm" đã cũ trong tài liệu, đồng bộ hóa với trạng thái thực tế của codebase.
+- **Files đã sửa**: `README.md`, `PROGRESS.md`.
