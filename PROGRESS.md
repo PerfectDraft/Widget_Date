@@ -8,7 +8,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-02 |
-| Phiên làm việc | #35 — DateMilesView Redesign |
+| Phiên làm việc | #36 — HistoryView Logic |
 | Nhánh Git | `main` |
 
 ---
@@ -44,7 +44,7 @@ Data & Database    ████████████████░░░░ 
 - [x] **Payment Modal** — Xác nhận thanh toán + confetti + +100 Miles
 - [x] **Image Viewer Modal** — Xem ảnh địa điểm (carousel)
 - [x] **Focus Mode & AI Combo** — Nâng cấp Focus Mode fullscreen, thêm Modal tùy chỉnh cho AI Combo, cho phép tạo Manual Combo.
-- [x] **HistoryView Redesign** — Đồng bộ 100% với "Modern Romanticism" design system
+- [x] **HistoryView Logic** — Thêm logic chọn ngày, lọc danh sách, modal chi tiết và điều hướng tháng.
 - [x] **DateMilesView Redesign** — Đồng bộ 100% với "Modern Romanticism" design system, áp dụng chuẩn design tokens (on-surface, etc.)
 - [x] **i18n** — Thêm keys cho empty state trang Lịch sử
 - [x] **Outfit Gợi ý** — Bỏ tính năng này theo yêu cầu (W7)
@@ -165,9 +165,11 @@ npm run dev
 - **Drive Sync**: Cập nhật `useDriveSync` đồng bộ `streak`.
 - **UI Integration**: Kết nối dữ liệu streak thực tế vào màn hình `DateMilesView`.
 
-### Session #35 — 2026-05-02
-- **DateMilesView Redesign (Premium)**: Thực hiện redesign toàn diện tab Thành tích (Date Miles) với phong cách Modern Romanticism cao cấp.
-- **UI Enhancements**: Nâng cấp Hero Score Card với gradient phức hợp, hiệu ứng glassmorphism sâu, và progress bar tùy chỉnh.
-- **Component Polish**: Viết lại StatCard và BadgeCard với logic hover, grayscale cho badges chưa đạt, và material symbols chuẩn.
-- **Typography & Spacing**: Áp dụng triệt để "luxury spacing" và Epilogue headline font theo DESIGN.md.
-- **Files đã sửa**: `DateMilesView.tsx`, `PROGRESS.md`.
+### Session #36 — 2026-05-02
+- **HistoryView Logic**: Hoàn thiện logic cho tab Lịch sử.
+- **Interactions**: Thêm state `selectedDay`, `detailItem`, và `monthOffset`.
+- **Date Strip**: Cập nhật `DateItem` hỗ trợ click và active state.
+- **Detail Modal**: Implement `DateDetailModal` với animation và đầy đủ thông tin.
+- **Mock Data**: Mở rộng dữ liệu mẫu để demo tính năng lọc.
+- **i18n**: Cập nhật `vi.json` với các nhãn mới cho modal và tháng.
+- **Files đã sửa**: `HistoryView.tsx`, `vi.json`, `PROGRESS.md`.
