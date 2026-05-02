@@ -44,6 +44,7 @@ export interface UserReward {
   completedDates: number;
   badges: string[];
   history: ActivityLog[];
+  streak: number;
 }
 
 export interface LocationItem {

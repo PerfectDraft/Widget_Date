@@ -55,7 +55,7 @@ export function useDriveSync(
           // Create new empty DB
           const initialData: AppDatabase = { 
             combos: [], 
-            userReward: { totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [] },
+            userReward: { totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [], streak: 0 },
             chatMessages: []
           };
           currentFileId = await createDatabaseFile(accessToken, initialData);
@@ -153,7 +153,7 @@ export function useDriveSync(
 
     // Reset app state to clear sensitive data
     setCombos([]);
-    setUserReward({ totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [] });
+    setUserReward({ totalMiles: 0, completedDates: 0, badges: [], level: 'Fledgling', history: [], streak: 0 });
     setChatMessages([
       { role: 'model', text: 'Chào đằng ấy 👋! Mình là trợ lý AI Hẹn Hò. Đằng ấy muốn ăn món Việt, đồ Âu sang chảnh, hay đi một nơi nào đó thật Chill? Cứ tâm sự chi tiết ở đây nha!' }
     ]);
