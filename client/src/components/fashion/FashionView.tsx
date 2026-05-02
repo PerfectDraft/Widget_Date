@@ -21,10 +21,43 @@ const GENDER_LABEL: Record<string, string> = {
   Unisex: 'Unisex',
 };
 
+// Unsplash keyword map: style + gender → search keywords
+const UNSPLASH_KEYWORDS: Record<string, Record<string, string>> = {
+  'Old Money': {
+    Male: 'elegant,mensfashion,classic,suit',
+    Female: 'elegant,womensfashion,luxury,dress',
+  },
+  'Vintage': {
+    Male: 'vintage,mensfashion,retro,style',
+    Female: 'vintage,womensfashion,retro,floral',
+  },
+  'Streetwear': {
+    Male: 'streetwear,urban,hoodie,mens',
+    Female: 'streetwear,urban,oversized,womens',
+  },
+  'Trendy': {
+    Male: 'trendy,mensfashion,modern,style',
+    Female: 'trendy,womensfashion,modern,chic',
+  },
+  'Minimalism': {
+    Male: 'minimalist,mensfashion,clean,simple',
+    Female: 'minimalist,womensfashion,clean,simple',
+  },
+};
+
+function getUnsplashUrl(outfit: Outfit): string {
+  const keywords = UNSPLASH_KEYWORDS[outfit.style]?.[outfit.gender]
+    ?? UNSPLASH_KEYWORDS[outfit.style]?.['Male']
+    ?? 'fashion,outfit';
+  // Use outfit.id as seed for consistent image per card
+  return `https://source.unsplash.com/400x500/?${keywords}&sig=${outfit.id}`;
+}
+
 export function FashionView() {
   const [activeStyle, setActiveStyle] = useState('Tất cả');
   const [activeGender, setActiveGender] = useState('Tất cả');
   const [selected, setSelected] = useState<Outfit | null>(null);
+  const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
 
   const filtered = useMemo(() => {
     return OUTFITS.filter(o => {
@@ -106,9 +139,21 @@ export function FashionView() {
             onClick={() => setSelected(outfit)}
             className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow active:scale-95"
           >
-            {/* Image placeholder with Pinterest link hint */}
-            <div className="relative bg-gradient-to-br from-pink-50 to-purple-50 h-40 flex items-center justify-center">
-              <span className="material-symbols-outlined text-5xl text-slate-300" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
+            <div className="relative h-44 bg-gradient-to-br from-pink-50 to-purple-50 overflow-hidden">
+              {!imgErrors[outfit.id] ? (
+                <img
+                  src={getUnsplashUrl(outfit)}
+                  alt={outfit.description}
+                  className="w-full h-full object-cover"
+                  onError={() => setImgErrors(prev => ({ ...prev, [outfit.id]: true }))}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="material-symbols-outlined text-5xl text-slate-300" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
+                </div>
+              )}
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
               <div className="absolute top-2 left-2">
                 <span className="bg-white/90 text-[10px] font-bold text-primary px-2 py-0.5 rounded-full shadow-sm">
                   {outfit.style}
@@ -140,51 +185,70 @@ export function FashionView() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             onClick={e => e.stopPropagation()}
-            className="bg-white rounded-t-3xl w-full max-w-md p-6 pb-10"
+            className="bg-white rounded-t-3xl w-full max-w-md pb-10 overflow-hidden"
           >
-            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4" />
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{selected.style}</span>
-                <span className="ml-2 text-xs text-slate-400">{GENDER_LABEL[selected.gender]}</span>
-              </div>
-              <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-600">
+            {/* Preview image in modal */}
+            <div className="relative h-56 bg-gradient-to-br from-pink-50 to-purple-50 overflow-hidden">
+              {!imgErrors[selected.id] ? (
+                <img
+                  src={getUnsplashUrl(selected)}
+                  alt={selected.description}
+                  className="w-full h-full object-cover"
+                  onError={() => setImgErrors(prev => ({ ...prev, [selected.id]: true }))}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="material-symbols-outlined text-6xl text-slate-300" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <button
+                onClick={() => setSelected(null)}
+                className="absolute top-3 right-3 bg-black/40 text-white rounded-full p-1"
+              >
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            <p className="text-base font-semibold text-slate-800 mt-3 mb-4">{selected.description}</p>
-
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex-1 bg-primary/5 rounded-xl p-3 text-center">
-                <p className="text-[10px] text-slate-400 mb-0.5">Giá thuê</p>
-                <p className="text-sm font-bold text-primary">{formatVND(selected.rentPrice)}</p>
+            <div className="p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{selected.style}</span>
+                <span className="text-xs text-slate-400">{GENDER_LABEL[selected.gender]}</span>
               </div>
-              <div className="flex-1 bg-slate-50 rounded-xl p-3 text-center">
-                <p className="text-[10px] text-slate-400 mb-0.5">Style</p>
-                <p className="text-sm font-bold text-slate-700">{selected.style}</p>
-              </div>
-            </div>
 
-            <div className="flex flex-col gap-2">
-              <a
-                href={selected.imageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors"
-              >
-                <span className="material-symbols-outlined text-[18px]">photo_library</span>
-                Xem ảnh Pinterest
-              </a>
-              <a
-                href={selected.buyLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shadow-sm shadow-primary/30"
-              >
-                <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
-                Mua trên Shopee
-              </a>
+              <p className="text-base font-semibold text-slate-800 mb-4">{selected.description}</p>
+
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex-1 bg-primary/5 rounded-xl p-3 text-center">
+                  <p className="text-[10px] text-slate-400 mb-0.5">Giá thuê</p>
+                  <p className="text-sm font-bold text-primary">{formatVND(selected.rentPrice)}</p>
+                </div>
+                <div className="flex-1 bg-slate-50 rounded-xl p-3 text-center">
+                  <p className="text-[10px] text-slate-400 mb-0.5">Style</p>
+                  <p className="text-sm font-bold text-slate-700">{selected.style}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <a
+                  href={selected.imageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px]">photo_library</span>
+                  Xem ảnh Pinterest
+                </a>
+                <a
+                  href={selected.buyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shadow-sm shadow-primary/30"
+                >
+                  <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
+                  Mua trên Shopee
+                </a>
+              </div>
             </div>
           </motion.div>
         </div>
