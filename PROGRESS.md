@@ -8,7 +8,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-02 |
-| Phiên làm việc | #34 — UI UX Pro Max |
+| Phiên làm việc | #35 — DateMilesView Redesign |
 | Nhánh Git | `main` |
 
 ---
@@ -165,8 +165,9 @@ npm run dev
 - **Drive Sync**: Cập nhật `useDriveSync` đồng bộ `streak`.
 - **UI Integration**: Kết nối dữ liệu streak thực tế vào màn hình `DateMilesView`.
 
-### Session #34 — 2026-05-02
-- **DateMilesView Rewrite**: Viết lại toàn bộ component `DateMilesView.tsx` theo ảnh design mới.
-- **UI Fix**: Thêm `bg-background` và `min-h-screen` vào wrapper ngoài cùng.
-- **Design Tokens**: Sử dụng `primary-fixed`, `primary-container`, `glass-card` và `on-surface-variant` theo chuẩn Modern Romanticism.
+### Session #35 — 2026-05-02
+- **DateMilesView Redesign (Premium)**: Thực hiện redesign toàn diện tab Thành tích (Date Miles) với phong cách Modern Romanticism cao cấp.
+- **UI Enhancements**: Nâng cấp Hero Score Card với gradient phức hợp, hiệu ứng glassmorphism sâu, và progress bar tùy chỉnh.
+- **Component Polish**: Viết lại StatCard và BadgeCard với logic hover, grayscale cho badges chưa đạt, và material symbols chuẩn.
+- **Typography & Spacing**: Áp dụng triệt để "luxury spacing" và Epilogue headline font theo DESIGN.md.
 - **Files đã sửa**: `DateMilesView.tsx`, `PROGRESS.md`.
