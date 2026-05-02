@@ -736,7 +736,7 @@
     "price": 60000,
     "rating": 4.7,
     "mapsLink": "https://maps.app.goo.gl/PkVsMQmxarAVz9YD6",
-    "imageUrl": "https://www.google.com/maps/place/Little+Pie/@21.0337983,105.8777389,3a,75y,90t/data=!3m8!1e2!3m6!1sCIHM0ogKEICAgIDd8Li2zwE!2e10!3e12!6shttps:%2F%2Flh3.googleusercontent.com%2Fgps-cs-s%2FAPNQkAGzMREP1ZTPk0Qztsbc0QSBF4TnUyljN2lREexAsaD1ZgXRnaO1DNZADXNmaUqmrYPgjHY7zMRXlHk1M4Gkv_cCRXq3Z3e80N7RcIrpW2jCivmcNzCyUuSvc2b8CyfCeOVoA5CmTw%3Dw86-h184-k-no!7i1868!8i4000!4m7!3m6!1s0x3135a93c5c67242d:0xa3a1bb82ea0cce70!8m2!3d21.0337983!4d105.8777389!10e5!16s%2Fg%2F11fvlt700q?entry=ttu&g_ep=EgoyMDI2MDQxMy4wIKXMDSoASAFQAw%3D%3D",
+"imageUrl": "https://www.google.com/maps/place/Little+Pie/@21.0337983,105.8777389,3a,75y,90t/data=!3m8!1e2!3m6!1sCIHM0ogKEICAgIDd8Li2zwE!2e10!3e12!6shttps:%2F%2Flh3.googleusercontent.com%2Fgps-cs-s%2FAPNQkAGzMREP1ZTPk0Qztsbc0QSBF4TnUyljN2lREexAsaD1ZgXRnaO1DNZADXNmaUqmrYPgjHY7zMRXlHk1M4Gkv_cCRXq3Z3e80N7RcIrpW2jCivmcNzCyUuSvc2b8CyfCeOVoA5CmTw%3Dw86-h184-k-no!7i1868!8i4000!4m7!3m6!1s0x3135a93c5c67242d:0xa3a1bb82ea0cce70!8m2!3d21.0337983!4d105.8777389!10e5!16s%2Fg%2F11fvlt700q?entry=ttu&g_ep=EgoyMDI2MDQxMy4wIKXMDSoASAFQAw%3D%3D",
     "lat": 21.0337983,
     "lng": 105.8777389
   },
@@ -765,5 +765,44 @@
     "imageUrl": "https://www.google.com/maps/place/C'est+si+bon+Cafe/@21.0151281,105.8011809,3a,75y,90t/data=!3m8!1e2!3m6!1sCIHM0ogKEICAgMCgnKvrRA!2e10!3e12!6shttps:%2F%2Flh3.googleusercontent.com%2Fgps-cs-s%2FAPNQkAG_Rf7sgw9D-hUKrO82-JmDQKDs_dzLP0iuam13u8-xmij10d9X4f384H2PeJ-OiDLLTjdGuGw41ce4fnynCzDl5LXyImCcJKSQYl0Eyy-JQ0lT1RFNzmoFb_Nh-wVXgg2dY52n%3Dw86-h114-k-no!7i4284!8i5712!4m7!3m6!1s0x3135ab9459f0750b:0x206d9caccbfa84dc!8m2!3d21.0150113!4d105.8010413!10e5!16s%2Fg%2F11y5tgps5q?entry=ttu&g_ep=EgoyMDI2MDQxMy4wIKXMDSoASAFQAw%3D%3D",
     "lat": 21.0151281,
     "lng": 105.8011809
+  },
+  {
+    "id": "loc_60",
+    "name": "Maison Marou Flagship",
+    "category": "Cafe",
+    "theme": "Sô-cô-la, Hiện đại, Sang trọng",
+    "address": "91 P. Thợ Nhuộm, Trần Hưng Đạo, Hoàn Kiếm, Hà Nội",
+    "price": 150000,
+    "rating": 4.6,
+    "mapsLink": "https://maps.app.goo.gl/MAUaCi7R133DRpXE7",
+    "imageUrl": "https://lh3.googleusercontent.com/p/AF1QipN9_L_O0X3l_n_Ym9_N_Ym9_N_Ym9_N_Ym9_N_Ym9_N_Ym9=s1360-w1360-h1020",
+    "lat": 21.0252,
+    "lng": 105.8471
+  },
+  {
+    "id": "loc_61",
+    "name": "Note Coffee Hoàn Kiếm",
+    "category": "Cafe",
+    "theme": "Độc đáo, Post-it, Bờ Hồ",
+    "address": "64 Lương Văn Can, Hàng Trống, Hoàn Kiếm, Hà Nội",
+    "price": 50000,
+    "rating": 4.5,
+    "mapsLink": "https://maps.app.goo.gl/A8jrimAWdfs8HipE7",
+    "imageUrl": "https://lh3.googleusercontent.com/p/AF1QipM9_N_Ym9_N_Ym9_N_Ym9_N_Ym9_N_Ym9_N_Ym9=s1360-w1360-h1020",
+    "lat": 21.0315,
+    "lng": 105.8509
+  },
+  {
+    "id": "loc_62",
+    "name": "Pizza 4P's Phan Kế Bính",
+    "category": "Food",
+    "theme": "Nhà gỗ, Sang trọng, Thân thiện",
+    "address": "5 P. Phan Kế Bính, Cống Vị, Ba Đình, Hà Nội",
+    "price": 300000,
+    "rating": 4.8,
+    "mapsLink": "https://maps.app.goo.gl/ZNStx4BD4mE9xt8YA",
+    "imageUrl": "https://lh3.googleusercontent.com/p/AF1QipN8_N_Ym9_N_Ym9_N_Ym9_N_Ym9_N_Ym9_N_Ym9=s1360-w1360-h1020",
+    "lat": 21.0358,
+    "lng": 105.8115
   }
 ]

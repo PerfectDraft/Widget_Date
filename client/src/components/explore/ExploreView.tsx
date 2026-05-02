@@ -60,14 +60,15 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
-        const placesWithDist = REAL_LOCATIONS.map(p => ({
-          ...p, distance: p.lat && p.lng ? calculateDistance(lat, lng, p.lat, p.lng) : 999
-        }));
-        setDynamicPlaces(placesWithDist as LocationItem[]);
+        const sorted = [...REAL_LOCATIONS].map(loc => ({
+          ...loc,
+          distance: calculateDistance(lat, lng, loc.lat, loc.lng)
+        })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
+        setDynamicPlaces(sorted.slice(0, 15));
         setLoadingPlaces(false);
-        showToast(t.explore.toast_location_success);
       },
       (err) => {
+        console.error('Geolocation error:', err);
         const msgs: Record<number, string> = { 
           1: t.explore.search_error_denied, 
           2: t.explore.search_error_unknown, 
@@ -78,7 +79,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
         showToast(errorMsg); 
         setLoadingPlaces(false);
       },
-      { timeout: 10000, maximumAge: 60000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
 
