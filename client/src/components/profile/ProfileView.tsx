@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Phone, Lock, ChevronRight, CalendarCheck, RefreshCw, HelpCircle, FileText, LogOut, Cloud, CloudOff, ExternalLink, X, Eye, EyeOff, User } from 'lucide-react';
+import { ArrowLeft, Phone, Lock, ChevronRight, CalendarCheck, RefreshCw, HelpCircle, FileText, LogOut, Cloud, CloudOff, ExternalLink, X, Eye, EyeOff, User, Camera } from 'lucide-react';
 
 interface ProfileViewProps {
   phone: string;
@@ -18,18 +18,23 @@ interface ProfileViewProps {
 }
 
 export function ProfileView({
-  phone, userName: initialUserName, userAvatar, dateMiles, totalDates,
+  phone, userName: initialUserName, userAvatar: initialAvatar, dateMiles, totalDates,
   isDriveSynced, isSyncing, onDriveLogin, onDriveLogout,
   onLogout, onBack, showToast
 }: ProfileViewProps) {
   const [dateReminders, setDateReminders] = useState(true);
   const [appUpdates, setAppUpdates] = useState(false);
   const [userName, setUserName] = useState(initialUserName);
+  const [userAvatar, setUserAvatar] = useState(initialAvatar);
 
   // Edit Profile modal
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [editName, setEditName] = useState(initialUserName);
   const [editLoading, setEditLoading] = useState(false);
+  const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Change Password modal
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -44,13 +49,37 @@ export function ProfileView({
   const maskedPhone = phone
     ? phone.replace(/(\d{4})(\d+)(\d{3})/, '$1 *** $3')
     : '---';
-
   const memberSince = new Date().getFullYear();
+
+  const handleAvatarPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) return showToast('Ảnh tối đa 5MB');
+    setAvatarFile(file);
+    setPreviewAvatar(URL.createObjectURL(file));
+  };
 
   const handleEditProfile = async () => {
     if (!editName.trim()) return showToast('Tên không được để trống');
     setEditLoading(true);
     try {
+      let newAvatarUrl = userAvatar;
+
+      // Upload avatar if changed
+      if (avatarFile) {
+        setUploadingAvatar(true);
+        const uploadRes = await fetch('/api/auth/upload-avatar', {
+          method: 'POST',
+          headers: { 'Content-Type': avatarFile.type, 'x-phone': phone },
+          body: avatarFile,
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(uploadData.error);
+        newAvatarUrl = uploadData.url;
+        setUploadingAvatar(false);
+      }
+
+      // Update name
       const res = await fetch('/api/auth/update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,13 +87,18 @@ export function ProfileView({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+
       setUserName(data.userName);
+      setUserAvatar(newAvatarUrl);
+      setPreviewAvatar(null);
+      setAvatarFile(null);
       setShowEditProfile(false);
-      showToast('Đã cập nhật tên thành công! 🎉');
+      showToast('Đã cập nhật hồ sơ thành công! 🎉');
     } catch (err: any) {
       showToast(err.message || 'Có lỗi xảy ra');
     } finally {
       setEditLoading(false);
+      setUploadingAvatar(false);
     }
   };
 
@@ -125,7 +159,7 @@ export function ProfileView({
               <p className="text-sm text-[#524346]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Gold Member since {memberSince}</p>
             </div>
             <button
-              onClick={() => { setEditName(userName); setShowEditProfile(true); }}
+              onClick={() => { setEditName(userName); setPreviewAvatar(null); setAvatarFile(null); setShowEditProfile(true); }}
               className="px-4 py-2 rounded-full border-2 border-[#D9B784] text-[#745A2F] text-sm font-semibold hover:bg-[#FFDEAC]/20 transition-colors"
             >
               Edit
@@ -144,14 +178,14 @@ export function ProfileView({
           </div>
         </div>
 
-        {/* Account Section */}
+        {/* Account */}
         <SectionTitle>Account</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8 divide-y divide-[#EAE1DA]">
           <SettingsRow icon={<Phone className="w-5 h-5" />} label="Phone" value={maskedPhone} onClick={() => showToast('Số điện thoại không thể thay đổi')} />
           <SettingsRow icon={<Lock className="w-5 h-5" />} label="Change Password" onClick={() => { setOldPassword(''); setNewPassword(''); setConfirmPassword(''); setShowChangePassword(true); }} />
         </div>
 
-        {/* Sync Section */}
+        {/* Sync */}
         <SectionTitle>Data Sync</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8">
           <div className="flex items-center justify-between px-5 py-4">
@@ -212,83 +246,98 @@ export function ProfileView({
           <LogOut className="w-5 h-5" />
           Logout
         </button>
-
-        <p className="text-center text-xs text-[#847376]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+        <p className="text-center text-xs text-[#847376]">
           Version 2.4.1 • Made with love for {userName}
         </p>
       </div>
 
-      {/* Edit Profile Modal */}
+      {/* ── Edit Profile Modal ── */}
       <AnimatePresence>
         {showEditProfile && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-6"
             onClick={() => setShowEditProfile(false)}
           >
             <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
+              initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
               className="bg-white rounded-[28px] w-full max-w-sm p-6 shadow-xl"
             >
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Chỉnh sửa hồ sơ</h3>
-                <button onClick={() => setShowEditProfile(false)} className="text-[#847376] hover:text-[#524346]">
-                  <X className="w-5 h-5" />
-                </button>
+                <button onClick={() => setShowEditProfile(false)} className="text-[#847376] hover:text-[#524346]"><X className="w-5 h-5" /></button>
               </div>
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-[#524346] mb-1.5 block">Tên hiển thị</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#847376]" />
-                    <input
-                      value={editName}
-                      onChange={e => setEditName(e.target.value)}
-                      placeholder="Nhập tên của bạn"
-                      className="w-full pl-9 pr-4 py-3 rounded-xl border border-[#D6C1C5] bg-[#FFF8F4] text-sm text-[#1F1B17] outline-none focus:border-[#894C5C] transition-colors"
+
+              {/* Avatar picker */}
+              <div className="flex flex-col items-center mb-5">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-[3px] border-[#F4A7B9] shadow-sm">
+                    <img
+                      src={previewAvatar ?? userAvatar}
+                      alt="avatar"
+                      className="w-full h-full object-cover"
                     />
                   </div>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 bg-[#894C5C] text-white rounded-full p-1.5 shadow-md hover:bg-[#733949] transition-colors"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-                <button
-                  onClick={handleEditProfile}
-                  disabled={editLoading}
-                  className="w-full py-3 rounded-xl bg-[#894C5C] text-white font-semibold text-sm hover:bg-[#733949] transition-colors disabled:opacity-60"
-                >
-                  {editLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
-                </button>
+                <p className="text-xs text-[#847376] mt-2">Nhấn camera để đổi ảnh · Tối đa 5MB</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarPick}
+                />
               </div>
+
+              {/* Name input */}
+              <div className="mb-4">
+                <label className="text-xs font-semibold text-[#524346] mb-1.5 block">Tên hiển thị</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#847376]" />
+                  <input
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder="Nhập tên của bạn"
+                    className="w-full pl-9 pr-4 py-3 rounded-xl border border-[#D6C1C5] bg-[#FFF8F4] text-sm text-[#1F1B17] outline-none focus:border-[#894C5C] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleEditProfile}
+                disabled={editLoading}
+                className="w-full py-3 rounded-xl bg-[#894C5C] text-white font-semibold text-sm hover:bg-[#733949] transition-colors disabled:opacity-60"
+              >
+                {uploadingAvatar ? 'Đang tải ảnh...' : editLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
+              </button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Change Password Modal */}
+      {/* ── Change Password Modal ── */}
       <AnimatePresence>
         {showChangePassword && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-6"
             onClick={() => setShowChangePassword(false)}
           >
             <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
+              initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               onClick={e => e.stopPropagation()}
               className="bg-white rounded-[28px] w-full max-w-sm p-6 shadow-xl"
             >
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Đổi mật khẩu</h3>
-                <button onClick={() => setShowChangePassword(false)} className="text-[#847376] hover:text-[#524346]">
-                  <X className="w-5 h-5" />
-                </button>
+                <button onClick={() => setShowChangePassword(false)} className="text-[#847376] hover:text-[#524346]"><X className="w-5 h-5" /></button>
               </div>
               <div className="flex flex-col gap-3">
                 {[
