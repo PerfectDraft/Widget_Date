@@ -65,7 +65,8 @@ export function ProfileView({
 
       if (avatarFile) {
         setUploadingAvatar(true);
-        const uploadRes = await fetch('/api/auth?action=upload-avatar', {
+        // Dedicated endpoint with bodyParser:false for raw stream
+        const uploadRes = await fetch('/api/upload-avatar', {
           method: 'POST',
           headers: { 'Content-Type': avatarFile.type, 'x-phone': phone },
           body: avatarFile,
