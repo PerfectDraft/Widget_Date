@@ -43,21 +43,44 @@ const MOCK_UPCOMING: DateEntry[] = [
     partnerName: 'Minh Anh',
     partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBojnTPGX0bsTo6guSI3OZ86sVRPKlQ0f4HONgNxpp4VC_SncgSCgP6V2mJVS5QfONmPR-nCrNcZP9THWp5jS-hZYXwnWrgurnrnI6RH5M6Tr1iLJ6h2kyjIKFLNokOXJh2aaObQIAIUL4UWvMaJ0IAzhsWtVVRSggQArOecY5QequivReGsSYsMCXboiCwnJwoUZ1euGHQa_5j6WjDxi8tm7Xi1HC2Vj8_pEr3X2-6sFub6ZFIyax85jB5zv4RdnLKNRGhshdgyi_D',
     typeIcon: 'directions_walk'
+  },
+  {
+    id: '3',
+    title: 'Morning Coffee',
+    dateLabel: '08:00 • Sep 13',
+    location: 'The Note Coffee, Hoan Kiem, Hanoi',
+    status: 'confirmed',
+    partnerName: 'Minh Anh',
+    partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDs0MbF0SW4wg0y239gznRKNkV2_70V08BE2XnQ47KE5h2sCkkkf1PdyvQGkLgx_oGK7pqAmoQMjtvSuILye_RosX35YgJW5c3s_XVyJCrUtFF2U4TAJImErmB8zt4Y0xCUvAfKY_SeQqAgM_L-QsnH-5ssOwj2J76IXIKkD_MAswG00aEtjBXbVrf1B7aN6s033RdnjqxGIYqJXsXfwuwUuBFSqp-yCpoDlockf50is5KGo2_Wpk9zzvXBVeF_An1twKAbbwOZrK2Y',
+    typeIcon: 'local_cafe'
+  },
+  {
+    id: '4',
+    title: 'Late Night Movie',
+    dateLabel: '22:00 • Sep 15',
+    location: 'CGV Vincom Center, Dong Da, Hanoi',
+    status: 'pending',
+    partnerName: 'Minh Anh',
+    partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDs0MbF0SW4wg0y239gznRKNkV2_70V08BE2XnQ47KE5h2sCkkkf1PdyvQGkLgx_oGK7pqAmoQMjtvSuILye_RosX35YgJW5c3s_XVyJCrUtFF2U4TAJImErmB8zt4Y0xCUvAfKY_SeQqAgM_L-QsnH-5ssOwj2J76IXIKkD_MAswG00aEtjBXbVrf1B7aN6s033RdnjqxGIYqJXsXfwuwUuBFSqp-yCpoDlockf50is5KGo2_Wpk9zzvXBVeF_An1twKAbbwOZrK2Y',
+    typeIcon: 'movie'
   }
 ];
 
 const MOCK_PAST: DateEntry[] = [];
 
 // TODO: Connect to real date filter logic — currently visual-only
-function DateItem({ day, date, active }: { day: string; date: string; active?: boolean }) {
+function DateItem({ day, date, active, onClick }: { day: string; date: string; active?: boolean; onClick?: () => void }) {
   return (
     <div 
       aria-current={active ? "date" : undefined}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
       className={cn(
-        "flex flex-col items-center min-w-[64px] py-4 rounded-[20px] shrink-0 transition-all border",
+        "flex flex-col items-center min-w-[64px] py-4 rounded-[20px] shrink-0 transition-all border cursor-pointer active:scale-95",
         active 
           ? "bg-primary text-on-primary shadow-md shadow-primary/20 border-primary/30" 
-          : "bg-surface-container-low text-on-surface-variant border-outline-variant/20"
+          : "bg-surface-container-low text-on-surface-variant border-outline-variant/20 hover:border-primary/40"
       )}
     >
       <span className="text-xs font-medium uppercase leading-tight">{day}</span>
@@ -66,11 +89,119 @@ function DateItem({ day, date, active }: { day: string; date: string; active?: b
   );
 }
 
+function DateDetailModal({ item, onClose }: { item: DateEntry; onClose: () => void }) {
+  const { t } = useLocale();
+  
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+      />
+      <motion.div 
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="relative w-full max-w-lg bg-surface-container-lowest rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl z-10"
+      >
+        <div className="h-48 w-full relative">
+          {item.imageUrl ? (
+            <img src={item.imageUrl} className="w-full h-full object-cover" alt="" />
+          ) : (
+            <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[64px]">{item.typeIcon}</span>
+            </div>
+          )}
+          <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/40 transition-colors"
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <h2 className="text-headline-sm font-bold text-on-surface" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
+                {item.title}
+              </h2>
+              <p className="text-primary font-semibold flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[18px]">event</span>
+                {item.dateLabel}
+              </p>
+            </div>
+            <span className={cn(
+              "px-4 py-1.5 rounded-full text-xs font-bold uppercase border shadow-sm",
+              item.status === 'confirmed' 
+                ? "bg-tertiary-fixed/40 text-on-tertiary-fixed border-tertiary/30" 
+                : "bg-surface-container-high text-on-surface-variant border-outline-variant/30"
+            )}>
+              {item.status === 'confirmed' ? t.history.status_confirmed : t.history.status_pending}
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary-container/30 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-primary">location_on</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t.explore.open_maps}</p>
+                <p className="text-on-surface font-medium">{item.location}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-secondary-container/30 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-secondary">favorite</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t.history.partner}</p>
+                <div className="flex items-center gap-2">
+                  {item.partnerAvatar && (
+                    <img src={item.partnerAvatar} className="w-6 h-6 rounded-full border border-outline-variant/30" alt="" />
+                  )}
+                  <p className="text-on-surface font-medium">{item.partnerName}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10">
+              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t.history.notes}</p>
+              <p className="text-sm text-on-surface leading-relaxed">
+                Buổi hẹn hò tuyệt vời tại không gian lãng mạn. Đừng quên mang theo quà nhé!
+              </p>
+            </div>
+          </div>
+
+          <button 
+            onClick={onClose}
+            className="w-full py-4 bg-primary text-on-primary rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-shadow active:scale-[0.98]"
+          >
+            {t.common.cancel}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PAST }: HistoryViewProps) {
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
+  const [selectedDay, setSelectedDay] = useState<string>('12');
+  const [detailItem, setDetailItem] = useState<DateEntry | null>(null);
+  const [monthOffset, setMonthOffset] = useState<number>(0);
   const { t } = useLocale();
 
-  const currentDates = tab === 'upcoming' ? upcomingDates : pastDates;
+  const currentDates = (tab === 'upcoming' ? upcomingDates : pastDates).filter(item => {
+    if (selectedDay === '12') return item.dateLabel.includes('Today') || item.dateLabel.includes('Sep 12');
+    return item.dateLabel.includes(`Sep ${selectedDay}`);
+  });
 
   return (
     <div className="bg-background min-h-screen pb-24">
@@ -122,16 +253,18 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
                     aria-hidden="true">
                 calendar_month
               </span>
-              {t.history.september_2024}
+              {t.history.month_8}, 2024
             </h2>
             <div className="flex gap-2">
               <button 
+                onClick={() => setMonthOffset(prev => prev - 1)}
                 aria-label={t.history.prev_month}
                 className="w-8 h-8 rounded-full glass-card flex items-center justify-center text-primary hover:bg-primary-container/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <span className="material-symbols-outlined text-[20px]">chevron_left</span>
               </button>
               <button 
+                onClick={() => setMonthOffset(prev => prev + 1)}
                 aria-label={t.history.next_month}
                 className="w-8 h-8 rounded-full glass-card flex items-center justify-center text-primary hover:bg-primary-container/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
@@ -140,11 +273,21 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
             </div>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
-            <DateItem day="T2" date="12" active />
-            <DateItem day="T3" date="13" />
-            <DateItem day="T4" date="14" />
-            <DateItem day="T5" date="15" />
-            <DateItem day="T6" date="16" />
+            {[
+              { d: 'T2', n: '12' },
+              { d: 'T3', n: '13' },
+              { d: 'T4', n: '14' },
+              { d: 'T5', n: '15' },
+              { d: 'T6', n: '16' }
+            ].map(item => (
+              <DateItem 
+                key={item.n}
+                day={item.d} 
+                date={item.n} 
+                active={selectedDay === item.n}
+                onClick={() => setSelectedDay(item.n)}
+              />
+            ))}
           </div>
         </section>
 
@@ -209,7 +352,7 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
                           ? "bg-tertiary-fixed/40 text-on-tertiary-fixed border-tertiary/30" 
                           : "bg-surface-container-high text-on-surface-variant border-outline-variant/30"
                       )}>
-                        {item.status}
+                        {item.status === 'confirmed' ? t.history.status_confirmed : t.history.status_pending}
                       </span>
                     </div>
                     
@@ -238,12 +381,15 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
                         )}
                         <span className="text-sm font-bold text-on-surface">{item.partnerName}</span>
                       </div>
-                      <button className={cn(
-                        "px-5 py-2 rounded-full text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                        item.status === 'confirmed' 
-                          ? "bg-primary text-on-primary" 
-                          : "bg-surface-container-high text-on-surface-variant hover:bg-primary-container/30"
-                      )}>
+                      <button 
+                        onClick={() => setDetailItem(item)}
+                        className={cn(
+                          "px-5 py-2 rounded-full text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                          item.status === 'confirmed' 
+                            ? "bg-primary text-on-primary" 
+                            : "bg-surface-container-high text-on-surface-variant hover:bg-primary-container/30"
+                        )}
+                      >
                         {t.common.details}
                       </button>
                     </div>
@@ -254,6 +400,14 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
           )}
         </section>
       </main>
+
+      {/* Detail Modal */}
+      {detailItem && (
+        <DateDetailModal 
+          item={detailItem} 
+          onClose={() => setDetailItem(null)} 
+        />
+      )}
     </div>
   );
 }
