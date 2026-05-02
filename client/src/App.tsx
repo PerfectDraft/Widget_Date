@@ -25,6 +25,7 @@ import { ProfileView } from './components/profile/ProfileView';
 import { WeatherDetailView } from './components/weather/WeatherDetailView';
 import { ComboActionModal } from './components/modals/ComboActionModal';
 import { HistoryView } from './components/history/HistoryView';
+import { FashionView } from './components/fashion/FashionView';
 
 import type { Tab, Combo, LocationItem, ComboSlot } from './types';
 import { CATEGORY_SLOT_MAP } from './types';
@@ -116,7 +117,6 @@ export default function App() {
     setCombos([]);
     setPreferences(['Cafe']);
     setShowProfile(false);
-    // Clear all persisted data
     localStorage.removeItem('wd_auth');
     localStorage.removeItem('wd_phone');
     localStorage.removeItem('wd_combos');
@@ -201,32 +201,28 @@ export default function App() {
     setShowPaymentModal(true);
   };
 
-  /** Smart slot-filling: match loc.category to combo activity keywords */
   const findMatchingSlotIndex = (loc: LocationItem): number => {
     const locCat = (loc.category || '').toLowerCase();
     const locName = loc.name.toLowerCase();
     const locTheme = (loc.theme || '').toLowerCase();
 
     for (let i = 0; i < comboSlots.length; i++) {
-      if (comboSlots[i] !== null) continue; // already filled
+      if (comboSlots[i] !== null) continue;
       const act = activeCombo?.activities[i];
       if (!act) continue;
       const actName = act.name.toLowerCase();
 
-      // Check each slot map category
       for (const keywords of Object.values(CATEGORY_SLOT_MAP)) {
         const locMatches = keywords.some(kw => locCat.includes(kw) || locName.includes(kw) || locTheme.includes(kw));
         const actMatches = keywords.some(kw => actName.includes(kw));
         if (locMatches && actMatches) return i;
       }
     }
-    // Fallback: first empty slot
     return comboSlots.findIndex(s => s === null);
   };
 
   const handleAddToCombo = (loc: LocationItem) => {
     if (!activeCombo) {
-      // No combo active — add to saved places list
       setSavedPlaces(prev => {
         if (prev.some(p => p.id === loc.id)) {
           showToast(`${loc.name} đã có trong danh sách rồi!`);
@@ -238,7 +234,6 @@ export default function App() {
       return;
     }
 
-    // Combo Focus Mode — fill slot
     const allFilled = comboSlots.every(s => s !== null);
     if (allFilled) {
       showToast('Combo đã đầy đủ! Bấm "Chốt lịch" trên Home.');
@@ -293,7 +288,6 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-20 selection:bg-pink-200">
       <Toast message={toastMessage} onClose={hideToast} />
 
-      {/* Main Content — No top-level header, each view has its own */}
       <main id="main-content" className="max-w-md mx-auto w-full">
         <AnimatePresence mode="wait">
           {activeTab === 'home' && (
@@ -335,6 +329,7 @@ export default function App() {
               comboSlots={comboSlots}
             />
           )}
+          {activeTab === 'fashion' && <FashionView />}
           {activeTab === 'wallet' && <DateMilesView userReward={userReward} />}
           {activeTab === 'history' && <HistoryView />}
         </AnimatePresence>
@@ -342,10 +337,11 @@ export default function App() {
 
       {/* Bottom Nav */}
       <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 glass-card pb-safe z-40">
-        <div className="max-w-md mx-auto px-4 py-2 flex justify-around items-end">
+        <div className="max-w-md mx-auto px-2 py-2 flex justify-around items-end">
           {([
             { id: 'home', icon: 'home', label: 'Trang chủ' },
             { id: 'explore', icon: 'explore', label: 'Khám phá' },
+            { id: 'fashion', icon: 'checkroom', label: 'Phong cách' },
             { id: 'history', icon: 'history', label: 'Lịch sử' },
             { id: 'wallet', icon: 'emoji_events', label: 'Thành tích' },
           ] as const).map(item => {
@@ -357,7 +353,7 @@ export default function App() {
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'flex flex-col items-center gap-0.5 px-3 py-1 transition-all duration-300 relative cursor-pointer',
+                  'flex flex-col items-center gap-0.5 px-2 py-1 transition-all duration-300 relative cursor-pointer',
                   isActive ? 'text-primary -translate-y-1' : 'text-on-surface-variant/60 hover:text-on-surface-variant'
                 )}
               >
@@ -371,7 +367,7 @@ export default function App() {
                   )}
                   <span
                     className={cn(
-                      'material-symbols-outlined text-[24px] relative z-10 transition-all',
+                      'material-symbols-outlined text-[22px] relative z-10 transition-all',
                       isActive && 'font-bold'
                     )}
                     style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
@@ -380,7 +376,7 @@ export default function App() {
                   </span>
                 </div>
                 <span className={cn(
-                  'text-[10px] font-semibold transition-all',
+                  'text-[9px] font-semibold transition-all',
                   isActive ? 'text-primary' : 'text-on-surface-variant/60'
                 )}>
                   {item.label}
