@@ -13,7 +13,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-02 |
-| Phiên làm việc | #30 — HistoryView Redesign Execution |
+| Phiên làm việc | #31 — DateMilesView Redesign Execution |
 | Nhánh Git | `main` |
 
 ---
@@ -49,6 +49,7 @@ Data & Database    ████████░░░░░░░░░░░░ 
 - [x] **Image Viewer Modal** — Xem ảnh địa điểm (carousel)
 - [x] **Focus Mode & AI Combo** — Nâng cấp Focus Mode fullscreen, thêm Modal tùy chỉnh cho AI Combo, cho phép tạo Manual Combo.
 - [x] **HistoryView Redesign** — Đồng bộ 100% với "Modern Romanticism" design system
+- [x] **DateMilesView Redesign** — Đồng bộ 100% với "Modern Romanticism" design system, áp dụng chuẩn design tokens (on-surface, etc.)
 - [x] **i18n** — Thêm keys cho empty state trang Lịch sử
 - [x] **Outfit Gợi ý** — Bỏ tính năng này theo yêu cầu (W7)
 
@@ -403,3 +404,12 @@ npm run dev
 - **Verification**: Đã chạy `tsc` và pass 100% type safety.
 - Files đã sửa: `HistoryView.tsx`, `vi.json`, `PROGRESS.md`, `task.md`.
 - Tasks hoàn thành: Redesign HistoryView.
+
+### Session #31 — 2026-05-02
+- **DateMilesView Redesign**: Redesign toàn diện tab Thành tích (Date Miles) theo chuẩn Modern Romanticism.
+- **Design System Sync**: Đồng bộ hóa toàn bộ design tokens (text-on-surface, text-on-surface-variant, surface-container-low).
+- **UI Polish**: Redesign Hero Card với gradient custom rực rỡ, Stats Row và Badges Grid sử dụng glass-card. Thay thế emoji 🔥 bằng icon Flame.
+- **Verification**: Đã chạy `tsc` (Pass 100%) và bộ lệnh `grep` checklist (0 kết quả cho các class rác).
+- Files đã sửa: `constants.ts`, `DateMilesView.tsx`, `PROGRESS.md`, `task.md`.
+- Tasks hoàn thành: Redesign DateMilesView.
+- Bugfix: Sửa lỗi syntax `whiteSpace` trong `index.css` và chuẩn hóa class `.sr-only`.
