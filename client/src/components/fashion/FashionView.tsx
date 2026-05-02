@@ -21,36 +21,20 @@ const GENDER_LABEL: Record<string, string> = {
   Unisex: 'Unisex',
 };
 
-// Unsplash keyword map: style + gender → search keywords
-const UNSPLASH_KEYWORDS: Record<string, Record<string, string>> = {
-  'Old Money': {
-    Male: 'elegant,mensfashion,classic,suit',
-    Female: 'elegant,womensfashion,luxury,dress',
-  },
-  'Vintage': {
-    Male: 'vintage,mensfashion,retro,style',
-    Female: 'vintage,womensfashion,retro,floral',
-  },
-  'Streetwear': {
-    Male: 'streetwear,urban,hoodie,mens',
-    Female: 'streetwear,urban,oversized,womens',
-  },
-  'Trendy': {
-    Male: 'trendy,mensfashion,modern,style',
-    Female: 'trendy,womensfashion,modern,chic',
-  },
-  'Minimalism': {
-    Male: 'minimalist,mensfashion,clean,simple',
-    Female: 'minimalist,womensfashion,clean,simple',
-  },
+// Picsum seed map per style+gender for consistent, relevant-ish fashion photos
+const PICSUM_SEEDS: Record<string, Record<string, number>> = {
+  'Old Money':    { Male: 10, Female: 11 },
+  'Vintage':      { Male: 20, Female: 21 },
+  'Streetwear':   { Male: 30, Female: 31 },
+  'Trendy':       { Male: 40, Female: 41 },
+  'Minimalism':   { Male: 50, Female: 51 },
 };
 
-function getUnsplashUrl(outfit: Outfit): string {
-  const keywords = UNSPLASH_KEYWORDS[outfit.style]?.[outfit.gender]
-    ?? UNSPLASH_KEYWORDS[outfit.style]?.['Male']
-    ?? 'fashion,outfit';
-  // Use outfit.id as seed for consistent image per card
-  return `https://source.unsplash.com/400x500/?${keywords}&sig=${outfit.id}`;
+function getImgUrl(outfit: Outfit, width = 400, height = 500): string {
+  const baseSeed = PICSUM_SEEDS[outfit.style]?.[outfit.gender] ?? 60;
+  // Add outfit.id offset so cards within same style differ
+  const seed = baseSeed + outfit.id;
+  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
 }
 
 export function FashionView() {
@@ -73,15 +57,15 @@ export function FashionView() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.25 }}
-      className="min-h-screen bg-slate-50 pb-24"
+      className="min-h-screen bg-background pb-24"
     >
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 pt-12 pb-3">
+      <div className="sticky top-0 z-20 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 px-4 pt-12 pb-3">
         <div className="flex items-center gap-2 mb-3">
           <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
-          <h1 className="text-xl font-bold text-slate-800">Phong cách</h1>
+          <h1 className="text-xl font-bold text-on-surface">Phong cách</h1>
         </div>
-        <p className="text-xs text-slate-400 mb-3">Gợi ý outfit hẹn hò · Thuê hoặc mua ngay</p>
+        <p className="text-xs text-on-surface-variant/60 mb-3">Gợi ý outfit hẹn hò · Thuê hoặc mua ngay</p>
 
         {/* Style filter */}
         <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
@@ -92,8 +76,8 @@ export function FashionView() {
               className={cn(
                 'flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all',
                 activeStyle === s
-                  ? 'bg-primary text-white shadow-sm shadow-primary/30'
-                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                  ? 'bg-primary text-on-primary shadow-sm'
+                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
               )}
             >
               {s !== 'Tất cả' && (
@@ -113,8 +97,8 @@ export function FashionView() {
               className={cn(
                 'px-3 py-1 rounded-full text-xs font-medium transition-all',
                 activeGender === g
-                  ? 'bg-pink-500 text-white'
-                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                  ? 'bg-primary-container text-on-primary-container font-bold'
+                  : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
               )}
             >
               {g === 'Male' ? 'Nam' : g === 'Female' ? 'Nữ' : g}
@@ -125,7 +109,7 @@ export function FashionView() {
 
       {/* Count */}
       <div className="px-4 pt-3 pb-1">
-        <span className="text-xs text-slate-400">{filtered.length} outfit</span>
+        <span className="text-xs text-on-surface-variant/50">{filtered.length} outfit</span>
       </div>
 
       {/* Grid */}
@@ -137,40 +121,40 @@ export function FashionView() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.04 }}
             onClick={() => setSelected(outfit)}
-            className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow active:scale-95"
+            className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden cursor-pointer hover:shadow-md transition-shadow active:scale-95"
           >
-            <div className="relative h-44 bg-gradient-to-br from-pink-50 to-purple-50 overflow-hidden">
+            <div className="relative h-44 bg-surface-container overflow-hidden">
               {!imgErrors[outfit.id] ? (
                 <img
-                  src={getUnsplashUrl(outfit)}
+                  src={getImgUrl(outfit)}
                   alt={outfit.description}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                   onError={() => setImgErrors(prev => ({ ...prev, [outfit.id]: true }))}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-5xl text-slate-300" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
+                <div className="w-full h-full flex items-center justify-center bg-surface-container">
+                  <span className="material-symbols-outlined text-5xl text-on-surface-variant/20" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
                 </div>
               )}
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
               <div className="absolute top-2 left-2">
-                <span className="bg-white/90 text-[10px] font-bold text-primary px-2 py-0.5 rounded-full shadow-sm">
+                <span className="bg-surface-container-lowest/90 text-[10px] font-bold text-primary px-2 py-0.5 rounded-full shadow-sm">
                   {outfit.style}
                 </span>
               </div>
               <div className="absolute top-2 right-2">
-                <span className="bg-white/90 text-[10px] font-medium text-slate-500 px-2 py-0.5 rounded-full shadow-sm">
+                <span className="bg-surface-container-lowest/90 text-[10px] font-medium text-on-surface-variant px-2 py-0.5 rounded-full shadow-sm">
                   {GENDER_LABEL[outfit.gender]}
                 </span>
               </div>
             </div>
 
             <div className="p-3">
-              <p className="text-xs font-medium text-slate-700 line-clamp-2 mb-2">{outfit.description}</p>
+              <p className="text-xs font-medium text-on-surface line-clamp-2 mb-2">{outfit.description}</p>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-primary">{formatVND(outfit.rentPrice)}<span className="text-slate-400 font-normal">/thuê</span></span>
-                <span className="material-symbols-outlined text-slate-300 text-[18px]">chevron_right</span>
+                <span className="text-xs font-bold text-primary">{formatVND(outfit.rentPrice)}<span className="text-on-surface-variant/50 font-normal">/thuê</span></span>
+                <span className="material-symbols-outlined text-on-surface-variant/30 text-[18px]">chevron_right</span>
               </div>
             </div>
           </motion.div>
@@ -185,20 +169,19 @@ export function FashionView() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             onClick={e => e.stopPropagation()}
-            className="bg-white rounded-t-3xl w-full max-w-md pb-10 overflow-hidden"
+            className="bg-surface rounded-t-3xl w-full max-w-md pb-10 overflow-hidden"
           >
-            {/* Preview image in modal */}
-            <div className="relative h-56 bg-gradient-to-br from-pink-50 to-purple-50 overflow-hidden">
+            <div className="relative h-56 bg-surface-container overflow-hidden">
               {!imgErrors[selected.id] ? (
                 <img
-                  src={getUnsplashUrl(selected)}
+                  src={getImgUrl(selected, 800, 560)}
                   alt={selected.description}
                   className="w-full h-full object-cover"
                   onError={() => setImgErrors(prev => ({ ...prev, [selected.id]: true }))}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-6xl text-slate-300" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
+                  <span className="material-symbols-outlined text-6xl text-on-surface-variant/20" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -213,19 +196,19 @@ export function FashionView() {
             <div className="p-5">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{selected.style}</span>
-                <span className="text-xs text-slate-400">{GENDER_LABEL[selected.gender]}</span>
+                <span className="text-xs text-on-surface-variant">{GENDER_LABEL[selected.gender]}</span>
               </div>
 
-              <p className="text-base font-semibold text-slate-800 mb-4">{selected.description}</p>
+              <p className="text-base font-semibold text-on-surface mb-4">{selected.description}</p>
 
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex-1 bg-primary/5 rounded-xl p-3 text-center">
-                  <p className="text-[10px] text-slate-400 mb-0.5">Giá thuê</p>
+                  <p className="text-[10px] text-on-surface-variant/60 mb-0.5">Giá thuê</p>
                   <p className="text-sm font-bold text-primary">{formatVND(selected.rentPrice)}</p>
                 </div>
-                <div className="flex-1 bg-slate-50 rounded-xl p-3 text-center">
-                  <p className="text-[10px] text-slate-400 mb-0.5">Style</p>
-                  <p className="text-sm font-bold text-slate-700">{selected.style}</p>
+                <div className="flex-1 bg-surface-container rounded-xl p-3 text-center">
+                  <p className="text-[10px] text-on-surface-variant/60 mb-0.5">Style</p>
+                  <p className="text-sm font-bold text-on-surface">{selected.style}</p>
                 </div>
               </div>
 
@@ -234,7 +217,7 @@ export function FashionView() {
                   href={selected.imageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-surface-container text-on-surface font-semibold text-sm hover:bg-surface-container-high transition-colors"
                 >
                   <span className="material-symbols-outlined text-[18px]">photo_library</span>
                   Xem ảnh Pinterest
@@ -243,7 +226,7 @@ export function FashionView() {
                   href={selected.buyLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shadow-sm shadow-primary/30"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm hover:bg-primary/90 transition-colors shadow-sm shadow-primary/30"
                 >
                   <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
                   Mua trên Shopee
