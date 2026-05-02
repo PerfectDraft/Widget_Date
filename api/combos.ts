@@ -30,7 +30,7 @@ Trả về JSON array gồm 3 combo hẹn hò theo format:
     "category": string
   }]
 }]
-Chỉ trả JSON, không giải thích.`;
+Chỉ trả JSON thuần túy (raw JSON array), không giải thích, không markdown, không code block.`;
 
   const userMsg = `Tạo 3 combo hẹn hò tại ${location || 'Hà Nội'}.
 Sở thích: ${(preferences || []).join(', ') || 'Café, Ẩm thực'}.
@@ -51,7 +51,6 @@ Thời tiết hôm nay: ${weather || 'bình thường'}.`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMsg },
         ],
-        response_format: { type: 'json_object' },
       }),
     });
 
@@ -62,7 +61,11 @@ Thời tiết hôm nay: ${weather || 'bình thường'}.`;
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || '[]';
+    let content = data.choices?.[0]?.message?.content || '[]';
+
+    // Strip markdown code block if model wraps JSON in ```json ... ```
+    content = content.replace(/^```[\w]*\n?/i, '').replace(/\n?```$/i, '').trim();
+
     let combos;
     try {
       const parsed = JSON.parse(content);
