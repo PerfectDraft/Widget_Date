@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
-import { ArrowLeft, Mail, Phone, Lock, ChevronRight, Bell, CalendarCheck, RefreshCw, HelpCircle, FileText, LogOut, Cloud, CloudOff, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowLeft, Phone, Lock, ChevronRight, CalendarCheck, RefreshCw, HelpCircle, FileText, LogOut, Cloud, CloudOff, ExternalLink, X, Eye, EyeOff, User } from 'lucide-react';
 
 interface ProfileViewProps {
   phone: string;
@@ -8,30 +8,91 @@ interface ProfileViewProps {
   userAvatar: string;
   dateMiles: number;
   totalDates: number;
-  // Drive sync
   isDriveSynced: boolean;
   isSyncing: boolean;
   onDriveLogin: () => void;
   onDriveLogout: () => void;
-  // Actions
   onLogout: () => void;
   onBack: () => void;
   showToast: (msg: string) => void;
 }
 
 export function ProfileView({
-  phone, userName, userAvatar, dateMiles, totalDates,
+  phone, userName: initialUserName, userAvatar, dateMiles, totalDates,
   isDriveSynced, isSyncing, onDriveLogin, onDriveLogout,
   onLogout, onBack, showToast
 }: ProfileViewProps) {
   const [dateReminders, setDateReminders] = useState(true);
   const [appUpdates, setAppUpdates] = useState(false);
+  const [userName, setUserName] = useState(initialUserName);
+
+  // Edit Profile modal
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [editName, setEditName] = useState(initialUserName);
+  const [editLoading, setEditLoading] = useState(false);
+
+  // Change Password modal
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pwLoading, setPwLoading] = useState(false);
 
   const maskedPhone = phone
     ? phone.replace(/(\d{4})(\d+)(\d{3})/, '$1 *** $3')
     : '---';
 
   const memberSince = new Date().getFullYear();
+
+  const handleEditProfile = async () => {
+    if (!editName.trim()) return showToast('Tên không được để trống');
+    setEditLoading(true);
+    try {
+      const res = await fetch('/api/auth/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, userName: editName }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setUserName(data.userName);
+      setShowEditProfile(false);
+      showToast('Đã cập nhật tên thành công! 🎉');
+    } catch (err: any) {
+      showToast(err.message || 'Có lỗi xảy ra');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!oldPassword || !newPassword || !confirmPassword)
+      return showToast('Vui lòng điền đầy đủ thông tin');
+    if (newPassword !== confirmPassword)
+      return showToast('Mật khẩu mới không khớp');
+    if (newPassword.length < 6)
+      return showToast('Mật khẩu mới phải từ 6 ký tự');
+    setPwLoading(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, oldPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setShowChangePassword(false);
+      setOldPassword(''); setNewPassword(''); setConfirmPassword('');
+      showToast('Đổi mật khẩu thành công! 🔒');
+    } catch (err: any) {
+      showToast(err.message || 'Có lỗi xảy ra');
+    } finally {
+      setPwLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -44,15 +105,10 @@ export function ProfileView({
       <div className="max-w-md mx-auto px-6 py-6 pb-12">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <button
-            onClick={onBack}
-            className="p-2 rounded-2xl hover:bg-[#F5ECE5] transition-colors"
-          >
+          <button onClick={onBack} className="p-2 rounded-2xl hover:bg-[#F5ECE5] transition-colors">
             <ArrowLeft className="w-5 h-5 text-[#894C5C]" />
           </button>
-          <h1 className="text-2xl font-semibold text-[#894C5C]" style={{ fontFamily: 'Epilogue, sans-serif' }}>
-            Settings
-          </h1>
+          <h1 className="text-2xl font-semibold text-[#894C5C]" style={{ fontFamily: 'Epilogue, sans-serif' }}>Settings</h1>
         </div>
 
         {/* Profile Card */}
@@ -65,22 +121,16 @@ export function ProfileView({
               <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-white" />
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue, sans-serif' }}>
-                {userName}
-              </h2>
-              <p className="text-sm text-[#524346]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                Gold Member since {memberSince}
-              </p>
+              <h2 className="text-xl font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue, sans-serif' }}>{userName}</h2>
+              <p className="text-sm text-[#524346]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Gold Member since {memberSince}</p>
             </div>
             <button
-              onClick={() => showToast('Tính năng Edit Profile sẽ sớm ra mắt! 🌹')}
+              onClick={() => { setEditName(userName); setShowEditProfile(true); }}
               className="px-4 py-2 rounded-full border-2 border-[#D9B784] text-[#745A2F] text-sm font-semibold hover:bg-[#FFDEAC]/20 transition-colors"
             >
-              Edit Profile
+              Edit
             </button>
           </div>
-
-          {/* Stats */}
           <div className="flex gap-4 mt-5 pt-5 border-t border-[#EAE1DA]">
             <div className="flex-1 text-center">
               <p className="text-2xl font-bold text-[#894C5C]" style={{ fontFamily: 'Epilogue' }}>{dateMiles}</p>
@@ -98,7 +148,7 @@ export function ProfileView({
         <SectionTitle>Account</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8 divide-y divide-[#EAE1DA]">
           <SettingsRow icon={<Phone className="w-5 h-5" />} label="Phone" value={maskedPhone} onClick={() => showToast('Số điện thoại không thể thay đổi')} />
-          <SettingsRow icon={<Lock className="w-5 h-5" />} label="Change Password" onClick={() => showToast('Tính năng đổi mật khẩu sẽ sớm ra mắt!')} />
+          <SettingsRow icon={<Lock className="w-5 h-5" />} label="Change Password" onClick={() => { setOldPassword(''); setNewPassword(''); setConfirmPassword(''); setShowChangePassword(true); }} />
         </div>
 
         {/* Sync Section */}
@@ -106,22 +156,13 @@ export function ProfileView({
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8">
           <div className="flex items-center justify-between px-5 py-4">
             <div className="flex items-center gap-3">
-              {isDriveSynced
-                ? <Cloud className="w-5 h-5 text-[#894C5C]" />
-                : <CloudOff className="w-5 h-5 text-[#847376]" />}
+              {isDriveSynced ? <Cloud className="w-5 h-5 text-[#894C5C]" /> : <CloudOff className="w-5 h-5 text-[#847376]" />}
               <div>
                 <p className="text-sm font-semibold text-[#1F1B17]">Google Drive Backup</p>
-                <p className="text-xs text-[#847376]">
-                  {isDriveSynced
-                    ? isSyncing ? 'Đang đồng bộ...' : 'Đã đồng bộ'
-                    : 'Chưa kết nối'}
-                </p>
+                <p className="text-xs text-[#847376]">{isDriveSynced ? (isSyncing ? 'Đang đồng bộ...' : 'Đã đồng bộ') : 'Chưa kết nối'}</p>
               </div>
             </div>
-            <ToggleSwitch
-              checked={isDriveSynced}
-              onChange={() => isDriveSynced ? onDriveLogout() : onDriveLogin()}
-            />
+            <ToggleSwitch checked={isDriveSynced} onChange={() => isDriveSynced ? onDriveLogout() : onDriveLogin()} />
           </div>
         </div>
 
@@ -172,11 +213,121 @@ export function ProfileView({
           Logout
         </button>
 
-        {/* Footer */}
         <p className="text-center text-xs text-[#847376]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
           Version 2.4.1 • Made with love for {userName}
         </p>
       </div>
+
+      {/* Edit Profile Modal */}
+      <AnimatePresence>
+        {showEditProfile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-6"
+            onClick={() => setShowEditProfile(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-[28px] w-full max-w-sm p-6 shadow-xl"
+            >
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Chỉnh sửa hồ sơ</h3>
+                <button onClick={() => setShowEditProfile(false)} className="text-[#847376] hover:text-[#524346]">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-[#524346] mb-1.5 block">Tên hiển thị</label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#847376]" />
+                    <input
+                      value={editName}
+                      onChange={e => setEditName(e.target.value)}
+                      placeholder="Nhập tên của bạn"
+                      className="w-full pl-9 pr-4 py-3 rounded-xl border border-[#D6C1C5] bg-[#FFF8F4] text-sm text-[#1F1B17] outline-none focus:border-[#894C5C] transition-colors"
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={handleEditProfile}
+                  disabled={editLoading}
+                  className="w-full py-3 rounded-xl bg-[#894C5C] text-white font-semibold text-sm hover:bg-[#733949] transition-colors disabled:opacity-60"
+                >
+                  {editLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Change Password Modal */}
+      <AnimatePresence>
+        {showChangePassword && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-6"
+            onClick={() => setShowChangePassword(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-[28px] w-full max-w-sm p-6 shadow-xl"
+            >
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Đổi mật khẩu</h3>
+                <button onClick={() => setShowChangePassword(false)} className="text-[#847376] hover:text-[#524346]">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-3">
+                {[
+                  { label: 'Mật khẩu hiện tại', val: oldPassword, set: setOldPassword, show: showOld, toggleShow: () => setShowOld(v => !v) },
+                  { label: 'Mật khẩu mới', val: newPassword, set: setNewPassword, show: showNew, toggleShow: () => setShowNew(v => !v) },
+                  { label: 'Xác nhận mật khẩu mới', val: confirmPassword, set: setConfirmPassword, show: showConfirm, toggleShow: () => setShowConfirm(v => !v) },
+                ].map(({ label, val, set, show, toggleShow }) => (
+                  <div key={label}>
+                    <label className="text-xs font-semibold text-[#524346] mb-1.5 block">{label}</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#847376]" />
+                      <input
+                        type={show ? 'text' : 'password'}
+                        value={val}
+                        onChange={e => set(e.target.value)}
+                        placeholder="••••••"
+                        className="w-full pl-9 pr-10 py-3 rounded-xl border border-[#D6C1C5] bg-[#FFF8F4] text-sm text-[#1F1B17] outline-none focus:border-[#894C5C] transition-colors"
+                      />
+                      <button type="button" onClick={toggleShow} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#847376]">
+                        {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                  <p className="text-xs text-[#BA1A1A]">Mật khẩu xác nhận không khớp</p>
+                )}
+                <button
+                  onClick={handleChangePassword}
+                  disabled={pwLoading}
+                  className="w-full py-3 rounded-xl bg-[#894C5C] text-white font-semibold text-sm hover:bg-[#733949] transition-colors disabled:opacity-60 mt-1"
+                >
+                  {pwLoading ? 'Đang xử lý...' : 'Xác nhận đổi mật khẩu'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
