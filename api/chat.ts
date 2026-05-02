@@ -10,14 +10,26 @@ export default async function handler(req: any, res: any) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Missing OPENROUTER_API_KEY' });
 
-  const { messages, userId } = req.body;
-  if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: 'messages array required' });
+  const { history, message } = req.body;
+  if (!message || typeof message !== 'string' || message.trim() === '') {
+    return res.status(400).json({ error: 'message string required' });
+  }
+  if (!Array.isArray(history)) {
+    return res.status(400).json({ error: 'history array required' });
   }
 
   const systemPrompt = `Bạn là trợ lý AI hẹn hò thông minh tên "Date AI", chuyên tư vấn địa điểm hẹn hò tại Hà Nội, Việt Nam.
 Bạn thân thiện, vui vẻ, hiểu tâm lý cặp đôi. Trả lời ngắn gọn, súc tích bằng tiếng Việt.
 Khi đề xuất địa điểm, cố gắng cung cấp tên thực, địa chỉ và giá ước tính.`;
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...history.map((m: any) => ({
+      role: m.role === 'model' ? 'assistant' : m.role,
+      content: m.text,
+    })),
+    { role: 'user', content: message },
+  ];
 
   try {
     const response = await fetch(OPENROUTER_API, {
@@ -29,10 +41,7 @@ Khi đề xuất địa điểm, cố gắng cung cấp tên thực, địa ch�
       },
       body: JSON.stringify({
         model: process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages.map((m: any) => ({ role: m.role === 'model' ? 'assistant' : m.role, content: m.text })),
-        ],
+        messages,
       }),
     });
 
