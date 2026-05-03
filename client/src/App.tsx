@@ -328,6 +328,9 @@ export default function App() {
               onManualCombo={handleManualCombo}
               onAddSlot={handleAddSlot}
               setActiveCombo={setActiveCombo}
+              userName={userName || phone || ''}
+              userAvatar={userAvatar}
+              dateMiles={userReward.totalMiles}
             />
           )}
           {activeTab === 'explore' && (
