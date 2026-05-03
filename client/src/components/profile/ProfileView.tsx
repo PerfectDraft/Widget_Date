@@ -53,13 +53,13 @@ export function ProfileView({
   const handleAvatarPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return showToast('\u1ea2nh t\u1ed1i \u0111a 5MB');
+    if (file.size > 5 * 1024 * 1024) return showToast('Ảnh tối đa 5MB');
     setAvatarFile(file);
     setPreviewAvatar(URL.createObjectURL(file));
   };
 
   const handleEditProfile = async () => {
-    if (!editName.trim()) return showToast('T\u00ean kh\u00f4ng \u0111\u01b0\u1ee3c \u0111\u1ec3 tr\u1ed1ng');
+    if (!editName.trim()) return showToast('Tên không được để trống');
     setEditLoading(true);
     try {
       let newAvatarUrl = userAvatar;
@@ -91,9 +91,9 @@ export function ProfileView({
       setAvatarFile(null);
       setShowEditProfile(false);
       onProfileUpdated?.(data.userName, newAvatarUrl);
-      showToast('\u0110\u00e3 c\u1eadp nh\u1eadt h\u1ed3 s\u01a1 th\u00e0nh c\u00f4ng! \ud83c\udf89');
+      showToast('Đã cập nhật hồ sơ thành công! 🎉');
     } catch (err: any) {
-      showToast(err.message || 'C\u00f3 l\u1ed7i x\u1ea3y ra');
+      showToast(err.message || 'Có lỗi xảy ra');
     } finally {
       setEditLoading(false);
       setUploadingAvatar(false);
@@ -102,11 +102,11 @@ export function ProfileView({
 
   const handleChangePassword = async () => {
     if (!oldPassword || !newPassword || !confirmPassword)
-      return showToast('Vui l\u00f2ng \u0111i\u1ec1n \u0111\u1ea7y \u0111\u1ee7 th\u00f4ng tin');
+      return showToast('Vui lòng điền đầy đủ thông tin');
     if (newPassword !== confirmPassword)
-      return showToast('M\u1eadt kh\u1ea9u m\u1edbi kh\u00f4ng kh\u1edbp');
+      return showToast('Mật khẩu mới không khớp');
     if (newPassword.length < 6)
-      return showToast('M\u1eadt kh\u1ea9u m\u1edbi ph\u1ea3i t\u1eeb 6 k\u00fd t\u1ef1');
+      return showToast('Mật khẩu mới phải từ 6 ký tự');
     setPwLoading(true);
     try {
       const res = await fetch('/api/auth?action=change-password', {
@@ -118,9 +118,9 @@ export function ProfileView({
       if (!res.ok) throw new Error(data.error);
       setShowChangePassword(false);
       setOldPassword(''); setNewPassword(''); setConfirmPassword('');
-      showToast('\u0110\u1ed5i m\u1eadt kh\u1ea9u th\u00e0nh c\u00f4ng! \ud83d\udd12');
+      showToast('Đổi mật khẩu thành công! 🔒');
     } catch (err: any) {
-      showToast(err.message || 'C\u00f3 l\u1ed7i x\u1ea3y ra');
+      showToast(err.message || 'Có lỗi xảy ra');
     } finally {
       setPwLoading(false);
     }
@@ -169,14 +169,14 @@ export function ProfileView({
             <div className="w-px bg-[#D6C1C5]" />
             <div className="flex-1 text-center">
               <p className="text-2xl font-bold text-[#894C5C]" style={{ fontFamily: 'Epilogue' }}>{totalDates}</p>
-              <p className="text-xs text-[#524346] mt-1">Bu\u1ed5i h\u1eb9n</p>
+              <p className="text-xs text-[#524346] mt-1">Buổi hẹn</p>
             </div>
           </div>
         </div>
 
         <SectionTitle>Account</SectionTitle>
         <div className="bg-white/70 backdrop-blur-xl rounded-[24px] shadow-[0_4px_20px_rgba(137,76,92,0.04)] mb-8 divide-y divide-[#EAE1DA]">
-          <SettingsRow icon={<Phone className="w-5 h-5" />} label="Phone" value={maskedPhone} onClick={() => showToast('S\u1ed1 \u0111i\u1ec7n tho\u1ea1i kh\u00f4ng th\u1ec3 thay \u0111\u1ed5i')} />
+          <SettingsRow icon={<Phone className="w-5 h-5" />} label="Phone" value={maskedPhone} onClick={() => showToast('Số điện thoại không thể thay đổi')} />
           <SettingsRow icon={<Lock className="w-5 h-5" />} label="Change Password" onClick={() => { setOldPassword(''); setNewPassword(''); setConfirmPassword(''); setShowChangePassword(true); }} />
         </div>
 
@@ -187,7 +187,7 @@ export function ProfileView({
               {isDriveSynced ? <Cloud className="w-5 h-5 text-[#894C5C]" /> : <CloudOff className="w-5 h-5 text-[#847376]" />}
               <div>
                 <p className="text-sm font-semibold text-[#1F1B17]">Google Drive Backup</p>
-                <p className="text-xs text-[#847376]">{isDriveSynced ? (isSyncing ? '\u0110ang \u0111\u1ed3ng b\u1ed9...' : '\u0110\u00e3 \u0111\u1ed3ng b\u1ed9') : 'Ch\u01b0a k\u1ebft n\u1ed1i'}</p>
+                <p className="text-xs text-[#847376]">{isDriveSynced ? (isSyncing ? 'Đang đồng bộ...' : 'Đã đồng bộ') : 'Chưa kết nối'}</p>
               </div>
             </div>
             <ToggleSwitch checked={isDriveSynced} onChange={() => isDriveSynced ? onDriveLogout() : onDriveLogin()} />
@@ -238,7 +238,7 @@ export function ProfileView({
           Logout
         </button>
         <p className="text-center text-xs text-[#847376]">
-          Version 2.4.1 \u2022 Made with love for {userName}
+          Version 2.4.1 • Made with love for {userName}
         </p>
       </div>
 
@@ -256,7 +256,7 @@ export function ProfileView({
               className="bg-white rounded-[28px] w-full max-w-sm p-6 shadow-xl"
             >
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Ch\u1ec9nh s\u1eeda h\u1ed3 s\u01a1</h3>
+                <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Chỉnh sửa hồ sơ</h3>
                 <button onClick={() => setShowEditProfile(false)} className="text-[#847376] hover:text-[#524346]"><X className="w-5 h-5" /></button>
               </div>
               <div className="flex flex-col items-center mb-5">
@@ -271,17 +271,17 @@ export function ProfileView({
                     <Camera className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <p className="text-xs text-[#847376] mt-2">Nh\u1ea5n camera \u0111\u1ec3 \u0111\u1ed5i \u1ea3nh \u00b7 T\u1ed1i \u0111a 5MB</p>
+                <p className="text-xs text-[#847376] mt-2">Nhấn camera để đổi ảnh · Tối đa 5MB</p>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarPick} />
               </div>
               <div className="mb-4">
-                <label className="text-xs font-semibold text-[#524346] mb-1.5 block">T\u00ean hi\u1ec3n th\u1ecb</label>
+                <label className="text-xs font-semibold text-[#524346] mb-1.5 block">Tên hiển thị</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#847376]" />
                   <input
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    placeholder="Nh\u1eadp t\u00ean c\u1ee7a b\u1ea1n"
+                    placeholder="Nhập tên của bạn"
                     className="w-full pl-9 pr-4 py-3 rounded-xl border border-[#D6C1C5] bg-[#FFF8F4] text-sm text-[#1F1B17] outline-none focus:border-[#894C5C] transition-colors"
                   />
                 </div>
@@ -291,7 +291,7 @@ export function ProfileView({
                 disabled={editLoading}
                 className="w-full py-3 rounded-xl bg-[#894C5C] text-white font-semibold text-sm hover:bg-[#733949] transition-colors disabled:opacity-60"
               >
-                {uploadingAvatar ? '\u0110ang t\u1ea3i \u1ea3nh...' : editLoading ? '\u0110ang l\u01b0u...' : 'L\u01b0u thay \u0111\u1ed5i'}
+                {uploadingAvatar ? 'Đang tải ảnh...' : editLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
               </button>
             </motion.div>
           </motion.div>
@@ -312,14 +312,14 @@ export function ProfileView({
               className="bg-white rounded-[28px] w-full max-w-sm p-6 shadow-xl"
             >
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>\u0110\u1ed5i m\u1eadt kh\u1ea9u</h3>
+                <h3 className="text-lg font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>Đổi mật khẩu</h3>
                 <button onClick={() => setShowChangePassword(false)} className="text-[#847376] hover:text-[#524346]"><X className="w-5 h-5" /></button>
               </div>
               <div className="flex flex-col gap-3">
                 {[
-                  { label: 'M\u1eadt kh\u1ea9u hi\u1ec7n t\u1ea1i', val: oldPassword, set: setOldPassword, show: showOld, toggleShow: () => setShowOld(v => !v) },
-                  { label: 'M\u1eadt kh\u1ea9u m\u1edbi', val: newPassword, set: setNewPassword, show: showNew, toggleShow: () => setShowNew(v => !v) },
-                  { label: 'X\u00e1c nh\u1eadn m\u1eadt kh\u1ea9u m\u1edbi', val: confirmPassword, set: setConfirmPassword, show: showConfirm, toggleShow: () => setShowConfirm(v => !v) },
+                  { label: 'Mật khẩu hiện tại', val: oldPassword, set: setOldPassword, show: showOld, toggleShow: () => setShowOld(v => !v) },
+                  { label: 'Mật khẩu mới', val: newPassword, set: setNewPassword, show: showNew, toggleShow: () => setShowNew(v => !v) },
+                  { label: 'Xác nhận mật khẩu mới', val: confirmPassword, set: setConfirmPassword, show: showConfirm, toggleShow: () => setShowConfirm(v => !v) },
                 ].map(({ label, val, set, show, toggleShow }) => (
                   <div key={label}>
                     <label className="text-xs font-semibold text-[#524346] mb-1.5 block">{label}</label>
@@ -329,7 +329,7 @@ export function ProfileView({
                         type={show ? 'text' : 'password'}
                         value={val}
                         onChange={e => set(e.target.value)}
-                        placeholder="\u2022\u2022\u2022\u2022\u2022\u2022"
+                        placeholder="••••••"
                         className="w-full pl-9 pr-10 py-3 rounded-xl border border-[#D6C1C5] bg-[#FFF8F4] text-sm text-[#1F1B17] outline-none focus:border-[#894C5C] transition-colors"
                       />
                       <button type="button" onClick={toggleShow} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#847376]">
@@ -339,14 +339,14 @@ export function ProfileView({
                   </div>
                 ))}
                 {newPassword && confirmPassword && newPassword !== confirmPassword && (
-                  <p className="text-xs text-[#BA1A1A]">M\u1eadt kh\u1ea9u x\u00e1c nh\u1eadn kh\u00f4ng kh\u1edbp</p>
+                  <p className="text-xs text-[#BA1A1A]">Mật khẩu xác nhận không khớp</p>
                 )}
                 <button
                   onClick={handleChangePassword}
                   disabled={pwLoading}
                   className="w-full py-3 rounded-xl bg-[#894C5C] text-white font-semibold text-sm hover:bg-[#733949] transition-colors disabled:opacity-60 mt-1"
                 >
-                  {pwLoading ? '\u0110ang x\u1eed l\u00fd...' : 'X\u00e1c nh\u1eadn \u0111\u1ed5i m\u1eadt kh\u1ea9u'}
+                  {pwLoading ? 'Đang xử lý...' : 'Xác nhận đổi mật khẩu'}
                 </button>
               </div>
             </motion.div>
