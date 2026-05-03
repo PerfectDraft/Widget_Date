@@ -28,13 +28,17 @@ interface Props {
   onManualCombo: () => void;
   onAddSlot: () => void;
   setActiveCombo: (c: Combo) => void;
+  userName: string;
+  userAvatar: string;
+  dateMiles: number;
 }
 
 export function HomeView({ 
   weatherData, showToast, setSelectedCombo, setShowPaymentModal, 
   setRideModalLoc, setRealImageLoc, combos, setCombos, 
   openChat, onAvatarClick, onWeatherClick, formatVND, location, preferences, setPreferences,
-  activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, onAddSlot, setActiveCombo
+  activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, onAddSlot, setActiveCombo,
+  userName, userAvatar, dateMiles
 }: Props) {
   
   const { formState, dataState, actions } = useAIPlanner({
@@ -45,7 +49,6 @@ export function HomeView({
     setExternalPreferences: setPreferences
   });
 
-  // Sync generated combos back to App state so they survive tab switches
   useEffect(() => {
     if (dataState.combos.length > 0) {
       setCombos(dataState.combos);
@@ -69,9 +72,9 @@ export function HomeView({
 
   return (
     <HomeDashboardUI
-      userName="Hưng"
-      userAvatar="https://lh3.googleusercontent.com/aida-public/AB6AXuD5fQvzhgWAnCEj7ACr7c_XPwX5u48krOmZuXxBChh911zOWYQRJcnaNtoQqplogf2AXUFicP9kn3TIbu-AI1FrobzW7zy73oO1v4ehbZKCtmSt1KXQJvIubhuBTzIGi1c0kzLLvt_Ykxn2ypNtz5YplxUHttU4mqRkMU9L82XDuoouQij2ZUUSpiP13o49_TSgYHOa0ZNTSCx4Am6e1gxZ83r7nQQ9uQpArgF6iu6SjN34NGisxjWTJ-xiImchPKYVctLQsyydIUBS"
-      dateMiles={1500}
+      userName={userName}
+      userAvatar={userAvatar}
+      dateMiles={dateMiles}
       openChat={openChat}
       onAvatarClick={onAvatarClick}
       onWeatherClick={onWeatherClick}

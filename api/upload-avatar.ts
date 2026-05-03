@@ -1,6 +1,6 @@
 import { put } from '@vercel/blob';
 import { sql } from '@vercel/postgres';
-import { Readable } from 'stream';
+import type { IncomingMessage } from 'http';
 
 export const config = { api: { bodyParser: false } };
 
@@ -9,6 +9,15 @@ const CORS = (res: any) => {
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,x-phone');
 };
+
+function readBody(req: IncomingMessage): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    req.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
+  });
+}
 
 async function ensureColumns() {
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name TEXT`;
@@ -29,12 +38,14 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const filename = `avatars/${phone.replace(/\D/g, '')}_${Date.now()}.jpg`;
+    const buffer = await readBody(req);
+    if (buffer.length === 0) return res.status(400).json({ error: 'File rỗng' });
+    if (buffer.length > 5 * 1024 * 1024) return res.status(400).json({ error: 'Ảnh tối đa 5MB' });
 
-    // Convert Node IncomingMessage to a proper ReadableStream for @vercel/blob
-    const readableStream = Readable.toWeb(req) as ReadableStream;
+    const ext = contentType.split('/')[1]?.split(';')[0] || 'jpg';
+    const filename = `avatars/${phone.replace(/\D/g, '')}_${Date.now()}.${ext}`;
 
-    const blob = await put(filename, readableStream, {
+    const blob = await put(filename, buffer, {
       access: 'public',
       contentType,
     });
