@@ -51,7 +51,7 @@ Thời tiết hôm nay: ${weather || 'bình thường'}.`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMsg },
         ],
-        max_tokens: 2000,
+        max_tokens: 1500,
       }),
     });
 
