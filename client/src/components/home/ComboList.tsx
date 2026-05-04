@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { type Combo, type Activity } from '../../types';
 import { Sparkles, HeartCrack, RefreshCcw } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
 const COMBO_HERO_IMAGES = [
   'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80',
@@ -32,6 +33,7 @@ interface ComboListProps {
 }
 
 export function ComboList({ combos, isLoading, error, onSelectCombo, onSelectVenue, onRetry, formatVND }: ComboListProps) {
+  const { t } = useTranslation();
   // Random offset changes every time combos array reference changes (i.e. every new generation)
   const imageOffset = useMemo(
     () => Math.floor(Math.random() * COMBO_HERO_IMAGES.length),
@@ -182,7 +184,7 @@ export function ComboList({ combos, isLoading, error, onSelectCombo, onSelectVen
                   className="w-full py-4 rounded-full bg-primary/10 text-primary font-bold text-body-md border-2 border-primary/20 hover:bg-primary hover:text-on-primary transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                   aria-label={`Chọn combo ${combo.theme}`}
                 >
-                  Select This Combo
+                  {t('common.select_this_combo')}
                 </button>
               </div>
             </motion.div>

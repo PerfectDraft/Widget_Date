@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
 import type { ForecastDay, WeatherData } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 interface WeatherDetailViewProps {
   weatherData: { current: WeatherData; forecast: ForecastDay[] } | null;
@@ -8,6 +9,7 @@ interface WeatherDetailViewProps {
 }
 
 export function WeatherDetailView({ weatherData, onBack }: WeatherDetailViewProps) {
+  const { t } = useTranslation();
   if (!weatherData) return null;
 
   const w = weatherData.current;
@@ -93,7 +95,7 @@ export function WeatherDetailView({ weatherData, onBack }: WeatherDetailViewProp
         {/* Feels Like + Sunset — Fixed alignment */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-white/70 backdrop-blur-xl rounded-[24px] p-5 shadow-[0_4px_20px_rgba(137,76,92,0.04)]">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#847376] mb-2">FEELS LIKE</p>
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#847376] mb-2">{t('common.feels_like')}</p>
             <div className="flex items-center justify-between">
               <p className="text-3xl font-bold text-[#1F1B17]" style={{ fontFamily: 'Epilogue' }}>{feelsLike}°</p>
               <span className="material-symbols-outlined text-[#D9B784] text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>

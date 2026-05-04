@@ -367,13 +367,14 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
   });
 
   return (
-    <div className="bg-background min-h-screen pb-24">
+    <div className="bg-background min-h-screen pb-24" id="main-content">
       <h1 className="sr-only">{t.history.title}</h1>
 
       <header className="sticky top-0 z-30 glass-card px-6 py-4 rounded-none border-t-0 border-x-0">
         <div className="flex items-center justify-between mb-4">
           <div className="text-headline-md font-bold text-on-surface"
-               style={{ fontFamily: 'var(--font-family-headline-md)' }}>
+               style={{ fontFamily: 'var(--font-family-headline-md)' }}
+               aria-hidden="true">
             {t.history.title}
           </div>
           <button 

@@ -110,13 +110,12 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   };
 
   return (
-    <motion.div key="explore" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-background min-h-screen pb-24">
-      <h1 className="sr-only">{t.explore.title}</h1>
+    <motion.div key="explore" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-background min-h-screen pb-24" id="main-content">
       <header className="sticky top-0 z-30 glass-card px-6 py-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-headline-md font-bold text-on-surface" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
+          <h1 className="text-headline-md font-bold text-on-surface" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
             {t.explore.title}
-          </div>
+          </h1>
           <button 
             onClick={handleFetchPlaces} 
             disabled={loadingPlaces} 

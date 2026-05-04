@@ -100,7 +100,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
   const COMPANION_OPTIONS = ['Người yêu', 'Bạn bè', 'Crush'];
 
   return (
-    <div className="bg-background text-on-background font-body-md min-h-screen pb-24 relative">
+    <div id="main-content" className="bg-background text-on-background font-body-md min-h-screen pb-24 relative">
       <h1 style={srOnlyStyle}>{tc.app_name} - {t.welcome} {userName}</h1>
 
       {/* Header — Avatar + Welcome + Date Miles */}

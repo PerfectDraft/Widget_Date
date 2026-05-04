@@ -1,20 +1,20 @@
 import { motion } from 'motion/react';
 import type { UserReward } from '../../types';
 import { MILESTONE_LEVELS, BADGES } from '../../data/constants';
-import vi from '../../locales/vi.json';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   userReward: UserReward;
 }
 
 export function DateMilesView({ userReward }: Props) {
-  const t = vi.wallet;
-  
+  const { t } = useTranslation();
+
   // Logic for progress
   const currentLevel = [...MILESTONE_LEVELS].reverse().find(l => userReward.totalMiles >= l.min) || MILESTONE_LEVELS[0];
   const nextLevel = MILESTONE_LEVELS.find(l => l.min > userReward.totalMiles);
-  const progressPercent = nextLevel 
-    ? ((userReward.totalMiles - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100 
+  const progressPercent = nextLevel
+    ? ((userReward.totalMiles - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100
     : 100;
   const pointsToNext = nextLevel ? nextLevel.min - userReward.totalMiles : 0;
 
@@ -31,10 +31,10 @@ export function DateMilesView({ userReward }: Props) {
           className="text-[36px] font-black text-primary leading-tight tracking-tight"
           style={{ fontFamily: 'var(--font-family-headline-lg)' }}
         >
-          {t.title}
+          {t('wallet.title')}
         </h1>
         <p className="text-on-surface-variant font-medium opacity-70">
-          Your romance journey
+          {t('common.your_romance_journey')}
         </p>
       </header>
 
@@ -58,7 +58,7 @@ export function DateMilesView({ userReward }: Props) {
             <div className="w-full flex justify-between items-start">
               <div>
                 <p className="text-label-sm font-black text-on-primary-container/60 uppercase tracking-[0.2em]">
-                  {t.rank}
+                  {t('wallet.rank')}
                 </p>
                 <h3 
                   className="text-headline-md font-bold text-on-primary-container mt-1"
@@ -79,7 +79,7 @@ export function DateMilesView({ userReward }: Props) {
                 {userReward.totalMiles}
               </h2>
               <p className="text-center text-label-md font-bold text-on-primary-container/80 uppercase tracking-widest mt-2">
-                {t.miles}
+                {t('wallet.miles')}
               </p>
             </div>
 
@@ -88,7 +88,7 @@ export function DateMilesView({ userReward }: Props) {
               <div className="space-y-2">
                 <div className="flex justify-between text-label-sm font-black text-on-primary-container/80">
                   <span>{currentLevel.name}</span>
-                  <span>{nextLevel?.name || t.max_level}</span>
+                  <span>{nextLevel?.name || t('wallet.max_level')}</span>
                 </div>
                 
                 <div className="h-4 bg-black/5 rounded-full p-1 overflow-hidden backdrop-blur-sm">
@@ -114,19 +114,19 @@ export function DateMilesView({ userReward }: Props) {
         <StatCard 
           icon="favorite" 
           value={userReward.completedDates} 
-          label={t.dates} 
+          label={t('wallet.dates')} 
           color="primary"
         />
         <StatCard 
           icon="local_fire_department" 
           value={userReward.streak} 
-          label={t.streak} 
+          label={t('wallet.streak')} 
           color="tertiary"
         />
         <StatCard 
           icon="workspace_premium" 
           value={userReward.badges.length} 
-          label={t.badges} 
+          label={t('wallet.badges')} 
           color="secondary"
         />
       </section>
@@ -138,7 +138,7 @@ export function DateMilesView({ userReward }: Props) {
             className="text-headline-md font-bold text-on-surface"
             style={{ fontFamily: 'var(--font-family-headline-md)' }}
           >
-            {t.badges_title}
+            {t('wallet.badges_title')}
           </h3>
           <button className="text-label-md font-black text-primary hover:bg-primary/10 px-4 py-2 rounded-full transition-all">
             View All

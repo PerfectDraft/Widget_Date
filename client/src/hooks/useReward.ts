@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
-import type { UserReward } from '../types';
+import type { UserReward, ActivityLog } from '../types';
 import { MILESTONE_LEVELS } from '../data/constants';
 
-function calculateStreak(history: any[]): number {
+function calculateStreak(history: ActivityLog[]): number {
   if (!history || history.length === 0) return 0;
   
   const dates = Array.from(new Set(

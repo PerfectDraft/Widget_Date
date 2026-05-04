@@ -138,9 +138,10 @@ export function FashionView() {
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.25 }}
       className="min-h-screen bg-background pb-24"
+      id="main-content"
     >
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 px-4 pt-12 pb-3">
+      <header className="sticky top-0 z-20 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 px-4 pt-12 pb-3">
         <div className="flex items-center gap-2 mb-3">
           <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>checkroom</span>
           <h1 className="text-xl font-bold text-on-surface">Phong cách</h1>
@@ -167,7 +168,7 @@ export function FashionView() {
             </button>
           ))}
         </div>
-      </div>
+      </header>
 
       <div className="px-4 pt-3 pb-1">
         <span className="text-xs text-on-surface-variant/50">{filtered.length} outfit</span>

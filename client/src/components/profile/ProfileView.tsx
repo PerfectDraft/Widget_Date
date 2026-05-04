@@ -92,8 +92,8 @@ export function ProfileView({
       setShowEditProfile(false);
       onProfileUpdated?.(data.userName, newAvatarUrl);
       showToast('Đã cập nhật hồ sơ thành công! 🎉');
-    } catch (err: any) {
-      showToast(err.message || 'Có lỗi xảy ra');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Có lỗi xảy ra');
     } finally {
       setEditLoading(false);
       setUploadingAvatar(false);
@@ -119,8 +119,8 @@ export function ProfileView({
       setShowChangePassword(false);
       setOldPassword(''); setNewPassword(''); setConfirmPassword('');
       showToast('Đổi mật khẩu thành công! 🔒');
-    } catch (err: any) {
-      showToast(err.message || 'Có lỗi xảy ra');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Có lỗi xảy ra');
     } finally {
       setPwLoading(false);
     }
