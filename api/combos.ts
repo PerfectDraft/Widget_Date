@@ -1,5 +1,33 @@
 const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
 
+// Fallback chain: if one model hits credit/rate limits, try the next
+const FALLBACK_MODELS = [
+  'google/gemma-4-31b-it:free',
+  'google/gemma-4-26b-a4b-it:free',
+  'google/gemini-2.0-flash-001:free',
+  'mistralai/mistral-7b-instruct:free',
+  'meta-llama/llama-3.1-8b-instruct:free',
+];
+
+async function callOpenRouter(apiKey: string, model: string, messages: any[]) {
+  const response = await fetch(OPENROUTER_API, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://widget-date-client.vercel.app',
+    },
+    body: JSON.stringify({ model, messages, max_tokens: 800 }),
+  });
+
+  if (!response.ok) {
+    const errBody = await response.text();
+    throw new Error(`[${model}] ${response.status}: ${errBody}`);
+  }
+
+  return response.json();
+}
+
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
@@ -12,70 +40,45 @@ export default async function handler(req: any, res: any) {
 
   const { location, preferences, budget, weather } = req.body;
 
-  const systemPrompt = `Bạn là trợ lý AI lên kế hoạch hẹn hò tại Hà Nội, Việt Nam. 
-Trả về JSON array gồm 3 combo hẹn hò theo format:
-[{
-  "id": string (uuid ngắn),
-  "theme": string (tên combo),
-  "icon": string (material symbol icon name),
-  "score": number (1-10),
-  "totalCost": number (VND),
-  "activities": [{
-    "time": string ("HH:MM"),
-    "name": string,
-    "address": string,
-    "cost": number,
-    "lat": number,
-    "lng": number,
-    "category": string
-  }]
-}]
-Chỉ trả JSON thuần túy (raw JSON array), không giải thích, không markdown, không code block.`;
+  const systemPrompt = `Trợ lý lên kế hoạch hẹn hò Hà Nội. Trả về JSON array 3 combo:
+[{"id":string,"theme":string,"icon":string,"score":number,"totalCost":number,"activities":[{"time":"HH:MM","name":string,"address":string,"cost":number,"lat":number,"lng":number,"category":string}]}]
+Chỉ JSON thuần, không markdown.`;
 
-  const userMsg = `Tạo 3 combo hẹn hò tại ${location || 'Hà Nội'}.
-Sở thích: ${(preferences || []).join(', ') || 'Café, Ẩm thực'}.
-Ngân sách: ${budget || '500000'} VND/người.
-Thời tiết hôm nay: ${weather || 'bình thường'}.`;
+  const userMsg = `3 combo hẹn hò tại ${location || 'Hà Nội'}, sở thích: ${(preferences || []).join(', ') || 'Café, Ẩm thực'}, ngân sách: ${budget || '500000'}VND, thời tiết: ${weather || 'bình thường'}. Mỗi combo 2-3 hoạt động.`;
 
-  try {
-    const response = await fetch(OPENROUTER_API, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://widget-date-client.vercel.app',
-      },
-      body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userMsg },
-        ],
-        max_tokens: 1500,
-      }),
-    });
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userMsg },
+  ];
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error('OpenRouter error:', err);
-      return res.status(502).json({ error: 'AI service error' });
-    }
+  const primaryModel = process.env.OPENROUTER_MODEL || FALLBACK_MODELS[0];
+  const modelsToTry = [primaryModel, ...FALLBACK_MODELS.filter(m => m !== primaryModel)];
 
-    const data = await response.json();
-    let content = data.choices?.[0]?.message?.content || '[]';
+  let lastError: Error | null = null;
 
-    content = content.replace(/^```[\w]*\n?/i, '').replace(/\n?```$/i, '').trim();
-
-    let combos;
+  for (const model of modelsToTry) {
     try {
-      const parsed = JSON.parse(content);
-      combos = Array.isArray(parsed) ? parsed : (parsed.combos || parsed.data || []);
-    } catch {
-      combos = [];
+      console.log(`[combos] Trying model: ${model}`);
+      const data = await callOpenRouter(apiKey, model, messages);
+      let content = data.choices?.[0]?.message?.content || '[]';
+      content = content.replace(/^```[\w]*\n?/i, '').replace(/\n?```$/i, '').trim();
+
+      let combos;
+      try {
+        const parsed = JSON.parse(content);
+        combos = Array.isArray(parsed) ? parsed : (parsed.combos || parsed.data || []);
+      } catch {
+        combos = [];
+      }
+
+      console.log(`[combos] Success with model: ${model}`);
+      return res.json({ combos, model_used: model });
+    } catch (err: any) {
+      console.error(`[combos] Failed model ${model}:`, err.message);
+      lastError = err;
     }
-    return res.json({ combos });
-  } catch (err) {
-    console.error('Combos error:', err);
-    return res.status(500).json({ error: 'Internal error' });
   }
+
+  console.error('[combos] All models failed:', lastError?.message);
+  return res.status(502).json({ error: 'AI service unavailable', details: lastError?.message });
 }
