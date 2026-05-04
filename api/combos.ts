@@ -46,7 +46,7 @@ Thời tiết hôm nay: ${weather || 'bình thường'}.`;
         'HTTP-Referer': 'https://widget-date-client.vercel.app',
       },
       body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || 'openrouter/owl-alpha',
+        model: process.env.OPENROUTER_MODEL || 'google/gemma-4-26b-a4b-it:free',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMsg },
