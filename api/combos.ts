@@ -46,7 +46,7 @@ Thời tiết hôm nay: ${weather || 'bình thường'}.`;
         'HTTP-Referer': 'https://widget-date-client.vercel.app',
       },
       body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || 'google/gemma-4-26b-a4b-it:free',
+        model: process.env.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMsg },
@@ -64,7 +64,6 @@ Thời tiết hôm nay: ${weather || 'bình thường'}.`;
     const data = await response.json();
     let content = data.choices?.[0]?.message?.content || '[]';
 
-    // Strip markdown code block if model wraps JSON in ```json ... ```
     content = content.replace(/^```[\w]*\n?/i, '').replace(/\n?```$/i, '').trim();
 
     let combos;

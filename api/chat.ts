@@ -1,8 +1,8 @@
 const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
 
 const FALLBACK_MODELS = [
+  'google/gemma-4-31b-it:free',
   'google/gemma-4-26b-a4b-it:free',
-  'google/gemini-2.0-flash-001:free',
   'mistralai/mistral-7b-instruct:free',
 ];
 
