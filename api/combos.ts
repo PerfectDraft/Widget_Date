@@ -46,11 +46,12 @@ Thời tiết hôm nay: ${weather || 'bình thường'}.`;
         'HTTP-Referer': 'https://widget-date-client.vercel.app',
       },
       body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001',
+        model: process.env.OPENROUTER_MODEL || 'openrouter/owl-alpha',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMsg },
         ],
+        max_tokens: 2000,
       }),
     });
 

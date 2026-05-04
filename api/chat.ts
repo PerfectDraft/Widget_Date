@@ -14,7 +14,7 @@ async function callOpenRouter(apiKey: string, model: string, messages: any[]) {
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://widget-date-client.vercel.app',
     },
-    body: JSON.stringify({ model, messages }),
+    body: JSON.stringify({ model, messages, max_tokens: 1500 }),
   });
 
   if (!response.ok) {
