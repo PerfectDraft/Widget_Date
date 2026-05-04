@@ -2,8 +2,15 @@ const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
 
 const FALLBACK_MODELS = [
   'google/gemma-4-31b-it:free',
-  'google/gemma-4-26b-a4b-it:free',
-  'mistralai/mistral-7b-instruct:free',
+  'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
+  'poolside/laguna-m.1:free',
+  'nvidia/nemotron-3-super-120b-a12b:free',
+  'minimax/minimax-m2.5:free',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
+  'nvidia/nemotron-nano-12b-v2-vl:free',
+  'nvidia/nemotron-nano-9b-v2:free',
+  'qwen/qwen3-next-80b-a3b-instruct:free',
+  'openai/gpt-oss-120b:free',
 ];
 
 async function callOpenRouter(apiKey: string, model: string, messages: any[]) {
