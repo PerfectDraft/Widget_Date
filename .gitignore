@@ -14,3 +14,7 @@ _archive/
 # Agent tools
 client/dist/
 dist/
+
+# Python cache
+__pycache__/
+*.pyc

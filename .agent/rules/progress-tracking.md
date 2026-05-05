@@ -1,9 +1,5 @@
 ---
 trigger: always_on
----
-
----
-trigger: always_on
 description: Đọc PROGRESS.md trước khi làm việc, cập nhật sau mỗi task
 ---
 
@@ -15,7 +11,7 @@ Trước khi bắt đầu bất kỳ thay đổi nào trong phiên làm việc:
 2. Xác nhận với người dùng task sẽ xử lý trong phiên này
 3. Nếu `PROGRESS.md` chưa tồn tại, tạo mới theo cấu trúc hiện có trong repo
 
-***
+---
 
 ## Sau khi hoàn thành thay đổi code
 
@@ -59,7 +55,7 @@ Nếu có thay đổi liên quan đến stack, dependencies, hoặc kiến trúc
 → Tự động update `.agent/.shared/PROJECT_CONTEXT.md` cho khớp.
 → Không cần hỏi user, chỉ cần log: "PROJECT_CONTEXT.md synced."
 
-***
+---
 
 ## Quy tắc cứng
 
@@ -68,7 +64,7 @@ Nếu có thay đổi liên quan đến stack, dependencies, hoặc kiến trúc
 - Nếu phát hiện task mới trong quá trình làm, thêm vào bảng `Đang làm` ngay
 - `PROGRESS.md` phải được commit cùng với code
 
-***
+---
 
 ## Nhắc nhở khi kết thúc
 
@@ -76,7 +72,7 @@ Sau khi task hoàn thành, thông báo với người dùng:
 
 > "Đã cập nhật PROGRESS.md. Nhớ commit: `git add PROGRESS.md && git commit -m 'docs: update progress'`"
 
-***
+---
 
 ## File tham chiếu
 
@@ -84,5 +80,5 @@ Sau khi task hoàn thành, thông báo với người dùng:
 |---|---|
 | `PROGRESS.md` | Nhật ký tiến độ — đọc và ghi mỗi phiên |
 | `.agent/rules/GEMINI.md` | Rules kỹ thuật chung của project |
-| `docs/PLAN-client-server.md` | Kế hoạch kiến trúc client-server |
+| `CODEBASE.md` | Thông tin OS, cấu trúc project, dependencies |
 | `TaskList.ini` | Legacy — không dùng nữa, thay bằng PROGRESS.md |

@@ -2,10 +2,6 @@
 trigger: always_on
 ---
 
----
-trigger: always_on
----
-
 # Component Contract — Widget Date
 
 Khi sửa bất kỳ component nào, PHẢI giữ nguyên:
