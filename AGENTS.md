@@ -20,3 +20,10 @@ See @README.md và @package.json.
 ## Code Style
 - const over let, descriptive names, extract complex conditions
 - Tiếng Việt với user, code comments bằng English
+
+## Workflow Preferences (global)
+- Commit sau mỗi session run (code riêng, docs riêng nếu cần)
+- Luôn chạy `checklist.py` trước commit — chỉ commit nếu 6/6 PASSED
+- Cập nhật `PROGRESS.md` cuối mỗi phiên
+- Cập nhật `AUTONOMOUS_LOG.md` cuối mỗi phiên autonomous
+- Không merge code + docs vào chung 1 commit
