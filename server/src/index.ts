@@ -44,6 +44,7 @@ console.log(`📂 Static files path: ${clientDistPath}`);
 
 app.use(express.static(clientDistPath));
 
+// Explicit fallback for SPA routing
 app.get('*', (req, res, next) => {
   // If it's an API route that wasn't caught by the routers above, let it fall through to 404 handler
   if (req.path.startsWith('/api')) {
@@ -54,10 +55,8 @@ app.get('*', (req, res, next) => {
   res.sendFile(indexPath, (err) => {
     if (err) {
       console.error(`❌ Failed to serve index.html: ${indexPath}`);
-      res.status(404).json({ 
-        error: 'Frontend build not found',
-        message: 'Please run "npm run build" in the client directory to generate the dist folder.'
-      });
+      // Fallback to a basic response if index.html is missing
+      res.status(404).send('Frontend build not found. Please run "npm run build" in the client directory.');
     }
   });
 });

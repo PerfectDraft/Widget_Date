@@ -1,7 +1,7 @@
 # File Tree: Widget_Date
 
 **Generated:** 4/24/2026, 8:49:38 PM
-**Root Path:** `d:\UET\Nam_2\Kỳ 2\KNKN\Widget_Date`
+**Root Path:** `d:\UET\Nam_2\Ky_2\KNKN\Widget_Date`
 
 ```
 ├── 📁 client

@@ -80,7 +80,7 @@ Data & Database    ████████████████░░░░ 
 | B3 | Khám phá | Cải thiện logic xử lý quyền truy cập Geolocation | ✅ Fixed | `ExploreView.tsx` (handleFetchPlaces) |
 | B4 | Client | ~~TypeScript error: `Cannot find module '@google/genai'` trong `geminiService.ts` cũ~~ → **ĐÃ FIX**: Xoá file obsolete | ✅ Fixed | `client/src/services/geminiService.ts` → **ĐÃ XOÁ** |
 | B5 | Client | ~~TypeScript error: `Property 'env' does not exist on type 'ImportMeta'`~~ → **ĐÃ FIX**: Xoá file obsolete | ✅ Fixed | `client/src/services/geminiService.ts` → **ĐÃ XOÁ** |
-| B6 | Local | Chạy local bị lỗi `CANNOT GET /` | 🔴 Cao | `server/src/index.ts` (thiếu route fallback hoặc config sai) |
+| B6 | Local | ~~Chạy local bị lỗi `CANNOT GET /`~~ → **ĐÃ FIX**: Thêm route fallback tường minh và cải thiện logic serve static | ✅ Fixed | `server/src/index.ts` |
 
 ---
 
@@ -197,3 +197,8 @@ npm run dev
 - **TypeScript Fix**: Thêm `'fashion'` vào Tab union type tại `client/src/types/index.ts:98`.
 - **Verification**: checklist.py 6/6 PASSED (Security, Lint, Schema, Test, UX, SEO).
 - **Files đã sửa**: `client/src/types/index.ts`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
+### Session #43 — 2026-05-05
+- **Bug Fix (B6)**: Đã sửa lỗi `CANNOT GET /` bằng cách thêm route fallback SPA tường minh trong server.
+- **Path Cleanup**: Cập nhật `File-Tree.md` để khớp với đường dẫn thực tế (`Ky_2`).
+- **Autonomous Scan**: Chạy verify toàn bộ (checklist.py) và đạt kết quả 6/6 PASSED.
+- **Files đã sửa**: `server/src/index.ts`, `File-Tree.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.

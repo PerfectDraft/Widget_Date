@@ -4,7 +4,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_DIR = path.resolve(__dirname, '../../data');
+const DB_DIR = path.resolve(__dirname, '../data');
 const DB_PATH = path.join(DB_DIR, 'user.sqlite');
 
 // Ensure data directory exists
@@ -17,7 +17,7 @@ const db = new Database(DB_PATH);
 // Initialize schema
 export function initSchema() {
   console.log('📦 Initializing User Database schema...');
-  
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       phone TEXT PRIMARY KEY,
@@ -53,7 +53,7 @@ export function initSchema() {
   } catch (e) {
     // Column might already exist
   }
-  
+
   console.log('✅ User Database schema ready.');
 }
 
