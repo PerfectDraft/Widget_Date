@@ -7,8 +7,8 @@
 
 ## 🗓️ Cập nhật lần cuối
 
-| Ngày | 2026-05-02 |
-| Phiên làm việc | #39 — README Rewrite & Project Sync |
+| Ngày | 2026-05-05 |
+| Phiên làm việc | #42 — Autonomous Mode: TypeScript Tab Type Fix |
 | Nhánh Git | `main` |
 
 ---
@@ -191,3 +191,9 @@ npm run dev
 - **README Rewrite**: Viết lại toàn bộ `README.md` để cập nhật tech stack (React 19, Tailwind 4), cấu trúc monorepo và các tính năng mới hoàn thiện.
 - **Project Sync**: Loại bỏ các hạng mục "Đang làm" đã cũ trong tài liệu, đồng bộ hóa với trạng thái thực tế của codebase.
 - **Files đã sửa**: `README.md`, `PROGRESS.md`.
+
+### Session #42 — 2026-05-05
+- **Autonomous Mode**: Proactive scan phát hiện 2 lỗi TypeScript sau khi git reset --hard về commit bbfb060.
+- **TypeScript Fix**: Thêm `'fashion'` vào Tab union type tại `client/src/types/index.ts:98`.
+- **Verification**: checklist.py 6/6 PASSED (Security, Lint, Schema, Test, UX, SEO).
+- **Files đã sửa**: `client/src/types/index.ts`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.

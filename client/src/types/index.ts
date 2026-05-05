@@ -95,7 +95,7 @@ export interface WeatherWithForecast {
   forecast: ForecastDay[];
 }
 
-export type Tab = 'home' | 'explore' | 'history' | 'wallet';
+export type Tab = 'home' | 'explore' | 'history' | 'wallet' | 'fashion';
 export type ExploreTab = 'map' | 'movies' | 'trends' | 'swipe';
 
 
