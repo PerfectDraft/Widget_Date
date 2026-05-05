@@ -289,7 +289,34 @@ When a trigger is detected:
 | `auto_preview.py` | Launch local preview server for visual inspection | `python .agent/scripts/auto_preview.py` |
 | `session_manager.py` | Save or restore agent session context | `python .agent/scripts/session_manager.py` |
 
-All four scripts are available and should be used proactively, not just reactively.
+### Extended Script Inventory (12 scripts across skills)
+
+| Script | Skill | Trigger |
+|---|---|---|
+| `security_scan.py` | vulnerability-scanner | `final checks`, deploy |
+| `dependency_analyzer.py` | vulnerability-scanner | `final checks` |
+| `lint_runner.py` | lint-and-validate | Mỗi code change |
+| `test_runner.py` | testing-patterns | Sau logic change |
+| `schema_validator.py` | database-design | Sau DB change |
+| `ux_audit.py` | frontend-design | Sau UI change |
+| `accessibility_checker.py` | frontend-design | Sau UI change |
+| `seo_checker.py` | seo-fundamentals | Sau page change |
+| `bundle_analyzer.py` | performance-profiling | Trước deploy |
+| `mobile_audit.py` | mobile-design | Sau mobile change |
+| `lighthouse_audit.py` | performance-profiling | Trước deploy |
+| `playwright_runner.py` | webapp-testing | Trước deploy |
+
+### Final Checklist Protocol
+
+Trigger: "final checks", "run all tests", "kiểm tra cuối", "chạy test", "kiểm tra lần cuối", hoặc trước khi đánh dấu task lớn hoàn thành.
+
+Priority: **Security → Lint → Schema → Tests → UX → SEO → Lighthouse/E2E**
+
+```
+python .agent/scripts/checklist.py [--url <URL>]
+```
+
+Task KHÔNG hoàn thành nếu checklist không pass.
 
 ---
 

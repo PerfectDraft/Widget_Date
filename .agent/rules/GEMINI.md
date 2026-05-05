@@ -4,138 +4,57 @@ trigger: always_on
 
 # GEMINI.md - Widget Date
 
-> This file defines how the AI behaves in this workspace.
+> Quy tắc kỹ thuật cốt lõi. Routing & orchestration → xem super-manager.md.
 
 ---
 
-## CRITICAL: AGENT & SKILL PROTOCOL (START HERE)
+## TIER 0: UNIVERSAL RULES
 
-> **MANDATORY:** You MUST read the appropriate agent file and its skills BEFORE performing any implementation. This is the highest priority rule.
+### 🌐 Language
+- User nói tiếng Việt → trả lời tiếng Việt
+- Code comments + variable names → English
 
-### 1. Modular Skill Loading Protocol
+### 💾 Token Budget (MAX 20KB/session cho infrastructure files)
+Priority load order:
+1. GEMINI.md (always_on)
+2. Active agent file (theo domain task)
+3. Task-relevant skills (chỉ skills trong frontmatter agent)
+4. ARCHITECTURE.md — skip nếu đã đọc
 
-Agent activated → Check frontmatter "skills:" → Read SKILL.md (INDEX) → Read specific sections.
-
-- **Selective Reading:** DO NOT read ALL files in a skill folder. Read `SKILL.md` first, then only read sections matching the user's request.
-- **Rule Priority:** P0 (GEMINI.md) > P1 (Agent .md) > P2 (SKILL.md). All rules are binding.
-
-### 2. Enforcement Protocol
-
-1. **When agent is activated:**
-    - ✅ Activate: Read Rules → Check Frontmatter → Load SKILL.md → Apply All.
-2. **Forbidden:** Never skip reading agent rules or skill instructions. "Read → Understand → Apply" is mandatory.
-
-### 3. Modular Architecture
-
-To keep rules efficient and reduce token bloat, detailed protocols are split into specialized files. You must reference them when relevant:
-
-- **`GEMINI-routing.md`**: Defines Request Classification, Agent Routing, Socratic Gate, and Mode Mapping.
-- **`GEMINI-scripts.md`**: Defines Final Checklist Protocol, audit triggers, and available system scripts.
-
----
-
-## TIER 0: UNIVERSAL RULES (Always Active)
-
-### 🌐 Language Handling
-
-When user's prompt is NOT in English:
-
-1. **Internally translate** for better comprehension
-2. **Respond in user's language** - match their communication
-3. **Code comments/variables** remain in English
-
-### 💾 Token Budget Rule (MANDATORY)
-
-**Context budget for infrastructure files per session: MAX 20KB total**
-(across all agent + rule + skill files combined — excluding source code)
-
-**Load priority order (strict):**
-1. `GEMINI.md` (always_on — already loaded)
-2. Active agent file (the one matching current task domain)
-3. Task-relevant skills ONLY (listed in active agent's frontmatter)
-4. `ARCHITECTURE.md` — skip if already read earlier this session
-
-**Rules:**
-- Do NOT load skills not listed in frontmatter of the active agent
-- If a skill file exceeds 5KB: read its INDEX/SKILL.md first, load sections on demand
-- Do NOT load `GEMINI-routing.md` for QUESTION-type requests (TIER 0 only)
-- Do NOT load `GEMINI-scripts.md` unless user triggers final checks / deploy flow
-- If total loaded infrastructure approaches 20KB: stop loading, proceed with what's available
-
-### 🧹 Clean Code (Global Mandatory)
-
-**ALL code MUST follow `@[skills/clean-code]` rules. No exceptions.**
-
-- **Code**: Concise, direct, no over-engineering. Self-documenting.
-- **Testing**: Mandatory. Pyramid (Unit > Int > E2E) + AAA Pattern.
-- **Performance**: Measure first. Adhere to 2025 standards (Core Web Vitals).
-- **Infra/Safety**: 5-Phase Deployment. Verify secrets security.
-
-### 📁 File Dependency Awareness
-
-**Before modifying ANY file:**
-
+### 📁 File Dependency
+Trước khi sửa file:
 1. Check `CODEBASE.md` → File Dependencies
-2. Identify dependent files
-3. Update ALL affected files together
-
-### 🗺️ System Map Read
-
-> 🔴 **MANDATORY:** Read `ARCHITECTURE.md` at session start to understand Agents, Skills, and Scripts.
-
-**Path Awareness:**
-
-- Agents: `.agent/` (Project)
-- Skills: `.agent/skills/` (Project)
-- Runtime Scripts: `.agent/skills/<skill>/scripts/`
+2. Xác định file phụ thuộc
+3. Update tất cả file bị ảnh hưởng
 
 ### 🧠 Read → Understand → Apply
-
-```
-❌ WRONG: Read agent file → Start coding
-✅ CORRECT: Read → Understand WHY → Apply PRINCIPLES → Code
-```
-
-**Before coding, answer:**
-
-1. What is the GOAL of this agent/skill?
-2. What PRINCIPLES must I apply?
-3. How does this DIFFER from generic output?
+Trước khi code, trả lời:
+1. GOAL của agent/skill này là gì?
+2. PRINCIPLES nào phải áp dụng?
+3. Khác gì với generic output?
 
 ---
 
-## TIER 2: DESIGN RULES (Reference)
+## 🛑 Socratic Gate (rút gọn)
 
-> **Design rules are in the specialist agents, NOT here.**
+| Request Type | Hành động |
+|---|---|
+| New Feature / Build | Hỏi ≥3 câu strategic |
+| Bug Fix / Edit | Confirm understanding + impact |
+| Vague / Simple | Hỏi Purpose, Users, Scope |
+| "Proceed" sau khi đã trả lời | Hỏi thêm 2 câu Edge Case |
 
-| Task         | Read                            |
-| ------------ | ------------------------------- |
-| Web UI/UX    | `.agent/frontend-specialist.md` |
-| Mobile UI/UX | `.agent/mobile-developer.md`    |
+Nếu 1% không rõ → ASK. Không code khi chưa clear gate.
 
-**These agents contain:**
+---
 
-- Purple Ban (no violet/purple colors)
-- Template Ban (no standard layouts)
-- Anti-cliché rules
-- Deep Design Thinking protocol
-
-> 🔴 **For design work:** Open and READ the agent file. Rules are there.
+## 🎨 DESIGN RULES
+Không dùng violet/purple. Template ban. Chi tiết → `@frontend-specialist` hoặc `@mobile-developer`.
 
 ---
 
 ## 📁 QUICK REFERENCE
-
-### Agents & Skills
-
-- **Masters**: `orchestrator`, `project-planner`, `security-auditor` (Cyber/Audit), `backend-specialist` (API/DB), `frontend-specialist` (UI/UX), `mobile-developer`, `debugger`, `game-developer`
-- **Key Skills**: `clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `plan-writing`, `behavioral-modes`
-
-### Key Scripts
-
-- **Verify**: `.agent/scripts/verify_all.py`, `.agent/scripts/checklist.py`
-- **Scanners**: `security_scan.py`, `dependency_analyzer.py`
-- **Audits**: `ux_audit.py`, `mobile_audit.py`, `lighthouse_audit.py`, `seo_checker.py`
-- **Test**: `playwright_runner.py`, `test_runner.py`
-
----
+- **Agents**: `.agent/agents/` — orchestrator, project-planner, backend-specialist, frontend-specialist, debugger...
+- **Skills**: `.agent/skills/` — clean-code, frontend-design, api-patterns, systematic-debugging...
+- **Scripts**: `.agent/skills/<skill>/scripts/` — verify_all.py, checklist.py là 2 script chính
+- **Routing**: `.agent/agents/super-manager.md` — full routing table + slash commands
