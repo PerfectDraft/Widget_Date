@@ -167,3 +167,32 @@ Do NOT edit manually. Updated automatically by @super-manager during autonomous 
 - B6: Đã sửa.
 - Toàn bộ checks đã pass. Dự án ở trạng thái ổn định.
 
+---
+
+## 2026-05-05T20:15 — Session #44: Autonomous Mode — Console Severity Cleanup
+
+### Proactive Scan Results
+- **checklist.py**: 6/6 PASSED
+- **TypeScript**: CLEAN (0 errors, cả client và server)
+- **Build**: Pass (cảnh báo chunk >500KB vẫn tồn tại)
+- **Security grep**: No API keys in client source
+
+### Issues Resolved
+
+#### Issue #1: console.log → console.info in server startup/DB (Low risk)
+- **Files**: `server/src/db/client.ts`, `server/src/index.ts`
+- **Change type**: Low
+- **Root cause**: 6 instances of `console.log` dùng cho log vận hành (startup server, init DB). Theo policy autonomous mode và chuẩn đã áp dụng từ Session #24, operational logs nên dùng `console.info`.
+- **Fix applied**: 2 dòng trong `db/client.ts` + 4 dòng trong `index.ts` đổi `console.log` → `console.info`.
+- **Verification**: tsc --noEmit [pass] / checklist.py 6/6 PASSED.
+- **Result**: Resolved
+
+### Project Health After Run
+- **TypeScript**: ✅ CLEAN (0 errors)
+- **Security**: ✅ PASSED | **Lint**: ✅ PASSED | **Schema**: ✅ PASSED
+- **Tests**: ✅ PASSED | **UX**: ✅ PASSED | **SEO**: ✅ PASSED
+
+### Handoff
+- Console severity cleanup hoàn tất.
+- Toàn bộ checks vẫn 6/6 PASSED. Không còn `console.log` nào trong server code.
+

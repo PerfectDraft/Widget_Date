@@ -8,7 +8,7 @@
 ## 🗓️ Cập nhật lần cuối
 
 | Ngày | 2026-05-05 |
-| Phiên làm việc | #42 — Autonomous Mode: TypeScript Tab Type Fix |
+| Phiên làm việc | #44 — Autonomous Mode: Console Severity Cleanup |
 | Nhánh Git | `main` |
 
 ---
@@ -202,3 +202,9 @@ npm run dev
 - **Path Cleanup**: Cập nhật `File-Tree.md` để khớp với đường dẫn thực tế (`Ky_2`).
 - **Autonomous Scan**: Chạy verify toàn bộ (checklist.py) và đạt kết quả 6/6 PASSED.
 - **Files đã sửa**: `server/src/index.ts`, `File-Tree.md`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
+
+### Session #44 — 2026-05-05
+- **Autonomous Mode**: Proactive scan - checklist.py 6/6 PASSED, tsc clean.
+- **Console Severity**: Đổi 6 `console.log` → `console.info` trong `server/src/db/client.ts` và `server/src/index.ts` (startup/init logs).
+- **Verification**: checklist.py 6/6 PASSED, tsc --noEmit clean cả client và server.
+- **Files đã sửa**: `server/src/db/client.ts`, `server/src/index.ts`, `AUTONOMOUS_LOG.md`, `PROGRESS.md`.
