@@ -40,7 +40,7 @@ app.use('/api/trends', trendsRouter);
 const clientDistPath = path.resolve(__dirname, '../../client/dist');
 
 // Log the resolved path for debugging B6
-console.log(`📂 Static files path: ${clientDistPath}`);
+console.info(`📂 Static files path: ${clientDistPath}`);
 
 app.use(express.static(clientDistPath));
 
@@ -70,7 +70,7 @@ app.use((_req, res) => {
 });
 
 app.listen(env.PORT, () => {
-  console.log(`🚀 Widget Date Server running on http://localhost:${env.PORT}`);
-  console.log(`   Health: http://localhost:${env.PORT}/api/health`);
-  console.log(`   CORS origin: ${env.CLIENT_ORIGIN}`);
+  console.info(`🚀 Widget Date Server running on http://localhost:${env.PORT}`);
+  console.info(`   Health: http://localhost:${env.PORT}/api/health`);
+  console.info(`   CORS origin: ${env.CLIENT_ORIGIN}`);
 });

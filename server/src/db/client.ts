@@ -16,7 +16,7 @@ const db = new Database(DB_PATH);
 
 // Initialize schema
 export function initSchema() {
-  console.log('📦 Initializing User Database schema...');
+  console.info('📦 Initializing User Database schema...');
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -54,7 +54,7 @@ export function initSchema() {
     // Column might already exist
   }
 
-  console.log('✅ User Database schema ready.');
+  console.info('✅ User Database schema ready.');
 }
 
 export default db;
