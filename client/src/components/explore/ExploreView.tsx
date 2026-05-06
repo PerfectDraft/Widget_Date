@@ -433,7 +433,14 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
           <div className="glass-card rounded-2xl px-4 py-3 border border-primary/30 shadow-xl flex items-center gap-3">
             <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">target</span>
             <div className="flex-1 min-w-0">
-              <p className="text-label-sm font-bold text-on-surface truncate">{activeCombo.theme} {activeCombo.icon}</p>
+              <p className="text-label-sm font-bold text-on-surface truncate flex items-center gap-1.5">
+                {activeCombo.theme}
+                {activeCombo.icon && (
+                  <span className="material-symbols-outlined text-[16px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">
+                    {activeCombo.icon}
+                  </span>
+                )}
+              </p>
               <p className="text-[11px] text-on-surface-variant">{comboSlots.filter(s => s !== null).length}/{comboSlots.length} {t.explore.selected_places}</p>
             </div>
             <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
