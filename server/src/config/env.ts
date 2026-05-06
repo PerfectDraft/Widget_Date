@@ -24,6 +24,7 @@ interface EnvConfig {
   OPENWEATHER_API_KEY: string;
   PORT: number;
   CLIENT_ORIGIN: string;
+  JWT_SECRET: string;
 }
 
 function validateEnv(): EnvConfig {
@@ -46,6 +47,7 @@ function validateEnv(): EnvConfig {
     OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY!,
     PORT: parseInt(process.env.PORT || '3001', 10),
     CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    JWT_SECRET: process.env.JWT_SECRET || 'widget-date-dev-secret-change-in-production',
   };
 }
 

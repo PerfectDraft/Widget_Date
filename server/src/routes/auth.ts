@@ -1,7 +1,13 @@
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
 import { userService } from '../services/userService.js';
 
 const router = Router();
+
+function generateToken(phone: string): string {
+  return jwt.sign({ phone, sub: phone }, env.JWT_SECRET, { expiresIn: '7d' });
+}
 
 // Register
 router.post('/register', async (req, res) => {
@@ -23,7 +29,8 @@ router.post('/register', async (req, res) => {
     }
 
     await userService.createUser(phone, password);
-    res.json({ success: true, message: 'Registration successful' });
+    const token = generateToken(phone);
+    res.json({ success: true, message: 'Registration successful', token });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Unknown error';
     console.error('Registration error:', error);
@@ -45,9 +52,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid phone number or password' });
     }
 
-    // Success - return user info (excluding password hash)
+    const token = generateToken(phone);
     const { password_hash, ...profile } = user;
-    res.json({ success: true, user: profile });
+    res.json({ success: true, user: profile, token });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Unknown error';
     console.error('Login error:', error);

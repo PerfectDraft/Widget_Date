@@ -42,8 +42,17 @@ function loadJson<T>(key: string, fallback: T): T {
   } catch { return fallback; }
 }
 
+function getInitialAuth(): boolean {
+  const token = localStorage.getItem('wd_token');
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 > Date.now();
+  } catch { return false; }
+}
+
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => loadJson('wd_auth', false));
+  const [isAuthenticated, setIsAuthenticated] = useState(getInitialAuth);
   const [phone, setPhone] = useState<string | null>(() => loadJson('wd_phone', null));
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [showProfile, setShowProfile] = useState(false);
@@ -74,11 +83,9 @@ export default function App() {
   const [activeCombo, setActiveCombo] = useState<Combo | null>(null);
   const [comboSlots, setComboSlots] = useState<ComboSlot[]>([]);
 
-  // Persist auth
   useEffect(() => {
-    localStorage.setItem('wd_auth', JSON.stringify(isAuthenticated));
     localStorage.setItem('wd_phone', JSON.stringify(phone));
-  }, [isAuthenticated, phone]);
+  }, [phone]);
 
   useEffect(() => {
     localStorage.setItem('wd_combos', JSON.stringify(combos));
@@ -99,7 +106,10 @@ export default function App() {
   // Load profile from DB when authenticated
   const loadProfile = useCallback(async (phoneNum: string) => {
     try {
-      const res = await fetch(`/api/user?action=profile&phone=${encodeURIComponent(phoneNum)}`);
+      const token = localStorage.getItem('wd_token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`/api/user?action=profile&phone=${encodeURIComponent(phoneNum)}`, { headers });
       if (!res.ok) return;
       const data = await res.json();
       if (data.display_name) {
@@ -133,7 +143,9 @@ export default function App() {
     setCurrentUserId(phone || drive.userIdentifier);
   }, [drive.userIdentifier, phone]);
 
-  const handleAuthSuccess = (p: string, _userData?: { phone: string; googleId?: string }) => {
+  const handleAuthSuccess = (p: string, token: string, _userData?: { phone: string; googleId?: string }) => {
+    localStorage.setItem('wd_token', token);
+    localStorage.setItem('wd_phone', JSON.stringify(p));
     setPhone(p);
     setIsAuthenticated(true);
     showToast(`Chào mừng trở lại!`);
@@ -149,6 +161,7 @@ export default function App() {
     setUserName('');
     setUserAvatar(DEFAULT_AVATAR);
     setShowProfile(false);
+    localStorage.removeItem('wd_token');
     localStorage.removeItem('wd_auth');
     localStorage.removeItem('wd_phone');
     localStorage.removeItem('wd_combos');

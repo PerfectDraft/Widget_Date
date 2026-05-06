@@ -5,7 +5,7 @@ import { login, register } from '../../services/api';
 import { cn } from '../../lib/utils';
 
 interface AuthViewProps {
-  onAuthSuccess: (phone: string, userData?: { phone: string; googleId?: string }) => void;
+  onAuthSuccess: (phone: string, token: string, userData?: { phone: string; googleId?: string }) => void;
 }
 
 interface AuthState {
@@ -26,16 +26,16 @@ export function AuthView({ onAuthSuccess }: AuthViewProps) {
     try {
       if (mode === 'login') {
         const res = await login(formPhone, formPassword);
-        if (res.success) {
-          onAuthSuccess(formPhone, res.user);
+        if (res.success && res.token) {
+          onAuthSuccess(formPhone, res.token, res.user);
           return { error: null, success: true, phone: formPhone, password: formPassword };
         } else {
           return { error: res.error || 'Đăng nhập thất bại', success: false, phone: formPhone, password: formPassword };
         }
       } else {
         const res = await register(formPhone, formPassword);
-        if (res.success) {
-          setMode('login');
+        if (res.success && res.token) {
+          onAuthSuccess(formPhone, res.token);
           return { error: null, success: true, phone: formPhone, password: formPassword };
         } else {
           return { error: res.error || 'Đăng ký thất bại', success: false, phone: formPhone, password: formPassword };

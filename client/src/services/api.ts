@@ -13,7 +13,7 @@ export class ApiError extends Error {
 const API_BASE = '/api';
 
 async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
-  const token = localStorage.getItem('google_access_token');
+  const token = localStorage.getItem('wd_token');
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   
   if (token) {
@@ -170,19 +170,20 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
 export interface AuthResponse {
   success: boolean;
   message?: string;
+  token?: string;
   user?: { phone: string; googleId?: string };
   error?: string;
 }
 
 export async function login(phone: string, password: string): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/auth?action=login', {
+  return apiRequest<AuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ phone, password }),
   });
 }
 
 export async function register(phone: string, password: string): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/auth?action=register', {
+  return apiRequest<AuthResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify({ phone, password }),
   });

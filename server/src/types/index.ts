@@ -2,8 +2,9 @@ import type { Request } from 'express';
 
 /** Authenticated user info attached by auth middleware */
 export interface AuthUser {
-  googleId: string;
+  googleId?: string;
   email?: string;
+  phone?: string;
 }
 
 /** Express Request extended with optional authenticated user */
