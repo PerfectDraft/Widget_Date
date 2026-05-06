@@ -28,7 +28,7 @@ export default async function handler(req: any, res: any) {
   const apiKey = process.env.NVIDIA_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Missing NVIDIA_API_KEY' });
 
-  const model = process.env.NVIDIA_MODEL || 'nvidia/nemotron-mini-4b-instruct';
+  const model = process.env.NVIDIA_MODEL || 'mistralai/mistral-nemotron';
 
   const { location, preferences, budget, weather } = req.body;
 
