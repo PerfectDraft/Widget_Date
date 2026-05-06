@@ -232,9 +232,9 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
 
                 {/* Navigate to Explore button */}
                 <button
-                  onClick={onNavigateToExplore}
-                  className="w-full mt-4 py-3 rounded-2xl border-2 border-primary/40 text-primary font-bold hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  aria-label="Đi tới tab Khám phá để thêm địa điểm"
+                  onClick={() => { onClearCombo(); onNavigateToExplore(); }}
+                  className="w-full mt-4 py-3 rounded-2xl border-2 border-tertiary/40 text-tertiary font-bold hover:bg-tertiary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
+                  aria-label="Khám phá địa điểm"
                 >
                   <span className="material-symbols-outlined text-[20px]">explore</span>
                   Khám phá địa điểm
@@ -243,7 +243,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                 {/* Add Slot Button */}
                 <button
                   onClick={onAddSlot}
-                  className="w-full mt-3 py-3 rounded-2xl border-2 border-dashed border-outline-variant/40 text-on-surface-variant font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="w-full mt-3 py-3 rounded-2xl border-2 border-dashed border-primary/40 text-primary font-bold hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t.add_location}
                 >
                   <span className="material-symbols-outlined text-[20px]">add</span>
