@@ -63,6 +63,7 @@ export interface HomeDashboardUIProps {
   onManualCombo: () => void;
   onAddSlot: () => void;
   setActiveCombo: (combo: Combo) => void;
+  onNavigateToExplore: () => void;
 }
 
 export function HomeDashboardUI(props: HomeDashboardUIProps) {
@@ -72,7 +73,8 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
     startTime, endTime, onTimeChange, preferences, categories, onPreferenceToggle,
     isGenerating, onGenerate,
     combos, error, onSelectCombo, onSelectVenue, formatVND,
-    activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, onAddSlot, setActiveCombo
+    activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, onAddSlot, setActiveCombo,
+    onNavigateToExplore
   } = props;
 
   const t = vi.dashboard;
@@ -98,6 +100,11 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
   
   // Companion Options
   const COMPANION_OPTIONS = ['Người yêu', 'Bạn bè', 'Crush'];
+
+  const handleExploreAndClose = () => {
+    onClearCombo();
+    onNavigateToExplore();
+  };
 
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 relative">
@@ -141,7 +148,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
-              className="fixed inset-0 z-50 bg-background overflow-y-auto pb-safe"
+              className="fixed inset-0 z-50 bg-background overflow-y-auto pb-[72px]"
               role="dialog"
               aria-labelledby="focus-mode-title"
             >
@@ -233,6 +240,16 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                 >
                   <span className="material-symbols-outlined text-[20px]">add</span>
                   {t.add_location}
+                </button>
+
+                {/* Explore Button */}
+                <button
+                  onClick={handleExploreAndClose}
+                  className="w-full mt-4 py-3 rounded-full border-2 border-outline-variant/60 text-on-surface-variant font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
+                  aria-label={t.explore_button}
+                >
+                  <span className="material-symbols-outlined text-[20px]">explore</span>
+                  {t.explore_button}
                 </button>
 
                 {/* CTA */}

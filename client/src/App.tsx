@@ -340,6 +340,7 @@ export default function App() {
               onRemoveSlot={(idx) => setComboSlots(prev => { const n = [...prev]; n[idx] = null; return n; })}
               onManualCombo={handleManualCombo}
               onAddSlot={handleAddSlot}
+              onNavigateToExplore={() => setActiveTab('explore')}
               setActiveCombo={setActiveCombo}
               userName={userName || phone || ''}
               userAvatar={userAvatar}
