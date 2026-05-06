@@ -1,32 +1,18 @@
-const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
+const NVIDIA_API = 'https://integrate.api.nvidia.com/v1/chat/completions';
 
-const FALLBACK_MODELS = [
-  'google/gemma-4-31b-it:free',
-  'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
-  'poolside/laguna-m.1:free',
-  'nvidia/nemotron-3-super-120b-a12b:free',
-  'minimax/minimax-m2.5:free',
-  'nvidia/nemotron-3-nano-30b-a3b:free',
-  'nvidia/nemotron-nano-12b-v2-vl:free',
-  'nvidia/nemotron-nano-9b-v2:free',
-  'qwen/qwen3-next-80b-a3b-instruct:free',
-  'openai/gpt-oss-120b:free',
-];
-
-async function callOpenRouter(apiKey: string, model: string, messages: any[]) {
-  const response = await fetch(OPENROUTER_API, {
+async function callNvidia(apiKey: string, model: string, messages: any[]) {
+  const response = await fetch(NVIDIA_API, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://widget-date-client.vercel.app',
     },
-    body: JSON.stringify({ model, messages, max_tokens: 1500 }),
+    body: JSON.stringify({ model, messages, max_tokens: 2048, temperature: 0.8, stream: false }),
   });
 
   if (!response.ok) {
     const errBody = await response.text();
-    throw new Error(`OpenRouter [${model}] ${response.status}: ${errBody}`);
+    throw new Error(`NVIDIA [${model}] ${response.status}: ${errBody}`);
   }
 
   return response.json();
@@ -39,8 +25,10 @@ export default async function handler(req: any, res: any) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Missing OPENROUTER_API_KEY' });
+  const apiKey = process.env.NVIDIA_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'Missing NVIDIA_API_KEY' });
+
+  const model = process.env.NVIDIA_MODEL || 'nvidia/nemotron-mini-4b-instruct';
 
   const { history, message } = req.body;
   if (!message || typeof message !== 'string' || message.trim() === '') {
@@ -61,24 +49,14 @@ export default async function handler(req: any, res: any) {
     { role: 'user', content: message },
   ];
 
-  const primaryModel = process.env.OPENROUTER_MODEL || FALLBACK_MODELS[0];
-  const modelsToTry = [primaryModel, ...FALLBACK_MODELS.filter(m => m !== primaryModel)];
-
-  let lastError: Error | null = null;
-
-  for (const model of modelsToTry) {
-    try {
-      console.log(`[chat] Trying model: ${model}`);
-      const data = await callOpenRouter(apiKey, model, messages);
-      const reply = data.choices?.[0]?.message?.content || 'Xin lỗi, mình không hiểu. Bạn có thể nói lại không?';
-      console.log(`[chat] Success with model: ${model}`);
-      return res.json({ reply, model_used: model });
-    } catch (err: any) {
-      console.error(`[chat] Failed model ${model}:`, err.message);
-      lastError = err;
-    }
+  try {
+    console.log(`[chat] Trying model: ${model}`);
+    const data = await callNvidia(apiKey, model, messages);
+    const reply = data.choices?.[0]?.message?.content || 'Xin lỗi, mình không hiểu. Bạn có thể nói lại không?';
+    console.log(`[chat] Success with model: ${model}`);
+    return res.json({ reply, model_used: model });
+  } catch (err: any) {
+    console.error(`[chat] Failed:`, err.message);
+    return res.status(502).json({ error: 'AI service unavailable', details: err.message });
   }
-
-  console.error('[chat] All models failed. Last error:', lastError?.message);
-  return res.status(502).json({ error: 'AI service unavailable', details: lastError?.message });
 }
