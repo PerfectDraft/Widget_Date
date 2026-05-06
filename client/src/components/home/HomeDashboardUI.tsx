@@ -145,8 +145,8 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
-              className="fixed inset-x-0 top-0 z-40 bg-background overflow-y-auto"
-              style={{ bottom: '64px' }}
+              className="fixed inset-x-0 top-0 bottom-0 z-40 bg-background overflow-y-auto"
+              style={{ paddingBottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
               role="dialog"
               aria-labelledby="focus-mode-title"
             >
@@ -230,9 +230,9 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                   })}
                 </div>
 
-                {/* Navigate to Explore button */}
+                {/* Navigate to Explore button — KHÔNG hủy combo */}
                 <button
-                  onClick={() => { onClearCombo(); onNavigateToExplore(); }}
+                  onClick={onNavigateToExplore}
                   className="w-full mt-4 py-3 rounded-2xl border-2 border-tertiary/40 text-tertiary font-bold hover:bg-tertiary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
                   aria-label="Khám phá địa điểm"
                 >
