@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const CORS = (res: any) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,16 +21,23 @@ export default async function handler(req: any, res: any) {
     const result = await sql`SELECT * FROM users WHERE phone = ${phone}`;
     const user = result.rows[0];
     if (!user || !user.password_hash)
-      return res.status(401).json({ error: 'S\u1ed1 \u0111i\u1ec7n tho\u1ea1i ho\u1eb7c m\u1eadt kh\u1ea9u kh\u00f4ng \u0111\u00fang' });
+      return res.status(401).json({ success: false, error: 'Số điện thoại hoặc mật khẩu không đúng' });
 
     const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid)
-      return res.status(401).json({ error: 'S\u1ed1 \u0111i\u1ec7n tho\u1ea1i ho\u1eb7c m\u1eadt kh\u1ea9u kh\u00f4ng \u0111\u00fang' });
+      return res.status(401).json({ success: false, error: 'Số điện thoại hoặc mật khẩu không đúng' });
+
+    const secret = process.env.JWT_SECRET || 'widget_date_secret';
+    const token = jwt.sign(
+      { phone: user.phone, sub: user.phone },
+      secret,
+      { expiresIn: '30d' }
+    );
 
     const { password_hash, ...profile } = user;
-    return res.json({ success: true, user: profile });
+    return res.json({ success: true, token, user: profile });
   } catch (err) {
     console.error('Login error:', err);
-    return res.status(500).json({ error: 'L\u1ed7i server, vui l\u00f2ng th\u1eed l\u1ea1i' });
+    return res.status(500).json({ success: false, error: 'Lỗi server, vui lòng thử lại' });
   }
 }
