@@ -27,20 +27,19 @@ interface Props {
   onRemoveSlot: (idx: number) => void;
   onManualCombo: () => void;
   onAddSlot: () => void;
-  onNavigateToExplore: () => void;
   setActiveCombo: (c: Combo) => void;
   userName: string;
   userAvatar: string;
   dateMiles: number;
+  onNavigateToExplore: () => void;
 }
 
 export function HomeView({ 
   weatherData, showToast, setSelectedCombo, setShowPaymentModal, 
   setRideModalLoc, setRealImageLoc, combos, setCombos, 
   openChat, onAvatarClick, onWeatherClick, formatVND, location, preferences, setPreferences,
-  activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, onAddSlot,
-  onNavigateToExplore, setActiveCombo,
-  userName, userAvatar, dateMiles
+  activeCombo, comboSlots, onClearCombo, onConfirmCombo, onRemoveSlot, onManualCombo, onAddSlot, setActiveCombo,
+  userName, userAvatar, dateMiles, onNavigateToExplore
 }: Props) {
   
   const { formState, dataState, actions } = useAIPlanner({
@@ -112,8 +111,8 @@ export function HomeView({
       onRemoveSlot={onRemoveSlot}
       onManualCombo={onManualCombo}
       onAddSlot={onAddSlot}
-      onNavigateToExplore={onNavigateToExplore}
       setActiveCombo={setActiveCombo}
+      onNavigateToExplore={onNavigateToExplore}
     />
   );
 }
