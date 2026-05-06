@@ -50,58 +50,51 @@ export interface Combo {
   activities: Activity[];
 }
 
-// --- OpenRouter API Helper ---
+// --- NVIDIA NIM API Helper ---
 
-interface OpenRouterMessage {
+interface NvidiaMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
-async function callOpenRouter(
-  messages: OpenRouterMessage[],
+async function callNvidiaAI(
+  messages: NvidiaMessage[],
   temperature = 0.7
 ): Promise<string> {
-  const models = [env.OPENROUTER_MODEL, ...env.OPENROUTER_FALLBACK_MODELS];
-  let lastError = '';
+  const model = env.NVIDIA_MODEL;
 
-  for (const model of models) {
-    try {
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
-          'HTTP-Referer': env.CLIENT_ORIGIN,
-          'X-Title': 'Widget Date',
-        },
-        body: JSON.stringify({ model, messages, temperature }),
-      });
+  console.info(`[nvidia] Trying model: ${model}`);
 
-      if (!res.ok) {
-        const errorBody = await res.text();
-        console.warn(`[OpenRouter] Model "${model}" → ${res.status}`);
-        console.warn(`[OpenRouter] Model "${model}" error:`, errorBody);
-        lastError = `OpenRouter ${res.status}: ${errorBody}`;
-        continue; // try next model for ANY error
-      }
+  const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${env.NVIDIA_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature,
+      max_tokens: 4096,
+      stream: false,
+    }),
+  });
 
-      const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-      const content = data.choices?.[0]?.message?.content || '';
-
-      if (content) {
-        if (model !== env.OPENROUTER_MODEL) {
-          console.info(`[OpenRouter] ✅ Fallback success with "${model}"`);
-        }
-        return content;
-      }
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : 'Unknown error';
-      console.warn(`[OpenRouter] Model "${model}" error:`, message);
-      lastError = message;
-    }
+  if (!res.ok) {
+    const errorBody = await res.text();
+    console.error(`[nvidia] Failed model ${model}: ${res.status}: ${errorBody}`);
+    throw new Error(`NVIDIA API ${res.status}: ${errorBody}`);
   }
 
-  throw new Error(`All models exhausted. Last error: ${lastError}`);
+  const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+  const content = data.choices?.[0]?.message?.content || '';
+
+  if (!content) {
+    throw new Error('NVIDIA API returned empty content');
+  }
+
+  console.info(`[nvidia] Success with model: ${model}`);
+  return content;
 }
 
 function extractJson(text: string): string {
@@ -137,10 +130,10 @@ Return ONLY a valid JSON object inside a \`\`\`json block with this exact struct
     }
   ]
 }
-CRITICAL: ENSURE ALL DOUBLE QUOTES INSIDE STRINGS ARE ESCAPED (e.g. \\"). NO TRAILING COMMAS.
+CRITICAL: ENSURE ALL DOUBLE QUOTES INSIDE STRINGS ARE ESCAPED (e.g. \\\"). NO TRAILING COMMAS.
 `;
 
-  const text = await callOpenRouter([{ role: 'user', content: prompt }]);
+  const text = await callNvidiaAI([{ role: 'user', content: prompt }]);
   const jsonStr = extractJson(text);
   return JSON.parse(jsonStr) as ExploreResult;
 }
@@ -196,7 +189,7 @@ Return ONLY a valid JSON array of combos inside a \`\`\`json block. The structur
 ]
 CRITICAL RULES FOR JSON: 
 1. DO NOT include trailing commas. 
-2. ESCAPE ALL double quotes inside strings (e.g., "name": "Quán \\"ABC\\""). 
+2. ESCAPE ALL double quotes inside strings (e.g., "name": "Quán \\\"ABC\\\""). 
 3. DO NOT output any extra markdown text outside the valid JSON array.
 `;
 
@@ -204,7 +197,7 @@ CRITICAL RULES FOR JSON:
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const text = await callOpenRouter([{ role: 'user', content: prompt }]);
+      const text = await callNvidiaAI([{ role: 'user', content: prompt }]);
       const jsonStr = extractJson(text);
 
       // Try parsing as array first from extracted block
@@ -258,7 +251,7 @@ export async function chatWithAI(
     'Bạn là AI Trợ lý Hẹn hò tinh tế và hài hước của Widget Date. Nhiệm vụ tư vấn chi tiết các điểm đi chơi, review quán xá ở Việt Nam. Rất thân thiện, dùng icon dễ thương và chia lịch trình ra từng gạch đầu dòng rõ ràng, mạch lạc.';
 
   const recentHistory = history.slice(-5);
-  const messages: OpenRouterMessage[] = [
+  const messages: NvidiaMessage[] = [
     { role: 'system', content: systemInstruction },
     ...recentHistory.map(msg => ({
       role: (msg.role === 'model' ? 'assistant' : 'user') as 'assistant' | 'user',
@@ -268,7 +261,7 @@ export async function chatWithAI(
   ];
 
   try {
-    const text = await callOpenRouter(messages, 0.8);
+    const text = await callNvidiaAI(messages, 0.8);
     return text || 'Mình bị rớt mạng rồi, bạn thử lại sau nhe!!';
   } catch (e: unknown) {
     console.error('Chat error:', e);

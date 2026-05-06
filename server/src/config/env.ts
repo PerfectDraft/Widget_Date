@@ -18,9 +18,8 @@ if (envPath) {
 }
 
 interface EnvConfig {
-  OPENROUTER_API_KEY: string;
-  OPENROUTER_MODEL: string;
-  OPENROUTER_FALLBACK_MODELS: string[];
+  NVIDIA_API_KEY: string;
+  NVIDIA_MODEL: string;
   OPENWEATHER_API_KEY: string;
   PORT: number;
   CLIENT_ORIGIN: string;
@@ -28,7 +27,7 @@ interface EnvConfig {
 }
 
 function validateEnv(): EnvConfig {
-  const required = ['OPENROUTER_API_KEY', 'OPENWEATHER_API_KEY'];
+  const required = ['NVIDIA_API_KEY', 'OPENWEATHER_API_KEY'];
   const missing = required.filter(key => !process.env[key]);
 
   if (missing.length > 0) {
@@ -37,13 +36,9 @@ function validateEnv(): EnvConfig {
     process.exit(1);
   }
 
-  const fallbackRaw = process.env.OPENROUTER_FALLBACK_MODELS || '';
-  const fallbackModels = fallbackRaw.split(',').map(s => s.trim()).filter(Boolean);
-
   return {
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY!,
-    OPENROUTER_MODEL: process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001',
-    OPENROUTER_FALLBACK_MODELS: fallbackModels,
+    NVIDIA_API_KEY: process.env.NVIDIA_API_KEY!,
+    NVIDIA_MODEL: process.env.NVIDIA_MODEL || 'nvidia/llama-3.3-nemotron-super-49b-v1',
     OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY!,
     PORT: parseInt(process.env.PORT || '3001', 10),
     CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
