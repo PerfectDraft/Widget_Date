@@ -63,6 +63,8 @@ export interface HomeDashboardUIProps {
   onManualCombo: () => void;
   onAddSlot: () => void;
   setActiveCombo: (combo: Combo) => void;
+
+  // Navigation
   onNavigateToExplore: () => void;
 }
 
@@ -100,11 +102,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
   
   // Companion Options
   const COMPANION_OPTIONS = ['Người yêu', 'Bạn bè', 'Crush'];
-
-  const handleExploreAndClose = () => {
-    onClearCombo();
-    onNavigateToExplore();
-  };
 
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 relative">
@@ -148,7 +145,8 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
-              className="fixed inset-0 z-50 bg-background overflow-y-auto pb-[72px]"
+              className="fixed inset-x-0 top-0 bottom-0 z-40 bg-background overflow-y-auto"
+              style={{ paddingBottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
               role="dialog"
               aria-labelledby="focus-mode-title"
             >
@@ -232,24 +230,24 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                   })}
                 </div>
 
+                {/* Navigate to Explore button — KHÔNG hủy combo */}
+                <button
+                  onClick={onNavigateToExplore}
+                  className="w-full mt-4 py-3 rounded-2xl border-2 border-tertiary/40 text-tertiary font-bold hover:bg-tertiary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
+                  aria-label="Khám phá địa điểm"
+                >
+                  <span className="material-symbols-outlined text-[20px]">explore</span>
+                  Khám phá địa điểm
+                </button>
+
                 {/* Add Slot Button */}
                 <button
                   onClick={onAddSlot}
-                  className="w-full mt-4 py-3 rounded-2xl border-2 border-dashed border-primary/40 text-primary font-bold hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="w-full mt-3 py-3 rounded-2xl border-2 border-dashed border-primary/40 text-primary font-bold hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t.add_location}
                 >
                   <span className="material-symbols-outlined text-[20px]">add</span>
                   {t.add_location}
-                </button>
-
-                {/* Explore Button */}
-                <button
-                  onClick={handleExploreAndClose}
-                  className="w-full mt-4 py-3 rounded-full border-2 border-outline-variant/60 text-on-surface-variant font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
-                  aria-label={t.explore_button}
-                >
-                  <span className="material-symbols-outlined text-[20px]">explore</span>
-                  {t.explore_button}
                 </button>
 
                 {/* CTA */}

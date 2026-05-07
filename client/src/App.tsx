@@ -340,11 +340,11 @@ export default function App() {
               onRemoveSlot={(idx) => setComboSlots(prev => { const n = [...prev]; n[idx] = null; return n; })}
               onManualCombo={handleManualCombo}
               onAddSlot={handleAddSlot}
-              onNavigateToExplore={() => setActiveTab('explore')}
               setActiveCombo={setActiveCombo}
               userName={userName || phone || ''}
               userAvatar={userAvatar}
               dateMiles={userReward.totalMiles}
+              onNavigateToExplore={() => setActiveTab('explore')}
             />
           )}
           {activeTab === 'explore' && (
@@ -365,8 +365,8 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* Bottom Nav */}
-      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 glass-card pb-safe z-40">
+      {/* Bottom Nav — z-50 để luôn nằm trên modal */}
+      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 glass-card pb-safe z-50">
         <div className="max-w-md mx-auto px-2 py-2 flex justify-around items-end">
           {([
             { id: 'home', icon: 'home', label: 'Trang chủ' },

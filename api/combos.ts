@@ -32,15 +32,16 @@ export default async function handler(req: any, res: any) {
 
   const { location, preferences, budget, weather, startTime, endTime, companion } = req.body;
 
-  const start = startTime || '18:00';
-  const end = endTime || '22:00';
-
   const systemPrompt = `Trợ lý lên kế hoạch hẹn hò Hà Nội. Trả về JSON array 3 combo:
 [{"id":string,"theme":string,"icon":string,"score":number,"totalCost":number,"activities":[{"time":"HH:MM","name":string,"address":string,"cost":number,"lat":number,"lng":number,"category":string}]}]
-QUAN TRỌNG: Trường "time" của mỗi activity PHẢI nằm trong khung giờ người dùng đã chọn. Không được đặt giờ ngoài khoảng đó.
-Chỉ JSON thuần, không markdown.`;
+Chỉ JSON thuần, không markdown.
+QUAN TRỌNG: Trường "time" của mỗi activity PHẢI nằm trong khung giờ người dùng đã chọn. Không được đặt giờ ngoài khoảng đó.`;
 
-  const userMsg = `3 combo hẹn hò tại ${location || 'Hà Nội'}, sở thích: ${(preferences || []).join(', ') || 'Café, Ẩm thực'}, ngân sách: ${budget || '500000'}VND, thời tiết: ${weather || 'bình thường'}. Người đi cùng: ${companion || 'Người yêu'}. Thời gian hẹn hò: từ ${start} đến ${end}. Mỗi activity phải có "time" nằm trong khoảng thời gian này. Mỗi combo 2-3 hoạt động.`;
+  const resolvedStart = startTime || '18:00';
+  const resolvedEnd = endTime || '22:00';
+  const resolvedCompanion = companion || 'Người yêu';
+
+  const userMsg = `3 combo hẹn hò tại ${location || 'Hà Nội'}, sở thích: ${(preferences || []).join(', ') || 'Café, Ẩm thực'}, ngân sách: ${budget || '500000'}VND, thời tiết: ${weather || 'bình thường'}, đi cùng: ${resolvedCompanion}. Thời gian hẹn hò: từ ${resolvedStart} đến ${resolvedEnd}. Mỗi activity phải có "time" nằm trong khoảng thời gian này. Mỗi combo 2-3 hoạt động.`;
 
   const messages = [
     { role: 'system', content: systemPrompt },
