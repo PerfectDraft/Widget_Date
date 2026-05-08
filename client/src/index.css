@@ -7,7 +7,6 @@ body {
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  /* ✅ Stitch colors — copy từ HTML */
   --color-primary: #894c5c;
   --color-background: #fff8f4;
   --color-surface: #fff8f4;
@@ -39,7 +38,6 @@ body {
   --color-inverse-surface: #34302b;
   --color-inverse-on-surface: #f8efe8;
 
-  /* Fonts */
   --font-family-headline-md: "Epilogue", serif;
   --font-family-headline-lg: "Epilogue", serif;
   --font-family-body-md: "Plus Jakarta Sans", sans-serif;
@@ -47,15 +45,54 @@ body {
   --font-family-label-sm: "Plus Jakarta Sans", sans-serif;
 }
 
-/* Glass card utility */
-.glass-card {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 24px -1px rgba(137, 76, 92, 0.08);
+/* ── Keyframes ───────────────────────────────────────────── */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Category overlay card */
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(40px, -30px) scale(1.05); }
+  66%       { transform: translate(-20px, 20px) scale(0.97); }
+}
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%       { transform: translate(-50px, 30px) scale(1.08); }
+  75%       { transform: translate(30px, -20px) scale(0.95); }
+}
+@keyframes orb-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(25px, 35px) scale(1.04); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes sidebar-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(137, 76, 92, 0); }
+  50%       { box-shadow: 4px 0 32px 0 rgba(137, 76, 92, 0.07); }
+}
+
+/* ── Base body ──────────────────────────────────────────── */
+body {
+  background-color: #fff8f4;
+  /* Mobile: simple cream */
+}
+
+/* ── Utilities ──────────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 24px -1px rgba(137, 76, 92, 0.08),
+              0 1px 0 0 rgba(255,255,255,0.6) inset;
+}
+
 .category-card {
   position: relative;
   overflow: hidden;
@@ -74,66 +111,153 @@ body {
   z-index: 1;
 }
 
-/* Hide scrollbar for horizontal scroll */
-.scroll-hidden::-webkit-scrollbar {
-  display: none;
-}
+.scroll-hidden::-webkit-scrollbar { display: none; }
 .scroll-hidden {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* Safe Area Padding */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-.pt-safe {
-  padding-top: env(safe-area-inset-top);
-}
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe  { padding-top: env(safe-area-inset-top); }
 
-/* Accessibility utility */
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;
 }
 
-/* ── Laptop responsive improvements ─────────────────────────── */
+/* ── Laptop (≥1024px) ───────────────────────────────────── */
 @media (min-width: 1024px) {
+
+  /* ── Animated mesh-gradient background ── */
   body {
-    background-color: var(--color-surface-container-low);
+    background-color: #fdf0f3;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 10% 10%,  rgba(255, 217, 224, 0.55) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 70% at 90% 5%,   rgba(255, 222, 172, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(244, 167, 185, 0.3)  0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 0%  80%,  rgba(217, 183, 132, 0.2)  0%, transparent 50%),
+      radial-gradient(ellipse 40% 60% at 100% 60%, rgba(255, 200, 210, 0.25) 0%, transparent 50%);
+    background-size: 200% 200%;
+    animation: gradient-shift 18s ease infinite;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
   }
 
-  /* Main scroll trên laptop là toàn trang */
+  /* ── Decorative floating orbs ── */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(70px);
+  }
+
+  /* Orb 1 — top-left, hồng primary */
+  body::before {
+    width: 520px;
+    height: 520px;
+    top: -120px;
+    left: -120px;
+    background: radial-gradient(circle, rgba(244, 167, 185, 0.45) 0%, transparent 70%);
+    animation: orb-float-1 22s ease-in-out infinite;
+  }
+
+  /* Orb 2 — bottom-right, vàng tertiary */
+  body::after {
+    width: 600px;
+    height: 600px;
+    bottom: -150px;
+    right: -150px;
+    background: radial-gradient(circle, rgba(255, 222, 172, 0.4) 0%, transparent 70%);
+    animation: orb-float-2 28s ease-in-out infinite;
+  }
+
+  /* Orb 3 via wrapper — center subtle */
+  #root::before {
+    content: '';
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    top: 40%;
+    left: 55%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(90px);
+    background: radial-gradient(circle, rgba(137, 76, 92, 0.08) 0%, transparent 70%);
+    animation: orb-float-3 35s ease-in-out infinite;
+  }
+
+  /* Tất cả content phải nằm trên orbs */
+  #root > div {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Sidebar glass upgrade ── */
+  aside {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 0 24px 24px 0;
+    padding: 8px;
+    animation: sidebar-glow 6s ease-in-out infinite;
+    /* Stretch full viewport height */
+    min-height: calc(100vh - 48px);
+  }
+
+  /* ── Main content scroll ── */
   #main-content {
     overflow-y: auto;
     max-height: calc(100vh - 48px);
     scroll-behavior: smooth;
+    /* Subtle inner shadow top */
+    mask-image: linear-gradient(to bottom, transparent 0px, black 12px, black calc(100% - 12px), transparent 100%);
   }
 
-  /* Nâng card lên trên nền laptop */
-  .glass-card {
-    box-shadow: 0 8px 32px -4px rgba(137, 76, 92, 0.12);
-  }
-
-  /* Scrollbar đẹp hơn trên laptop */
-  #main-content::-webkit-scrollbar {
-    width: 6px;
-  }
-  #main-content::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  /* Custom scrollbar */
+  #main-content::-webkit-scrollbar { width: 5px; }
+  #main-content::-webkit-scrollbar-track { background: transparent; }
   #main-content::-webkit-scrollbar-thumb {
     background: var(--color-outline-variant);
     border-radius: 999px;
   }
   #main-content::-webkit-scrollbar-thumb:hover {
     background: var(--color-primary-container);
+  }
+
+  /* ── Glass card đẹp hơn trên nền orb ── */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      0 8px 32px -4px rgba(137, 76, 92, 0.12),
+      0 2px 0 0 rgba(255,255,255,0.8) inset,
+      0 -1px 0 0 rgba(137,76,92,0.04) inset;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  .glass-card:hover {
+    box-shadow:
+      0 12px 40px -4px rgba(137, 76, 92, 0.18),
+      0 2px 0 0 rgba(255,255,255,0.9) inset;
+  }
+
+  /* ── Shimmer utility (dùng cho skeleton hay card nổi bật) ── */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.6) 50%,
+      rgba(255,255,255,0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
   }
 }
