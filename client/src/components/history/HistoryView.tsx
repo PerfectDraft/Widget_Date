@@ -69,7 +69,6 @@ const MOCK_UPCOMING: DateEntry[] = [
     location: 'The Note Coffee, Hoan Kiem, Hanoi',
     status: 'confirmed',
     partnerName: 'Minh Anh',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
     partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDs0MbF0SW4wg0y239gznRKNkV2_70V08BE2XnQ47KE5h2sCkkkf1PdyvQGkLgx_oGK7pqAmoQMjtvSuILye_RosX35YgJW5c3s_XVyJCrUtFF2U4TAJImErmB8zt4Y0xCUvAfKY_SeQqAgM_L-QsnH-5ssOwj2J76IXIKkD_MAswG00aEtjBXbVrf1B7aN6s033RdnjqxGIYqJXsXfwuwUuBFSqp-yCpoDlockf50is5KGo2_Wpk9zzvXBVeF_An1twKAbbwOZrK2Y',
     typeIcon: 'local_cafe'
   },
@@ -87,7 +86,6 @@ const MOCK_UPCOMING: DateEntry[] = [
     title: 'Late Night Movie',
     dateLabel: '22:00 • Sep 15',
     location: 'CGV Vincom Center, Dong Da, Hanoi',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
     status: 'pending',
     partnerName: 'Minh Anh',
     partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDs0MbF0SW4wg0y239gznRKNkV2_70V08BE2XnQ47KE5h2sCkkkf1PdyvQGkLgx_oGK7pqAmoQMjtvSuILye_RosX35YgJW5c3s_XVyJCrUtFF2U4TAJImErmB8zt4Y0xCUvAfKY_SeQqAgM_L-QsnH-5ssOwj2J76IXIKkD_MAswG00aEtjBXbVrf1B7aN6s033RdnjqxGIYqJXsXfwuwUuBFSqp-yCpoDlockf50is5KGo2_Wpk9zzvXBVeF_An1twKAbbwOZrK2Y',
@@ -107,7 +105,6 @@ const MOCK_UPCOMING: DateEntry[] = [
     title: 'Picnic at Park',
     dateLabel: '10:00 • Sep 16',
     location: 'Yen So Park, Hanoi',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
     status: 'confirmed',
     partnerName: 'Minh Anh',
     typeIcon: 'directions_walk'
@@ -129,7 +126,6 @@ const MOCK_PAST: DateEntry[] = [
     title: 'First Date Coffee',
     dateLabel: '09:00 • Sep 01',
     location: 'Cafe Giảng, Old Quarter, Hanoi',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
     status: 'confirmed',
     partnerName: 'Minh Anh',
     typeIcon: 'local_cafe',
@@ -150,7 +146,6 @@ const MOCK_PAST: DateEntry[] = [
     title: 'Shopping Trip',
     dateLabel: '16:00 • Sep 05',
     location: 'Aeon Mall Long Bien, Hanoi',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9y-K-fXp9S-f3V4N-B8WJ5Vz9I-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV-B7G-uV_uV',
     status: 'confirmed',
     partnerName: 'Minh Anh',
     typeIcon: 'shopping_bag',
@@ -220,7 +215,7 @@ function DateDetailModal({ item, onClose }: { item: DateEntry; onClose: () => vo
       >
         <div className="h-48 w-full relative">
           {item.imageUrl ? (
-            <img src={item.imageUrl} className="w-full h-full object-cover" alt="" />
+            <img src={item.imageUrl} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
           ) : (
             <div className="w-full h-full bg-primary/10 flex items-center justify-center">
               <span className="material-symbols-outlined text-primary text-[64px]">{item.typeIcon}</span>
@@ -274,7 +269,7 @@ function DateDetailModal({ item, onClose }: { item: DateEntry; onClose: () => vo
                 <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t.history.partner}</p>
                 <div className="flex items-center gap-2">
                   {item.partnerAvatar && (
-                    <img src={item.partnerAvatar} className="w-6 h-6 rounded-full border border-outline-variant/30" alt="" />
+                    <img src={item.partnerAvatar} className="w-6 h-6 rounded-full border border-outline-variant/30" alt="" referrerPolicy="no-referrer" />
                   )}
                   <p className="text-on-surface font-medium">{item.partnerName}</p>
                 </div>
@@ -394,7 +389,6 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
               aria-controls="timeline-panel"
               onClick={() => {
                 setTab(tabId);
-                // Reset selected day when switching tabs to ensure valid data is shown
                 if (tabId === 'past' && selectedDay >= '12') {
                   setSelectedDay('01');
                 } else if (tabId === 'upcoming' && selectedDay < '12') {
@@ -556,7 +550,12 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
                     {item.imageUrl && (
                       <div className="h-36 w-full rounded-2xl mb-4 overflow-hidden shadow-sm border border-outline-variant/20 relative group-hover:shadow-md transition-shadow">
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" aria-hidden="true"></div>
-                        <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src={item.imageUrl} alt={localizedTitle} />
+                        <img
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          src={item.imageUrl}
+                          alt={localizedTitle}
+                          referrerPolicy="no-referrer"
+                        />
                       </div>
                     )}
                     
@@ -566,7 +565,8 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
                           <img 
                             alt={item.partnerName} 
                             className="w-7 h-7 rounded-full border-2 border-primary-container object-cover shadow-sm" 
-                            src={item.partnerAvatar} 
+                            src={item.partnerAvatar}
+                            referrerPolicy="no-referrer"
                           />
                         )}
                         <span className="text-sm font-bold text-on-surface">{item.partnerName}</span>
@@ -605,7 +605,6 @@ export function HistoryView({ upcomingDates = MOCK_UPCOMING, pastDates = MOCK_PA
           selectedDay={selectedDay}
           onSelect={(day) => {
             setSelectedDay(day);
-            // Auto switch tab based on date if needed, or just let user stay on current tab
           }}
           onClose={() => setIsCalendarOpen(false)}
         />
