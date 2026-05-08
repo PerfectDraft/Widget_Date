@@ -50,7 +50,7 @@ const MOCK_UPCOMING: DateEntry[] = [
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBclEuSDE1MldGa7UQejM-cMgl_Sb9ajVBixCArfS4RI-XOjyZDAAO-m9szfe7pd78s_KsQ_szEvhZfvnmVYJH5567wYGyLZ4tv3fh4jSSTDJBaXPlbsCw-O0lJZnJ_D2mD_DDSKGqS4gmrB0qh9jW6nWSI8gjU7BPIxIIwtCyLgmGL1uHt8m818w_ReXhKhlWlcn1llRCuxM45S48Z9se3OyuW9U4Umyw437D3FuUZ_2QqalyXKwIbF0jr9iqArxiRx4SLv7Xi6yOF',
     status: 'pending',
     partnerName: 'Minh Anh',
-    partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBojnTPGX0bsTo6guSI3OZ86sVRPKlQ0f4HONgNxpp4VC_SncgSCgP6V2mJVS5QfONmPR-nCrNcZP9THWp5jS-hZYXwnWrgurnrnI6RH5M6Tr1iLJ6h2kyjIKFLNokOXJh2aaObQIAIUL4UWvMaJ0IAzhsWtVVRSggQArOecY5QequivReGsSYsMCXboiCwnJwoUZ1euGHQa_5j6WjDxi8tm7Xi1HC2Vj8_pEr3X2-6sFub6ZFIyax85jB5zv4RdnLKNRGhshdgyi_D',
+    partnerAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBojnTPGX0bsTo6guSI3OZ86sVRPKlQ0f4HONgNxpp4VC_SncgSCgP6V2mJVS5QfONmPR-nCvz9K_SncgSCgP6V2mJVS5QfONmPR',
     typeIcon: 'directions_walk'
   },
   {
@@ -198,7 +198,15 @@ function DateDetailModal({ item, onClose }: { item: DateEntry; onClose: () => vo
   const { t } = useLocale();
   
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 sm:pl-[--sidebar-offset,0px]">
+      <style>{`
+        @media (min-width: 1024px) {
+          .modal-sidebar-aware { padding-left: 256px; }
+        }
+        @media (min-width: 1280px) {
+          .modal-sidebar-aware { padding-left: 288px; }
+        }
+      `}</style>
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -211,85 +219,88 @@ function DateDetailModal({ item, onClose }: { item: DateEntry; onClose: () => vo
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-surface-container-lowest rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl z-10"
+        className="modal-sidebar-aware relative w-full flex items-end sm:items-center justify-center sm:p-4 z-10 pointer-events-none"
+        style={{ position: 'relative' }}
       >
-        <div className="h-48 w-full relative">
-          {item.imageUrl ? (
-            <img src={item.imageUrl} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
-          ) : (
-            <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-[64px]">{item.typeIcon}</span>
-            </div>
-          )}
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/40 transition-colors"
-          >
-            <span className="material-symbols-outlined">close</span>
-          </button>
-        </div>
-        
-        <div className="p-6 space-y-6">
-          <div className="flex justify-between items-start">
-            <div className="space-y-1">
-              <h2 className="text-headline-sm font-bold text-on-surface" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
-                {item.title}
-              </h2>
-              <p className="text-primary font-semibold flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[18px]">event</span>
-                {item.dateLabel}
-              </p>
-            </div>
-            <span className={cn(
-              "px-4 py-1.5 rounded-full text-xs font-bold uppercase border shadow-sm",
-              item.status === 'confirmed' 
-                ? "bg-tertiary-fixed/40 text-on-tertiary-fixed border-tertiary/30" 
-                : "bg-surface-container-high text-on-surface-variant border-outline-variant/30"
-            )}>
-              {item.status === 'confirmed' ? t.history.status_confirmed : t.history.status_pending}
-            </span>
+        <div className="pointer-events-auto w-full max-w-lg bg-surface-container-lowest rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl">
+          <div className="h-48 w-full relative">
+            {item.imageUrl ? (
+              <img src={item.imageUrl} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
+            ) : (
+              <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-[64px]">{item.typeIcon}</span>
+              </div>
+            )}
+            <button 
+              onClick={onClose}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/40 transition-colors"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
           </div>
-
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary-container/30 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-primary">location_on</span>
-              </div>
+          
+          <div className="p-6 space-y-6">
+            <div className="flex justify-between items-start">
               <div className="space-y-1">
-                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t.explore.open_maps}</p>
-                <p className="text-on-surface font-medium">{item.location}</p>
+                <h2 className="text-headline-sm font-bold text-on-surface" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
+                  {item.title}
+                </h2>
+                <p className="text-primary font-semibold flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px]">event</span>
+                  {item.dateLabel}
+                </p>
               </div>
+              <span className={cn(
+                "px-4 py-1.5 rounded-full text-xs font-bold uppercase border shadow-sm",
+                item.status === 'confirmed' 
+                  ? "bg-tertiary-fixed/40 text-on-tertiary-fixed border-tertiary/30" 
+                  : "bg-surface-container-high text-on-surface-variant border-outline-variant/30"
+              )}>
+                {item.status === 'confirmed' ? t.history.status_confirmed : t.history.status_pending}
+              </span>
             </div>
 
-            <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-secondary-container/30 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-secondary">favorite</span>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t.history.partner}</p>
-                <div className="flex items-center gap-2">
-                  {item.partnerAvatar && (
-                    <img src={item.partnerAvatar} className="w-6 h-6 rounded-full border border-outline-variant/30" alt="" referrerPolicy="no-referrer" />
-                  )}
-                  <p className="text-on-surface font-medium">{item.partnerName}</p>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary-container/30 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-primary">location_on</span>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t.explore.open_maps}</p>
+                  <p className="text-on-surface font-medium">{item.location}</p>
                 </div>
               </div>
-            </div>
-            
-            <div className="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10">
-              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t.history.notes}</p>
-              <p className="text-sm text-on-surface leading-relaxed">
-                Buổi hẹn hò tuyệt vời tại không gian lãng mạn. Đừng quên mang theo quà nhé!
-              </p>
-            </div>
-          </div>
 
-          <button 
-            onClick={onClose}
-            className="w-full py-4 bg-primary text-on-primary rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-shadow active:scale-[0.98]"
-          >
-            {t.common.cancel}
-          </button>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-secondary-container/30 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-secondary">favorite</span>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t.history.partner}</p>
+                  <div className="flex items-center gap-2">
+                    {item.partnerAvatar && (
+                      <img src={item.partnerAvatar} className="w-6 h-6 rounded-full border border-outline-variant/30" alt="" referrerPolicy="no-referrer" />
+                    )}
+                    <p className="text-on-surface font-medium">{item.partnerName}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10">
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t.history.notes}</p>
+                <p className="text-sm text-on-surface leading-relaxed">
+                  Buổi hẹn hò tuyệt vời tại không gian lãng mạn. Đừng quên mang theo quà nhé!
+                </p>
+              </div>
+            </div>
+
+            <button 
+              onClick={onClose}
+              className="w-full py-4 bg-primary text-on-primary rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-shadow active:scale-[0.98]"
+            >
+              {t.common.cancel}
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>
@@ -302,6 +313,14 @@ function CalendarBottomSheet({ selectedDay, onSelect, onClose }: { selectedDay: 
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center">
+      <style>{`
+        @media (min-width: 1024px) {
+          .calendar-sidebar-aware { padding-left: 256px; }
+        }
+        @media (min-width: 1280px) {
+          .calendar-sidebar-aware { padding-left: 288px; }
+        }
+      `}</style>
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -314,31 +333,33 @@ function CalendarBottomSheet({ selectedDay, onSelect, onClose }: { selectedDay: 
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-surface-container-lowest rounded-t-[32px] overflow-hidden shadow-2xl z-10 p-6 pb-10"
+        className="calendar-sidebar-aware relative w-full flex items-end justify-center z-10 pointer-events-none"
       >
-        <div className="w-12 h-1.5 bg-outline-variant/30 rounded-full mx-auto mb-6" />
-        <h3 className="text-headline-sm font-bold text-on-surface mb-6" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
-          {t.history.select_date}
-        </h3>
-        
-        <div className="grid grid-cols-7 gap-2">
-          {daysInMonth.map(d => (
-            <button
-              key={d}
-              onClick={() => {
-                onSelect(d);
-                onClose();
-              }}
-              className={cn(
-                "h-12 w-full rounded-2xl flex items-center justify-center font-bold transition-all",
-                selectedDay === d
-                  ? "bg-primary text-on-primary shadow-md"
-                  : "bg-surface-container-low text-on-surface hover:bg-primary-container/20"
-              )}
-            >
-              {d}
-            </button>
-          ))}
+        <div className="pointer-events-auto w-full max-w-lg bg-surface-container-lowest rounded-t-[32px] overflow-hidden shadow-2xl p-6 pb-10">
+          <div className="w-12 h-1.5 bg-outline-variant/30 rounded-full mx-auto mb-6" />
+          <h3 className="text-headline-sm font-bold text-on-surface mb-6" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
+            {t.history.select_date}
+          </h3>
+          
+          <div className="grid grid-cols-7 gap-2">
+            {daysInMonth.map(d => (
+              <button
+                key={d}
+                onClick={() => {
+                  onSelect(d);
+                  onClose();
+                }}
+                className={cn(
+                  "h-12 w-full rounded-2xl flex items-center justify-center font-bold transition-all",
+                  selectedDay === d
+                    ? "bg-primary text-on-primary shadow-md"
+                    : "bg-surface-container-low text-on-surface hover:bg-primary-container/20"
+                )}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
         </div>
       </motion.div>
     </div>
