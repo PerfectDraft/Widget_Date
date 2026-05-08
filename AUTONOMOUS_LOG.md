@@ -196,3 +196,49 @@ Do NOT edit manually. Updated automatically by @super-manager during autonomous 
 - Console severity cleanup hoàn tất.
 - Toàn bộ checks vẫn 6/6 PASSED. Không còn `console.log` nào trong server code.
 
+---
+
+## 2026-05-08T08:50 — Session #45: UI Fix — Custom Combo + Explore Header/Sidebar
+
+### Proactive Scan Results
+- Baseline phát hiện `HomeDashboardUI.tsx` bị truncate gây lỗi TypeScript (unterminated JSX/string).
+- Issue scope: 3 lỗi UI (focus mode custom combo, combo status placement ở Explore desktop, header Explore bị trong suốt).
+
+### Issues Resolved
+
+#### Issue #1: Focus mode "Tự tạo combo" hiển thị sai kích thước (High impact)
+- **Files**: `client/src/components/home/HomeDashboardUI.tsx`
+- **Change type**: Medium
+- **Root cause**: Layout cũ bị hỏng/truncate làm content overflow và không render đầy đủ.
+- **Fix applied**: Rebuild layout focus mode theo cấu trúc `header + scrollable main + sticky footer`, thêm progress, slot cards, CTA thêm địa điểm/chốt lịch.
+- **Verification**: `npx tsc --noEmit -p client/tsconfig.json` [pass], manual screenshot `/tmp/widget-focus-mode-desktop.png`.
+- **Result**: Resolved
+
+#### Issue #2: Thanh trạng thái combo cần nằm trong sidebar Explore trên desktop (Medium)
+- **Files**: `client/src/App.tsx`, `client/src/components/explore/ExploreView.tsx`
+- **Change type**: Low
+- **Root cause**: Combo bar đang fixed bottom cho mọi breakpoint.
+- **Fix applied**: Hiển thị combo status card dưới nút Chat AI trong sidebar khi `activeTab === 'explore'` và có `activeCombo`; giới hạn bottom combo bar của Explore chỉ cho mobile (`lg:hidden`).
+- **Verification**: manual screenshot `/tmp/widget-explore-desktop-sidebar-combo.png`.
+- **Result**: Resolved
+
+#### Issue #3: Header Explore bị transparent gây chồng chữ khi scroll (Medium)
+- **Files**: `client/src/components/explore/ExploreView.tsx`
+- **Change type**: Low
+- **Root cause**: Header dùng glass style thiếu nền mờ đủ mạnh cho trạng thái sticky.
+- **Fix applied**: Set nền `bg-surface/...` + `backdrop-blur-lg` + border dưới để tách lớp nội dung.
+- **Verification**: manual screenshot `/tmp/widget-explore-mobile-header.png`.
+- **Result**: Resolved
+
+### Additional Cleanup
+- Thay gradient `from-violet-600` → `from-emerald-600 to-cyan-500` trong ExploreView để pass UX audit rule (purple banned).
+
+### Project Health After Run
+- **TypeScript**: ✅ CLEAN (client + server)
+- **Build**: ✅ PASS (`npm run build`)
+- **Checklist**: ✅ 6/6 PASSED (`checklist.py`)
+- **CodeQL**: ✅ 0 alerts
+
+### Handoff
+- 3 vấn đề UI đã được xử lý đúng yêu cầu responsive.
+- Có screenshot minh chứng trong `/tmp/` cho desktop/mobile/focus mode.

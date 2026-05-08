@@ -7,9 +7,9 @@
 
 ## 🗓️ Cập nhật lần cuối
 
-| Ngày | 2026-05-05 |
-| Phiên làm việc | #44 — Autonomous Mode: Console Severity Cleanup |
-| Nhánh Git | `main` |
+| Ngày | 2026-05-08 |
+| Phiên làm việc | #45 — UI Fix: Custom Combo + Explore Header/Sidebar |
+| Nhánh Git | `copilot/fix-widget-date-ui-issues` |
 
 ---
 
@@ -208,3 +208,10 @@ npm run dev
 - **Console Severity**: Đổi 6 `console.log` → `console.info` trong `server/src/db/client.ts` và `server/src/index.ts` (startup/init logs).
 - **Verification**: checklist.py 6/6 PASSED, tsc --noEmit clean cả client và server.
 - **Files đã sửa**: `server/src/db/client.ts`, `server/src/index.ts`, `AUTONOMOUS_LOG.md`, `PROGRESS.md`.
+
+### Session #45 — 2026-05-08
+- **Custom Combo UI**: Sửa toàn bộ layout `HomeDashboardUI` ở chế độ "Tự tạo combo" để hiển thị đầy đủ nội dung, có scroll và không bị cắt.
+- **Explore Desktop Sidebar**: Thêm thanh trạng thái combo vào sidebar (dưới nút Chat AI) khi ở tab Khám phá trên màn hình `lg` trở lên.
+- **Explore Header**: Cập nhật header thành nền surface + blur để tránh chồng chữ khi cuộn (desktop + mobile).
+- **Quality Gate**: `tsc` client/server pass, `npm run build` pass, `checklist.py` 6/6 PASSED, CodeQL không có alert.
+- **Files đã sửa**: `client/src/components/home/HomeDashboardUI.tsx`, `client/src/components/explore/ExploreView.tsx`, `client/src/App.tsx`, `PROGRESS.md`, `AUTONOMOUS_LOG.md`.
