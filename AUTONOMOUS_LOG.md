@@ -196,3 +196,33 @@ Do NOT edit manually. Updated automatically by @super-manager during autonomous 
 - Console severity cleanup hoàn tất.
 - Toàn bộ checks vẫn 6/6 PASSED. Không còn `console.log` nào trong server code.
 
+---
+
+## 2026-05-08T09:35 — Session #45: UI Fix Pack (Blur, Font, Weather, Explore CTA)
+
+### Proactive Scan Results
+- Baseline phát hiện lỗi lint TypeScript: `price_per_person` không tồn tại trong `LocationItem`.
+- Kiểm tra checklist sau sửa: 6/6 PASSED.
+
+### Issues Resolved
+
+#### Issue #1: Bottom Nav + Explore Header thiếu hiệu ứng blur (Low risk)
+- **Files**: `client/src/App.tsx`, `client/src/components/explore/ExploreView.tsx`
+- **Root cause**: Navigation/header dùng style chưa đảm bảo frosted glass khi sticky/fixed.
+- **Fix applied**: Áp dụng `bg-white/70` + `backdrop-blur-lg` + border bán trong suốt cho mobile bottom nav và Explore sticky header.
+- **Verification**: Manual UI check + build pass.
+
+#### Issue #2: Font fallback không nhất quán (Low risk)
+- **Files**: `client/src/index.css`
+- **Root cause**: Font family definition bị phân tán, headline fallback về serif gây lệch style.
+- **Fix applied**: Chuẩn hoá font stack cho headline/body/label, và set `html, body, #root` dùng `var(--font-sans)`.
+- **Verification**: checklist UX/SEO pass.
+
+#### Issue #3: Weather card Home dễ vỡ layout + lỗi type tổng chi phí slot (Medium risk)
+- **Files**: `client/src/components/home/HomeDashboardUI.tsx`
+- **Root cause**: Hàng nhiệt độ/description chưa tối ưu responsive; tổng chi phí dùng field `price_per_person` không có trong type.
+- **Fix applied**: Tinh chỉnh layout responsive (`flex-col` -> `sm:flex-row`, break-word, spacing), sửa phép tính tổng về `price ?? cost ?? 0`. Nâng style nút chuyển tab Khám phá và giữ callback điều hướng qua props.
+- **Verification**: `npx tsc --noEmit -p client/tsconfig.json`, `npx tsc --noEmit -p server/tsconfig.json`, `npm run build -w client`, `python .agent/scripts/checklist.py .` đều pass.
+
+### Artifacts
+- UI screenshots: `/tmp/widget-date/home-tab.png`, `/tmp/widget-date/explore-tab.png`.

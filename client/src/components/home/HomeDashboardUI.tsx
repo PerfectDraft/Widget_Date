@@ -210,12 +210,14 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
 
           {/* Navigate to Explore */}
           <button
+            type="button"
             onClick={onNavigateToExplore}
-            className="w-full mt-4 py-3 rounded-2xl border-2 border-tertiary/40 text-tertiary font-bold hover:bg-tertiary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
-            aria-label="Khám phá địa điểm"
+            className="w-full mt-4 py-3 rounded-2xl border border-primary/30 bg-white/70 text-primary font-bold hover:bg-primary-container/35 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label={t.explore_button}
           >
             <span className="material-symbols-outlined text-[20px]">explore</span>
-            Khám phá địa điểm
+            {t.explore_button}
+            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
 
           {/* Add Slot Button */}
@@ -233,7 +235,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             <div className="flex justify-between items-center mb-3">
               <span className="text-body-md text-on-surface-variant">{t.total_label ?? 'Tổng'}</span>
               <span className="text-title-md font-bold text-primary">
-                {formatVND(comboSlots.filter(Boolean).reduce((sum, s) => sum + (s?.price_per_person ?? 0), 0))}
+                {formatVND(comboSlots.filter(Boolean).reduce((sum, s) => sum + (s?.price ?? s?.cost ?? 0), 0))}
               </span>
             </div>
             <button
@@ -294,13 +296,13 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
       <main className="px-6 space-y-8 mt-6">
 
         {/* Weather Card */}
-        <section className="glass-card rounded-[32px] p-6 border-none bg-gradient-to-br from-primary/10 via-secondary/10 to-background shadow-xl relative overflow-hidden">
+        <section className="glass-card rounded-[32px] p-5 sm:p-6 border-none bg-gradient-to-br from-primary/10 via-secondary/10 to-background shadow-xl relative overflow-hidden">
           <h2 style={srOnlyStyle}>{t.weather?.details ?? 'Thời tiết'}</h2>
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
           {weatherData ? (
             <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 gap-3">
                 <p className="text-primary font-bold text-label-sm uppercase tracking-[0.15em]">{dateStr}</p>
                 <div className="bg-white/40 p-3 rounded-2xl backdrop-blur-md shadow-sm border border-white/20">
                   <span className="material-symbols-outlined text-primary text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -308,16 +310,16 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                   </span>
                 </div>
               </div>
-              <div className="flex items-end gap-4 mb-3">
-                <h3 className="text-[56px] font-black leading-none text-on-surface tracking-tighter">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4 mb-3 min-w-0">
+                <h3 className="text-[44px] sm:text-[56px] font-black leading-none text-on-surface tracking-tighter">
                   {Math.round(weatherData.main?.temp ?? 0)}°
                 </h3>
-                <div className="pb-2">
-                  <p className="text-on-surface font-bold text-body-lg capitalize">{weatherData.weather?.[0]?.description}</p>
-                  <p className="text-on-surface-variant text-label-md">{weatherData.name} • {t.weather?.feels_like ?? 'Cảm giác như'} {Math.round(weatherData.main?.feels_like ?? 0)}°</p>
+                <div className="pb-1 sm:pb-2 min-w-0">
+                  <p className="text-on-surface font-bold text-body-lg capitalize leading-tight break-words">{weatherData.weather?.[0]?.description}</p>
+                  <p className="text-on-surface-variant text-label-md break-words">{weatherData.name} • {t.weather?.feels_like ?? 'Cảm giác như'} {Math.round(weatherData.main?.feels_like ?? 0)}°</p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3 mb-4 pt-3 border-t border-white/30" role="table" aria-label="Thông tin thời tiết chi tiết">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 pt-3 border-t border-white/30" role="table" aria-label="Thông tin thời tiết chi tiết">
                 <div className="text-center" role="cell">
                   <span className="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">water_drop</span>
                   <p className="text-label-sm text-on-surface mt-1 font-bold">{weatherData.main?.humidity ?? '--'}%</p>

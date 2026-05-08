@@ -275,7 +275,7 @@ export default function App() {
       </div>
 
       {/* Bottom Nav (mobile only) */}
-      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 glass-card pb-safe z-50 lg:hidden">
+      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 pb-safe z-50 lg:hidden border-t border-white/60 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60">
         <div className="max-w-md mx-auto px-2 py-2 flex justify-around items-end">
           {NAV_ITEMS.map(item => {
             const isActive = activeTab === item.id;

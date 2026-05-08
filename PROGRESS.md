@@ -7,9 +7,9 @@
 
 ## 🗓️ Cập nhật lần cuối
 
-| Ngày | 2026-05-05 |
-| Phiên làm việc | #44 — Autonomous Mode: Console Severity Cleanup |
-| Nhánh Git | `main` |
+| Ngày | 2026-05-08 |
+| Phiên làm việc | #45 — UI Fix: Blur/Nav/Font/Weather/Explore Button |
+| Nhánh Git | `copilot/fix-ui-issues-client-app` |
 
 ---
 
@@ -208,3 +208,12 @@ npm run dev
 - **Console Severity**: Đổi 6 `console.log` → `console.info` trong `server/src/db/client.ts` và `server/src/index.ts` (startup/init logs).
 - **Verification**: checklist.py 6/6 PASSED, tsc --noEmit clean cả client và server.
 - **Files đã sửa**: `server/src/db/client.ts`, `server/src/index.ts`, `AUTONOMOUS_LOG.md`, `PROGRESS.md`.
+
+### Session #45 — 2026-05-08
+- **UI Blur Fix**: Thêm hiệu ứng frosted glass cho bottom navigation và Explore header (`backdrop-blur-lg` + nền bán trong suốt).
+- **Font Consistency**: Chuẩn hoá font fallback trong `index.css`, áp dụng thống nhất `var(--font-sans)` cho `html/body/#root`.
+- **Home Weather Layout**: Cải thiện responsive layout tránh overflow/text vỡ ở card thời tiết.
+- **Custom Combo Button**: Sửa style + dùng label i18n cho nút chuyển sang tab Khám phá; giữ logic chuyển tab qua prop callback.
+- **Type/Lint Stability**: Sửa lỗi tổng chi phí slot dùng field không tồn tại (`price_per_person` → `price/cost`).
+- **Verification**: `tsc` client/server pass, `npm run build -w client` pass, `checklist.py` 6/6 PASSED, secret grep 0 matches.
+- **UI Capture**: Ảnh kiểm tra thủ công tại `/tmp/widget-date/home-tab.png` và `/tmp/widget-date/explore-tab.png`.
