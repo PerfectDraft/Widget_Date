@@ -51,6 +51,15 @@ function getInitialAuth(): boolean {
   } catch { return false; }
 }
 
+// Nav items config
+const NAV_ITEMS = [
+  { id: 'home', icon: 'home', label: 'Trang chủ' },
+  { id: 'explore', icon: 'explore', label: 'Khám phá' },
+  { id: 'fashion', icon: 'checkroom', label: 'Phong cách' },
+  { id: 'history', icon: 'history', label: 'Lịch sử' },
+  { id: 'wallet', icon: 'emoji_events', label: 'Thành tích' },
+] as const;
+
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(getInitialAuth);
   const [phone, setPhone] = useState<string | null>(() => loadJson('wd_phone', null));
@@ -63,47 +72,26 @@ export default function App() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const chat = useChat(currentUserId);
 
-  // User profile state
   const [userName, setUserName] = useState<string>(() => loadJson('wd_username', ''));
   const [userAvatar, setUserAvatar] = useState<string>(() => loadJson('wd_avatar', DEFAULT_AVATAR));
-
   const [preferences, setPreferences] = useState<string[]>(() => loadJson('wd_prefs', ['Cafe']));
-
   const [combos, setCombos] = useState<Combo[]>(() => loadJson('wd_combos', []));
   const [selectedCombo, setSelectedCombo] = useState<Combo | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [comboActionModal, setComboActionModal] = useState<Combo | null>(null);
-
   const [rideModalLoc, setRideModalLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [realImageLoc, setRealImageLoc] = useState<{ name: string; mapsUri: string; desc?: string; imageUrl?: string } | null>(null);
-
   const [savedPlaces, setSavedPlaces] = useState<LocationItem[]>([]);
-
   const [activeCombo, setActiveCombo] = useState<Combo | null>(null);
   const [comboSlots, setComboSlots] = useState<ComboSlot[]>([]);
 
-  useEffect(() => {
-    localStorage.setItem('wd_phone', JSON.stringify(phone));
-  }, [phone]);
+  useEffect(() => { localStorage.setItem('wd_phone', JSON.stringify(phone)); }, [phone]);
+  useEffect(() => { localStorage.setItem('wd_combos', JSON.stringify(combos)); }, [combos]);
+  useEffect(() => { localStorage.setItem('wd_prefs', JSON.stringify(preferences)); }, [preferences]);
+  useEffect(() => { localStorage.setItem('wd_username', JSON.stringify(userName)); }, [userName]);
+  useEffect(() => { localStorage.setItem('wd_avatar', JSON.stringify(userAvatar)); }, [userAvatar]);
 
-  useEffect(() => {
-    localStorage.setItem('wd_combos', JSON.stringify(combos));
-  }, [combos]);
-
-  useEffect(() => {
-    localStorage.setItem('wd_prefs', JSON.stringify(preferences));
-  }, [preferences]);
-
-  // Persist userName & userAvatar to localStorage
-  useEffect(() => {
-    localStorage.setItem('wd_username', JSON.stringify(userName));
-  }, [userName]);
-  useEffect(() => {
-    localStorage.setItem('wd_avatar', JSON.stringify(userAvatar));
-  }, [userAvatar]);
-
-  // Load profile from DB when authenticated
   const loadProfile = useCallback(async (phoneNum: string) => {
     try {
       const token = localStorage.getItem('wd_token');
@@ -112,36 +100,19 @@ export default function App() {
       const res = await fetch(`/api/user?action=profile&phone=${encodeURIComponent(phoneNum)}`, { headers });
       if (!res.ok) return;
       const data = await res.json();
-      if (data.display_name) {
-        setUserName(data.display_name);
-      } else if (!loadJson('wd_username', '')) {
-        setUserName(phoneNum);
-      }
+      if (data.display_name) setUserName(data.display_name);
+      else if (!loadJson('wd_username', '')) setUserName(phoneNum);
       if (data.avatar_url) setUserAvatar(data.avatar_url);
-    } catch (e) {
-      // silent fail — use cached values
-    }
+    } catch (e) { /* silent */ }
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && phone) {
-      loadProfile(phone);
-    }
+    if (isAuthenticated && phone) loadProfile(phone);
   }, [isAuthenticated, phone, loadProfile]);
 
-  const drive = useDriveSync(
-    combos,
-    userReward,
-    chat.chatMessages,
-    setCombos,
-    setUserReward,
-    chat.setChatMessages,
-    preferences
-  );
+  const drive = useDriveSync(combos, userReward, chat.chatMessages, setCombos, setUserReward, chat.setChatMessages, preferences);
 
-  useEffect(() => {
-    setCurrentUserId(phone || drive.userIdentifier);
-  }, [drive.userIdentifier, phone]);
+  useEffect(() => { setCurrentUserId(phone || drive.userIdentifier); }, [drive.userIdentifier, phone]);
 
   const handleAuthSuccess = (p: string, token: string, _userData?: { phone: string; googleId?: string }) => {
     localStorage.setItem('wd_token', token);
@@ -153,103 +124,47 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setPhone(null);
-    setCurrentUserId(null);
-    setCombos([]);
-    setPreferences(['Cafe']);
-    setUserName('');
-    setUserAvatar(DEFAULT_AVATAR);
-    setShowProfile(false);
-    localStorage.removeItem('wd_token');
-    localStorage.removeItem('wd_auth');
-    localStorage.removeItem('wd_phone');
-    localStorage.removeItem('wd_combos');
-    localStorage.removeItem('wd_prefs');
-    localStorage.removeItem('wd_username');
-    localStorage.removeItem('wd_avatar');
+    setIsAuthenticated(false); setPhone(null); setCurrentUserId(null);
+    setCombos([]); setPreferences(['Cafe']); setUserName(''); setUserAvatar(DEFAULT_AVATAR); setShowProfile(false);
+    localStorage.removeItem('wd_token'); localStorage.removeItem('wd_auth'); localStorage.removeItem('wd_phone');
+    localStorage.removeItem('wd_combos'); localStorage.removeItem('wd_prefs'); localStorage.removeItem('wd_username'); localStorage.removeItem('wd_avatar');
     showToast('Đã đăng xuất');
   };
 
-  if (!isAuthenticated) {
-    return <AuthView onAuthSuccess={handleAuthSuccess} />;
-  }
+  if (!isAuthenticated) return <AuthView onAuthSuccess={handleAuthSuccess} />;
 
   const handleSelectCombo = (combo: Combo) => setComboActionModal(combo);
 
   const proceedWithCustomize = (combo: Combo) => {
-    setActiveCombo(combo);
-    setComboActionModal(null);
-    setComboSlots(combo.activities.map((act) => ({
-      id: Math.random().toString(36).substring(7),
-      name: act.name,
-      address: act.address,
-      category: act.category || '',
-      price: act.cost,
-      lat: act.lat,
-      lng: act.lng,
-      imageUrl: act.imageUrl || ''
-    })));
+    setActiveCombo(combo); setComboActionModal(null);
+    setComboSlots(combo.activities.map((act) => ({ id: Math.random().toString(36).substring(7), name: act.name, address: act.address, category: act.category || '', price: act.cost, lat: act.lat, lng: act.lng, imageUrl: act.imageUrl || '' })));
     showToast(`Đã chọn combo "${combo.theme}" để tùy chỉnh!`);
   };
 
-  const proceedWithPayNow = (combo: Combo) => {
-    setSelectedCombo(combo);
-    setShowPaymentModal(true);
-    setComboActionModal(null);
-  };
+  const proceedWithPayNow = (combo: Combo) => { setSelectedCombo(combo); setShowPaymentModal(true); setComboActionModal(null); };
 
   const handleManualCombo = () => {
-    setActiveCombo({
-      id: Math.random().toString(36).substring(7),
-      theme: 'Tự tạo Combo',
-      icon: 'edit_calendar',
-      score: 10,
-      totalCost: 0,
-      activities: []
-    });
+    setActiveCombo({ id: Math.random().toString(36).substring(7), theme: 'Tự tạo Combo', icon: 'edit_calendar', score: 10, totalCost: 0, activities: [] });
     setComboSlots([null, null, null]);
     showToast('Tạo combo mới thành công. Hãy thêm địa điểm từ Khám phá!');
   };
 
   const handleAddSlot = () => setComboSlots(prev => [...prev, null]);
-
-  const handleClearCombo = () => {
-    setActiveCombo(null);
-    setComboSlots([]);
-    showToast('Đã huỷ combo');
-  };
+  const handleClearCombo = () => { setActiveCombo(null); setComboSlots([]); showToast('Đã huỷ combo'); };
 
   const handleConfirmCombo = () => {
     if (!activeCombo || comboSlots.some(s => s === null)) return;
     const filledSlots = comboSlots as LocationItem[];
     const totalPrice = filledSlots.reduce((sum, loc) => sum + (loc.price || loc.cost || 0), 0);
-    const finalCombo: Combo = {
-      ...activeCombo,
-      totalCost: totalPrice || activeCombo.totalCost,
-      activities: filledSlots.map((loc, i) => ({
-        time: activeCombo.activities[i]?.time || `${17 + i}:00`,
-        name: loc.name,
-        address: loc.address,
-        cost: loc.price || loc.cost || activeCombo.activities[i]?.cost || 0,
-        lat: loc.lat,
-        lng: loc.lng,
-        imageUrl: loc.imageUrl,
-        category: loc.category,
-      })),
-    };
-    setSelectedCombo(finalCombo);
-    setShowPaymentModal(true);
+    const finalCombo: Combo = { ...activeCombo, totalCost: totalPrice || activeCombo.totalCost, activities: filledSlots.map((loc, i) => ({ time: activeCombo.activities[i]?.time || `${17 + i}:00`, name: loc.name, address: loc.address, cost: loc.price || loc.cost || activeCombo.activities[i]?.cost || 0, lat: loc.lat, lng: loc.lng, imageUrl: loc.imageUrl, category: loc.category })) };
+    setSelectedCombo(finalCombo); setShowPaymentModal(true);
   };
 
   const findMatchingSlotIndex = (loc: LocationItem): number => {
-    const locCat = (loc.category || '').toLowerCase();
-    const locName = loc.name.toLowerCase();
-    const locTheme = (loc.theme || '').toLowerCase();
+    const locCat = (loc.category || '').toLowerCase(); const locName = loc.name.toLowerCase(); const locTheme = (loc.theme || '').toLowerCase();
     for (let i = 0; i < comboSlots.length; i++) {
       if (comboSlots[i] !== null) continue;
-      const act = activeCombo?.activities[i];
-      if (!act) continue;
+      const act = activeCombo?.activities[i]; if (!act) continue;
       const actName = act.name.toLowerCase();
       for (const keywords of Object.values(CATEGORY_SLOT_MAP)) {
         const locMatches = keywords.some(kw => locCat.includes(kw) || locName.includes(kw) || locTheme.includes(kw));
@@ -263,14 +178,9 @@ export default function App() {
   const handleAddToCombo = (loc: LocationItem) => {
     if (!activeCombo) {
       setSavedPlaces(prev => {
-        if (prev.some(p => p.id === loc.id)) {
-          showToast(`${loc.name} đã có trong danh sách rồi!`);
-          return prev;
-        }
-        showToast(`Đã thêm ${loc.name} vào danh sách! (${prev.length + 1} địa điểm)`);
-        return [...prev, loc];
-      });
-      return;
+        if (prev.some(p => p.id === loc.id)) { showToast(`${loc.name} đã có trong danh sách rồi!`); return prev; }
+        showToast(`Đã thêm ${loc.name} vào danh sách! (${prev.length + 1} địa điểm)`); return [...prev, loc];
+      }); return;
     }
     const allFilled = comboSlots.every(s => s !== null);
     if (allFilled) { showToast('Combo đã đầy đủ! Bấm "Chốt lịch" trên Home.'); return; }
@@ -288,21 +198,12 @@ export default function App() {
     earnMiles(100, `Hoàn thành Combo: ${selectedCombo.theme}`);
     incrementDates();
     showToast('Thanh toán thành công & Nhận 100 Miles! 🎉');
-    setTimeout(() => {
-      setShowPaymentModal(false);
-      setPaymentSuccess(false);
-      setSelectedCombo(null);
-      setActiveTab('wallet');
-    }, 2000);
+    setTimeout(() => { setShowPaymentModal(false); setPaymentSuccess(false); setSelectedCombo(null); setActiveTab('wallet'); }, 2000);
   };
 
   const handleRide = (app: 'grab' | 'be' | 'xanhsm', name: string, lat: number, lng: number) => {
     const encodedName = encodeURIComponent(name);
-    const urls: Record<string, string> = {
-      grab: `https://link.grab.com/open?screenType=BOOKING&dropOffLatitude=${lat}&dropOffLongitude=${lng}&dropOffName=${encodedName}`,
-      be: `be://booking?dropoff_lat=${lat}&dropoff_lng=${lng}&dropoff_address=${encodedName}`,
-      xanhsm: `xanhsm://booking?dropoff_lat=${lat}&dropoff_lng=${lng}&dropoff_address=${encodedName}`,
-    };
+    const urls: Record<string, string> = { grab: `https://link.grab.com/open?screenType=BOOKING&dropOffLatitude=${lat}&dropOffLongitude=${lng}&dropOffName=${encodedName}`, be: `be://booking?dropoff_lat=${lat}&dropoff_lng=${lng}&dropoff_address=${encodedName}`, xanhsm: `xanhsm://booking?dropoff_lat=${lat}&dropoff_lng=${lng}&dropoff_address=${encodedName}` };
     window.open(urls[app], '_blank');
     showToast(`Đang mở app ${app === 'grab' ? 'Grab' : app === 'be' ? 'Be' : 'Xanh SM'}...`);
     setRideModalLoc(null);
@@ -310,71 +211,126 @@ export default function App() {
 
   const location = 'Hà Nội';
 
+  // Sidebar nav (laptop)
+  const SidebarNav = () => (
+    <aside className="hidden lg:flex flex-col w-64 xl:w-72 shrink-0">
+      <div className="sticky top-6 flex flex-col gap-2">
+        {/* App logo/title */}
+        <div className="flex items-center gap-3 px-4 py-3 mb-4">
+          <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
+            <span className="material-symbols-outlined text-on-primary text-xl">favorite</span>
+          </div>
+          <div>
+            <p className="font-bold text-lg text-on-surface leading-tight">Widget Date</p>
+            <p className="text-xs text-on-surface-variant">Kế hoạch hẹn hò ✨</p>
+          </div>
+        </div>
+
+        {NAV_ITEMS.map(item => {
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={cn(
+                'flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 text-left w-full',
+                isActive
+                  ? 'bg-primary-fixed text-on-primary-container font-semibold shadow-sm'
+                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+              )}
+            >
+              <span
+                className="material-symbols-outlined text-[22px]"
+                style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+              >
+                {item.icon}
+              </span>
+              <span className="text-sm">{item.label}</span>
+              {isActive && <motion.div layoutId="sidebar-active" className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
+            </button>
+          );
+        })}
+
+        {/* Chat shortcut */}
+        <button
+          onClick={() => chat.setIsChatOpen(true)}
+          className="flex items-center gap-3 px-4 py-3 rounded-2xl mt-2 bg-primary text-on-primary hover:opacity-90 transition-all shadow-md"
+        >
+          <Bot className="w-5 h-5" />
+          <span className="text-sm font-semibold">Chat AI</span>
+        </button>
+      </div>
+    </aside>
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-20 selection:bg-pink-200">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-pink-200">
       <Toast message={toastMessage} onClose={hideToast} />
 
-      <main id="main-content" className="max-w-md mx-auto w-full">
-        <AnimatePresence mode="wait">
-          {activeTab === 'home' && (
-            <HomeView
-              weatherData={weatherData?.current ?? null}
-              showToast={showToast}
-              setSelectedCombo={handleSelectCombo}
-              setShowPaymentModal={setShowPaymentModal}
-              setRideModalLoc={setRideModalLoc}
-              setRealImageLoc={setRealImageLoc}
-              combos={combos}
-              setCombos={setCombos}
-              openChat={() => chat.setIsChatOpen(true)}
-              onAvatarClick={() => setShowProfile(true)}
-              onWeatherClick={() => setShowWeatherDetail(true)}
-              formatVND={formatVND}
-              location={location}
-              preferences={preferences}
-              setPreferences={setPreferences}
-              activeCombo={activeCombo}
-              comboSlots={comboSlots}
-              onClearCombo={handleClearCombo}
-              onConfirmCombo={handleConfirmCombo}
-              onRemoveSlot={(idx) => setComboSlots(prev => { const n = [...prev]; n[idx] = null; return n; })}
-              onManualCombo={handleManualCombo}
-              onAddSlot={handleAddSlot}
-              setActiveCombo={setActiveCombo}
-              userName={userName || phone || ''}
-              userAvatar={userAvatar}
-              dateMiles={userReward.totalMiles}
-              onNavigateToExplore={() => setActiveTab('explore')}
-            />
-          )}
-          {activeTab === 'explore' && (
-            <ExploreView
-              showToast={showToast}
-              setRideModalLoc={setRideModalLoc}
-              setRealImageLoc={setRealImageLoc}
-              formatVND={formatVND}
-              onAddToCombo={handleAddToCombo}
-              savedPlacesCount={savedPlaces.length}
-              activeCombo={activeCombo}
-              comboSlots={comboSlots}
-            />
-          )}
-          {activeTab === 'fashion' && <FashionView />}
-          {activeTab === 'wallet' && <DateMilesView userReward={userReward} />}
-          {activeTab === 'history' && <HistoryView />}
-        </AnimatePresence>
-      </main>
+      {/* ── LAPTOP: 2-column layout ── */}
+      <div className="lg:max-w-6xl lg:mx-auto lg:px-6 lg:py-6 lg:flex lg:gap-6">
+        <SidebarNav />
 
-      {/* Bottom Nav — z-50 để luôn nằm trên modal */}
-      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 glass-card pb-safe z-50">
+        {/* Main content area */}
+        <main
+          id="main-content"
+          className="flex-1 min-w-0 pb-20 lg:pb-6 max-w-md mx-auto w-full lg:max-w-none lg:mx-0"
+        >
+          <AnimatePresence mode="wait">
+            {activeTab === 'home' && (
+              <HomeView
+                weatherData={weatherData?.current ?? null}
+                showToast={showToast}
+                setSelectedCombo={handleSelectCombo}
+                setShowPaymentModal={setShowPaymentModal}
+                setRideModalLoc={setRideModalLoc}
+                setRealImageLoc={setRealImageLoc}
+                combos={combos}
+                setCombos={setCombos}
+                openChat={() => chat.setIsChatOpen(true)}
+                onAvatarClick={() => setShowProfile(true)}
+                onWeatherClick={() => setShowWeatherDetail(true)}
+                formatVND={formatVND}
+                location={location}
+                preferences={preferences}
+                setPreferences={setPreferences}
+                activeCombo={activeCombo}
+                comboSlots={comboSlots}
+                onClearCombo={handleClearCombo}
+                onConfirmCombo={handleConfirmCombo}
+                onRemoveSlot={(idx) => setComboSlots(prev => { const n = [...prev]; n[idx] = null; return n; })}
+                onManualCombo={handleManualCombo}
+                onAddSlot={handleAddSlot}
+                setActiveCombo={setActiveCombo}
+                userName={userName || phone || ''}
+                userAvatar={userAvatar}
+                dateMiles={userReward.totalMiles}
+                onNavigateToExplore={() => setActiveTab('explore')}
+              />
+            )}
+            {activeTab === 'explore' && (
+              <ExploreView
+                showToast={showToast}
+                setRideModalLoc={setRideModalLoc}
+                setRealImageLoc={setRealImageLoc}
+                formatVND={formatVND}
+                onAddToCombo={handleAddToCombo}
+                savedPlacesCount={savedPlaces.length}
+                activeCombo={activeCombo}
+                comboSlots={comboSlots}
+              />
+            )}
+            {activeTab === 'fashion' && <FashionView />}
+            {activeTab === 'wallet' && <DateMilesView userReward={userReward} />}
+            {activeTab === 'history' && <HistoryView />}
+          </AnimatePresence>
+        </main>
+      </div>
+
+      {/* Bottom Nav — chỉ hiện trên mobile */}
+      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 glass-card pb-safe z-50 lg:hidden">
         <div className="max-w-md mx-auto px-2 py-2 flex justify-around items-end">
-          {([
-            { id: 'home', icon: 'home', label: 'Trang chủ' },
-            { id: 'explore', icon: 'explore', label: 'Khám phá' },
-            { id: 'fashion', icon: 'checkroom', label: 'Phong cách' },
-            { id: 'history', icon: 'history', label: 'Lịch sử' },
-            { id: 'wallet', icon: 'emoji_events', label: 'Thành tích' },
-          ] as const).map(item => {
+          {NAV_ITEMS.map(item => {
             const isActive = activeTab === item.id;
             return (
               <button
@@ -396,19 +352,13 @@ export default function App() {
                     />
                   )}
                   <span
-                    className={cn(
-                      'material-symbols-outlined text-[22px] relative z-10 transition-all',
-                      isActive && 'font-bold'
-                    )}
+                    className={cn('material-symbols-outlined text-[22px] relative z-10 transition-all', isActive && 'font-bold')}
                     style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
                   >
                     {item.icon}
                   </span>
                 </div>
-                <span className={cn(
-                  'text-[9px] font-semibold transition-all',
-                  isActive ? 'text-primary' : 'text-on-surface-variant/60'
-                )}>
+                <span className={cn('text-[9px] font-semibold transition-all', isActive ? 'text-primary' : 'text-on-surface-variant/60')}>
                   {item.label}
                 </span>
               </button>
@@ -444,33 +394,20 @@ export default function App() {
       {/* Weather Detail Screen */}
       <AnimatePresence>
         {showWeatherDetail && (
-          <WeatherDetailView
-            weatherData={weatherData}
-            onBack={() => setShowWeatherDetail(false)}
-          />
+          <WeatherDetailView weatherData={weatherData} onBack={() => setShowWeatherDetail(false)} />
         )}
       </AnimatePresence>
 
-      <PaymentModal
-        show={showPaymentModal}
-        combo={selectedCombo}
-        paymentSuccess={paymentSuccess}
-        userReward={userReward}
-        onClose={() => setShowPaymentModal(false)}
-        onPay={handlePayment}
-        formatVND={formatVND}
-      />
-      <ComboActionModal
-        show={!!comboActionModal}
-        combo={comboActionModal}
-        onClose={() => setComboActionModal(null)}
-        onCustomize={proceedWithCustomize}
-        onPayNow={proceedWithPayNow}
-      />
+      <PaymentModal show={showPaymentModal} combo={selectedCombo} paymentSuccess={paymentSuccess} userReward={userReward} onClose={() => setShowPaymentModal(false)} onPay={handlePayment} formatVND={formatVND} />
+      <ComboActionModal show={!!comboActionModal} combo={comboActionModal} onClose={() => setComboActionModal(null)} onCustomize={proceedWithCustomize} onPayNow={proceedWithPayNow} />
       <RideModal loc={rideModalLoc} onClose={() => setRideModalLoc(null)} onRide={handleRide} />
       <ImageViewer loc={realImageLoc} onClose={() => setRealImageLoc(null)} />
 
-      <button onClick={() => chat.setIsChatOpen(true)} className="fixed bottom-24 right-4 z-40 bg-primary hover:bg-on-primary-container text-on-primary rounded-full p-4 shadow-lg shadow-primary/30 transition-all hover:scale-105 active:scale-95">
+      {/* Chat FAB — chỉ hiện trên mobile (laptop dùng sidebar button) */}
+      <button
+        onClick={() => chat.setIsChatOpen(true)}
+        className="fixed bottom-24 right-4 z-40 lg:hidden bg-primary hover:bg-on-primary-container text-on-primary rounded-full p-4 shadow-lg shadow-primary/30 transition-all hover:scale-105 active:scale-95"
+      >
         <Bot className="w-6 h-6 animate-bounce" />
       </button>
       <ChatPanel {...chat} />

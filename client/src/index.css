@@ -103,3 +103,37 @@ body {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ── Laptop responsive improvements ─────────────────────────── */
+@media (min-width: 1024px) {
+  body {
+    background-color: var(--color-surface-container-low);
+  }
+
+  /* Main scroll trên laptop là toàn trang */
+  #main-content {
+    overflow-y: auto;
+    max-height: calc(100vh - 48px);
+    scroll-behavior: smooth;
+  }
+
+  /* Nâng card lên trên nền laptop */
+  .glass-card {
+    box-shadow: 0 8px 32px -4px rgba(137, 76, 92, 0.12);
+  }
+
+  /* Scrollbar đẹp hơn trên laptop */
+  #main-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  #main-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #main-content::-webkit-scrollbar-thumb {
+    background: var(--color-outline-variant);
+    border-radius: 999px;
+  }
+  #main-content::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-container);
+  }
+}
