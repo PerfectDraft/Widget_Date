@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Epilogue:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-body {
-  font-family: var(--font-sans);
-}
-
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-primary: #894c5c;
@@ -38,11 +34,11 @@ body {
   --color-inverse-surface: #34302b;
   --color-inverse-on-surface: #f8efe8;
 
-  --font-family-headline-md: "Epilogue", serif;
-  --font-family-headline-lg: "Epilogue", serif;
-  --font-family-body-md: "Plus Jakarta Sans", sans-serif;
-  --font-family-label-md: "Plus Jakarta Sans", sans-serif;
-  --font-family-label-sm: "Plus Jakarta Sans", sans-serif;
+  --font-family-headline-md: "Epilogue", "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-headline-lg: "Epilogue", "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-body-md: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-label-md: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-label-sm: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ── Keyframes ───────────────────────────────────────────── */
@@ -78,6 +74,10 @@ body {
 }
 
 /* ── Base body ──────────────────────────────────────────── */
+html, body, #root {
+  font-family: var(--font-sans);
+}
+
 body {
   background-color: #fff8f4;
   /* Mobile: simple cream */
