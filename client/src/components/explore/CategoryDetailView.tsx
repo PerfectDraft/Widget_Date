@@ -26,7 +26,7 @@ type SortMode = 'best' | 'rating' | 'distance';
 const CATEGORY_MAP: Record<string, (loc: LocationItem) => boolean> = {
   'Ăn tối': (loc) => loc.category === 'Food' || loc.theme?.toLowerCase().includes('ăn') || false,
   'Cafe & Chill': (loc) => loc.category === 'Cafe',
-  'Đi dạo': (loc) => loc.theme?.toLowerCase().includes('lãng mạn') || loc.theme?.toLowerCase().includes('dạo') || false,
+  'Đi dạo': (loc) => loc.category === 'Activity',
   'Xem phim': (loc) => loc.category === 'Entertainment' || loc.theme?.toLowerCase().includes('phim') || false,
 };
 
