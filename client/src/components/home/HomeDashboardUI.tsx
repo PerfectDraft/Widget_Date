@@ -116,7 +116,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
         aria-labelledby="focus-mode-title"
       >
         {/* Header with cancel */}
-        <header className="sticky top-0 z-40 glass-card px-6 py-4 flex items-center justify-between border-b border-outline-variant/30">
+        <header className="sticky top-0 z-40 lg:hidden px-6 py-4 flex items-center justify-between border-b border-primary/30 bg-gradient-to-r from-primary to-secondary text-on-primary">
           <div className="flex flex-col flex-1 mr-4">
             <input
               type="text"
@@ -124,18 +124,18 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
               aria-label={t.combo_name_label}
               value={activeCombo.theme}
               onChange={(e) => setActiveCombo({ ...activeCombo, theme: e.target.value })}
-              className="text-headline-md font-bold text-on-surface bg-transparent border-none focus:ring-0 p-0 w-full"
+              className="text-headline-md font-bold text-on-primary bg-transparent border-none focus:ring-0 p-0 w-full"
             />
-            <p className="text-label-sm text-on-surface-variant">
+            <p className="text-label-sm text-on-primary/80">
               {filledCount}/{comboSlots.length} {t.selected_places_count}
             </p>
           </div>
           <button
             onClick={onClearCombo}
-            className="p-2 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
+            className="p-2 rounded-full hover:bg-white/20 transition-colors cursor-pointer group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-on-primary"
             aria-label={t.cancel_combo}
           >
-            <span className="material-symbols-outlined text-on-surface-variant group-hover:text-error text-[24px]">close</span>
+            <span className="material-symbols-outlined text-on-primary/80 group-hover:text-on-primary text-[24px]">close</span>
           </button>
         </header>
 

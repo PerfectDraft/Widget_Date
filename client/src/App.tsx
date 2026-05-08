@@ -260,7 +260,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-              className="mt-3 rounded-2xl overflow-hidden shadow-lg"
+              className="hidden lg:block mt-3 rounded-2xl overflow-hidden shadow-lg"
               style={{
                 background: 'linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #a855f7 100%)',
               }}
@@ -289,13 +289,20 @@ export default function App() {
                   transition={{ type: 'spring', stiffness: 200, damping: 25 }}
                 />
               </div>
-              {/* Huỷ button */}
-              <button
-                onClick={handleClearCombo}
-                className="w-full text-center text-white/70 text-[11px] pb-2.5 hover:text-white transition-colors"
-              >
-                Huỷ combo
-              </button>
+              <div className="px-4 pb-3 flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab('home')}
+                  className="flex-1 text-center text-white text-[11px] py-1.5 rounded-lg bg-white/15 hover:bg-white/25 transition-colors"
+                >
+                  Xem chi tiết
+                </button>
+                <button
+                  onClick={handleClearCombo}
+                  className="flex-1 text-center text-white/80 text-[11px] py-1.5 rounded-lg hover:bg-white/15 hover:text-white transition-colors"
+                >
+                  Huỷ combo
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
