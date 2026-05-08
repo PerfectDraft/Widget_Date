@@ -109,6 +109,8 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
     });
   };
 
+  const filledSlots = comboSlots.filter(s => s !== null).length;
+
   return (
     <motion.div key="explore" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-background min-h-screen pb-24">
       <h1 className="sr-only">{t.explore.title}</h1>
@@ -435,27 +437,49 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
         )}
       </AnimatePresence>
 
-      {activeCombo && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50">
-          <div className="glass-card rounded-2xl px-4 py-3 border border-primary/30 shadow-xl flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">target</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-label-sm font-bold text-on-surface truncate flex items-center gap-1.5">
-                {activeCombo.theme}
-                {activeCombo.icon && (
-                  <span className="material-symbols-outlined text-[16px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">
-                    {activeCombo.icon}
-                  </span>
-                )}
-              </p>
-              <p className="text-[11px] text-on-surface-variant">{comboSlots.filter(s => s !== null).length}/{comboSlots.length} {t.explore.selected_places}</p>
+      {/* Combo Status Bar — mobile only (lg+ dùng sidebar) */}
+      <AnimatePresence>
+        {activeCombo && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50 lg:hidden"
+          >
+            <div
+              className="rounded-2xl overflow-hidden shadow-xl"
+              style={{ background: 'linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #a855f7 100%)' }}
+            >
+              <div className="px-4 py-3 flex items-center gap-3">
+                <span
+                  className="material-symbols-outlined text-white text-[24px] shrink-0"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                  aria-hidden="true"
+                >
+                  {activeCombo.icon || 'edit_calendar'}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-[13px] truncate leading-tight">{activeCombo.theme}</p>
+                  <p className="text-white/80 text-[11px] mt-0.5">{filledSlots}/{comboSlots.length} {t.explore.selected_places}</p>
+                </div>
+                <div className="shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <span className="text-white font-bold text-[11px]">{filledSlots}/{comboSlots.length}</span>
+                </div>
+              </div>
+              {/* Progress bar */}
+              <div className="h-1 bg-white/20 mx-4 mb-3 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-white rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: comboSlots.length > 0 ? `${(filledSlots / comboSlots.length) * 100}%` : '0%' }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                />
+              </div>
             </div>
-            <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-primary font-bold text-[11px]">{comboSlots.filter(s => s !== null).length}/{comboSlots.length}</span>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

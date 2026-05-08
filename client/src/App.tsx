@@ -188,6 +188,8 @@ export default function App() {
     setRideModalLoc(null);
   };
 
+  const filledSlots = comboSlots.filter(s => s !== null).length;
+
   /* ── Sidebar (laptop only) ─────────────────────────────── */
   const SidebarNav = () => (
     <aside className="hidden lg:flex flex-col w-64 xl:w-72 shrink-0">
@@ -217,7 +219,6 @@ export default function App() {
                   : 'text-on-surface-variant hover:bg-white/50 hover:text-on-surface'
               )}
             >
-              {/* Hover shimmer */}
               {!isActive && (
                 <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
               )}
@@ -250,6 +251,54 @@ export default function App() {
           <span className="text-sm font-semibold relative z-10">Chat AI</span>
           <span className="ml-auto text-[10px] bg-white/20 px-2 py-0.5 rounded-full relative z-10">AI</span>
         </button>
+
+        {/* Combo Status Bar — desktop sidebar, chỉ hiện khi đang tạo combo */}
+        <AnimatePresence>
+          {activeCombo && (
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              className="mt-3 rounded-2xl overflow-hidden shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #a855f7 100%)',
+              }}
+            >
+              <div className="px-4 py-3 flex items-center gap-3">
+                <span
+                  className="material-symbols-outlined text-white text-[22px] shrink-0"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  {activeCombo.icon || 'edit_calendar'}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-[13px] truncate leading-tight">{activeCombo.theme}</p>
+                  <p className="text-white/80 text-[11px] mt-0.5">{filledSlots}/{comboSlots.length} địa điểm đã chọn</p>
+                </div>
+                <div className="shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <span className="text-white font-bold text-[11px]">{filledSlots}/{comboSlots.length}</span>
+                </div>
+              </div>
+              {/* Progress bar */}
+              <div className="h-1 bg-white/20 mx-4 mb-3 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-white rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: comboSlots.length > 0 ? `${(filledSlots / comboSlots.length) * 100}%` : '0%' }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                />
+              </div>
+              {/* Huỷ button */}
+              <button
+                onClick={handleClearCombo}
+                className="w-full text-center text-white/70 text-[11px] pb-2.5 hover:text-white transition-colors"
+              >
+                Huỷ combo
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </aside>
   );
