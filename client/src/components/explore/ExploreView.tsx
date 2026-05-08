@@ -28,6 +28,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
     { label: t.explore.categories_dinner, icon: 'dinner_dining', gradient: 'from-rose-600 to-orange-500' },
     { label: t.explore.categories_cafe, icon: 'local_cafe', gradient: 'from-amber-700 to-yellow-500' },
     { label: t.explore.categories_walk, icon: 'directions_walk', gradient: 'from-emerald-700 to-teal-500' },
+    { label: 'Activity', icon: 'sports_esports', gradient: 'from-violet-600 to-indigo-500' },
   ] as const;
 
   const [activeCategory, setActiveCategory] = useState<string>(t.explore.all_category);
