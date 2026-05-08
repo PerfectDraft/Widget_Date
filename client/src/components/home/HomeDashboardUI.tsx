@@ -84,7 +84,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
 
   const isFocusMode = activeCombo !== null;
   const filledCount = comboSlots.filter(s => s !== null).length;
-  const allFilled = isFocusMode && filledCount === comboSlots.length;
+  const allFilled = isFocusMode && filledCount === comboSlots.length && comboSlots.length > 0;
 
   const [showAiPlanner, setShowAiPlanner] = useState(false);
 
@@ -101,13 +101,168 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
   const BUDGET_OPTIONS = ['200K', '500K', '1M', '2M+'];
   
   // Companion Options
-  const COMPANION_OPTIONS = ['Người yêu', 'Bạn bè', 'Crush'];
+  const COMPANION_OPTIONS = ['Ng\u01b0\u1eddi y\u00eau', 'B\u1ea1n b\u00e8', 'Crush'];
 
+  // ===== Combo Focus Mode (inline, fits in main content area) =====
+  if (isFocusMode && activeCombo) {
+    return (
+      <motion.div
+        key="focus-mode"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        className="bg-background text-on-background font-body-md min-h-screen pb-24 relative"
+        role="dialog"
+        aria-labelledby="focus-mode-title"
+      >
+        {/* Header with cancel */}
+        <header className="sticky top-0 z-40 glass-card px-6 py-4 flex items-center justify-between border-b border-outline-variant/30">
+          <div className="flex flex-col flex-1 mr-4">
+            <input
+              type="text"
+              id="focus-mode-title"
+              aria-label={t.combo_name_label}
+              value={activeCombo.theme}
+              onChange={(e) => setActiveCombo({ ...activeCombo, theme: e.target.value })}
+              className="text-headline-md font-bold text-on-surface bg-transparent border-none focus:ring-0 p-0 w-full"
+            />
+            <p className="text-label-sm text-on-surface-variant">
+              {filledCount}/{comboSlots.length} {t.selected_places_count}
+            </p>
+          </div>
+          <button
+            onClick={onClearCombo}
+            className="p-2 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
+            aria-label={t.cancel_combo}
+          >
+            <span className="material-symbols-outlined text-on-surface-variant group-hover:text-error text-[24px]">close</span>
+          </button>
+        </header>
+
+        <div className="p-6">
+          {/* Progress bar */}
+          <div className="h-1.5 rounded-full bg-surface-container-high mb-5 overflow-hidden" role="progressbar" aria-valuenow={filledCount} aria-valuemin={0} aria-valuemax={comboSlots.length}>
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-primary to-tertiary"
+              initial={{ width: 0 }}
+              animate={{ width: comboSlots.length > 0 ? `${(filledCount / comboSlots.length) * 100}%` : '0%' }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            />
+          </div>
+
+          {/* Slot cards */}
+          <div className="space-y-3">
+            {comboSlots.map((slot, idx) => {
+              const originalActivity = activeCombo.activities[idx];
+              if (slot) {
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="flex items-center gap-3 bg-primary-container/20 rounded-2xl p-3 border border-primary/20"
+                  >
+                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-surface-container-high shrink-0">
+                      {extractPlaceImage(slot.imageUrl) ? (
+                        <img src={extractPlaceImage(slot.imageUrl)} alt={slot.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-label-sm text-primary font-bold">{originalActivity?.time || `Slot ${idx + 1}`}</p>
+                      <p className="font-bold text-on-surface truncate">{slot.name}</p>
+                      <p className="text-[11px] text-on-surface-variant truncate">{slot.address}</p>
+                    </div>
+                    <button
+                      onClick={() => onRemoveSlot(idx)}
+                      className="p-1.5 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
+                      aria-label={`${vi.explore.favorite_remove} ${slot.name}`}
+                    >
+                      <span className="material-symbols-outlined text-on-surface-variant hover:text-error text-[18px]">remove_circle</span>
+                    </button>
+                  </motion.div>
+                );
+              }
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="flex items-center gap-3 rounded-2xl p-3 border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50"
+                >
+                  <div className="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-outline-variant text-[24px]">add_location</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-label-sm text-outline font-bold">{originalActivity?.time || `Slot ${idx + 1}`}</p>
+                    <p className="text-on-surface-variant text-body-md">{t.no_places_selected}</p>
+                    <p className="text-[11px] text-outline-variant">{t.add_place_hint}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Navigate to Explore */}
+          <button
+            onClick={onNavigateToExplore}
+            className="w-full mt-4 py-3 rounded-2xl border-2 border-tertiary/40 text-tertiary font-bold hover:bg-tertiary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
+            aria-label="Kh\u00e1m ph\u00e1 \u0111\u1ecba \u0111i\u1ec3m"
+          >
+            <span className="material-symbols-outlined text-[20px]">explore</span>
+            Kh\u00e1m ph\u00e1 \u0111\u1ecba \u0111i\u1ec3m
+          </button>
+
+          {/* Add Slot Button */}
+          <button
+            onClick={onAddSlot}
+            className="w-full mt-3 py-3 rounded-2xl border-2 border-dashed border-primary/40 text-primary font-bold hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label={t.add_location}
+          >
+            <span className="material-symbols-outlined text-[20px]">add</span>
+            {t.add_location}
+          </button>
+
+          {/* Total & Confirm */}
+          <div className="bg-surface-container-low rounded-2xl p-4 mt-5">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-body-md text-on-surface-variant">{t.total_label ?? 'T\u1ed5ng'}</span>
+              <span className="text-title-md font-bold text-primary">
+                {formatVND(comboSlots.filter(Boolean).reduce((sum, s) => sum + (s?.price_per_person ?? 0), 0))}
+              </span>
+            </div>
+            <button
+              onClick={allFilled ? onConfirmCombo : undefined}
+              disabled={!allFilled}
+              className={`w-full py-4 rounded-full font-bold text-body-lg flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                allFilled
+                  ? 'bg-primary text-on-primary shadow-xl hover:scale-[1.02] cursor-pointer'
+                  : 'bg-surface-container-high text-on-surface-variant cursor-not-allowed opacity-50'
+              }`}
+              aria-label={allFilled ? t.confirm_schedule : `${t.waiting_selection} (${filledCount}/${comboSlots.length})`}
+            >
+              <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {allFilled ? 'check_circle' : 'hourglass_empty'}
+              </span>
+              {allFilled ? t.confirm_schedule : `${t.waiting_selection} (${filledCount}/${comboSlots.length})`}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // ===== Normal Dashboard =====
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 relative">
       <h1 style={srOnlyStyle}>{tc.app_name} - {t.welcome} {userName}</h1>
 
-      {/* Header — Avatar + Welcome + Date Miles */}
+      {/* Header \u2014 Avatar + Welcome + Date Miles */}
       <header className="sticky top-0 z-40 glass-card px-6 py-4 flex items-center justify-between">
         <button 
           onClick={onAvatarClick} 
@@ -138,150 +293,13 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
 
       <main className="px-6 space-y-8 mt-6">
 
-        {/* ========== COMBO FOCUS MODE ========== */}
-        <AnimatePresence>
-          {isFocusMode && activeCombo && (
-            <motion.div 
-              initial={{ opacity: 0, y: '100%' }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: '100%' }}
-              className="fixed inset-x-0 top-0 bottom-0 z-40 bg-background overflow-y-auto"
-              style={{ paddingBottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
-              role="dialog"
-              aria-labelledby="focus-mode-title"
-            >
-              <h2 id="focus-mode-title" style={srOnlyStyle}>{t.manual_combo_title}</h2>
-              
-              {/* Header with cancel */}
-              <div className="sticky top-0 z-10 glass-card px-6 py-4 flex items-center justify-between border-b border-outline-variant/30">
-                <div className="flex flex-col flex-1 mr-4">
-                  <input
-                    type="text"
-                    aria-label={t.combo_name_label}
-                    value={activeCombo.theme}
-                    onChange={(e) => setActiveCombo({ ...activeCombo, theme: e.target.value })}
-                    className="text-headline-md font-bold text-on-surface bg-transparent border-none focus:ring-0 p-0 w-full"
-                  />
-                  <p className="text-label-sm text-on-surface-variant">{filledCount}/{comboSlots.length} {t.selected_places_count}</p>
-                </div>
-                <button
-                  onClick={onClearCombo}
-                  className="p-2 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
-                  aria-label={t.cancel_combo}
-                >
-                  <span className="material-symbols-outlined text-on-surface-variant group-hover:text-error text-[24px]">close</span>
-                </button>
-              </div>
-
-              <div className="p-6">
-                {/* Progress bar */}
-                <div className="h-1.5 rounded-full bg-surface-container-high mb-5 overflow-hidden" role="progressbar" aria-valuenow={filledCount} aria-valuemin={0} aria-valuemax={comboSlots.length}>
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-primary to-tertiary transition-all duration-500"
-                    style={{ width: `${(filledCount / comboSlots.length) * 100}%` }}
-                  />
-                </div>
-
-                {/* Slot cards */}
-                <div className="space-y-3">
-                  {comboSlots.map((slot, idx) => {
-                    const originalActivity = activeCombo.activities[idx];
-                    if (slot) {
-                      // Filled slot
-                      return (
-                        <div key={idx} className="flex items-center gap-3 bg-primary-container/20 rounded-2xl p-3 border border-primary/20">
-                          <div className="w-14 h-14 rounded-xl overflow-hidden bg-surface-container-high shrink-0">
-                            {extractPlaceImage(slot.imageUrl) ? (
-                              <img src={extractPlaceImage(slot.imageUrl)} alt={slot.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-label-sm text-primary font-bold">{originalActivity?.time || `Slot ${idx + 1}`}</p>
-                            <p className="font-bold text-on-surface truncate">{slot.name}</p>
-                            <p className="text-[11px] text-on-surface-variant truncate">{slot.address}</p>
-                          </div>
-                          <button
-                            onClick={() => onRemoveSlot(idx)}
-                            className="p-1.5 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
-                            aria-label={`${vi.explore.favorite_remove} ${slot.name}`}
-                          >
-                            <span className="material-symbols-outlined text-on-surface-variant hover:text-error text-[18px]">remove_circle</span>
-                          </button>
-                        </div>
-                      );
-                    }
-                    // Empty slot
-                    return (
-                      <div key={idx} className="flex items-center gap-3 rounded-2xl p-3 border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50">
-                        <div className="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0">
-                          <span className="material-symbols-outlined text-outline-variant text-[24px]">add_location</span>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-label-sm text-outline font-bold">{originalActivity?.time || `Slot ${idx + 1}`}</p>
-                          <p className="text-on-surface-variant text-body-md">{t.no_places_selected}</p>
-                          <p className="text-[11px] text-outline-variant">{t.add_place_hint}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Navigate to Explore button — KHÔNG hủy combo */}
-                <button
-                  onClick={onNavigateToExplore}
-                  className="w-full mt-4 py-3 rounded-2xl border-2 border-tertiary/40 text-tertiary font-bold hover:bg-tertiary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
-                  aria-label="Khám phá địa điểm"
-                >
-                  <span className="material-symbols-outlined text-[20px]">explore</span>
-                  Khám phá địa điểm
-                </button>
-
-                {/* Add Slot Button */}
-                <button
-                  onClick={onAddSlot}
-                  className="w-full mt-3 py-3 rounded-2xl border-2 border-dashed border-primary/40 text-primary font-bold hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  aria-label={t.add_location}
-                >
-                  <span className="material-symbols-outlined text-[20px]">add</span>
-                  {t.add_location}
-                </button>
-
-                {/* CTA */}
-                <button
-                  onClick={allFilled ? onConfirmCombo : undefined}
-                  disabled={!allFilled}
-                  className={`w-full mt-5 py-4 rounded-full font-bold text-body-lg flex items-center justify-center gap-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
-                    allFilled
-                      ? 'bg-primary text-on-primary shadow-xl hover:scale-[1.02] cursor-pointer'
-                      : 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
-                  }`}
-                  aria-label={allFilled ? t.confirm_schedule : `${t.waiting_selection} (${filledCount}/${comboSlots.length})`}
-                >
-                  <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    {allFilled ? 'check_circle' : 'hourglass_empty'}
-                  </span>
-                  {allFilled ? t.confirm_schedule : `${t.waiting_selection} (${filledCount}/${comboSlots.length})`}
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ========== REST OF CONTENT ========== */}
-        <div className="transition-opacity duration-300">
-
-        {/* Weather Card — Clean 2-column layout */}
+        {/* Weather Card */}
         <section className="glass-card rounded-[32px] p-6 border-none bg-gradient-to-br from-primary/10 via-secondary/10 to-background shadow-xl relative overflow-hidden">
           <h2 style={srOnlyStyle}>{t.weather.details}</h2>
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
           {weatherData ? (
             <div className="relative z-10">
-              {/* Row 1: Date + Icon */}
               <div className="flex items-center justify-between mb-4">
                 <p className="text-primary font-bold text-label-sm uppercase tracking-[0.15em]">{dateStr}</p>
                 <div className="bg-white/40 p-3 rounded-2xl backdrop-blur-md shadow-sm border border-white/20">
@@ -290,24 +308,16 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                   </span>
                 </div>
               </div>
-
-              {/* Row 2: Temp + Description */}
               <div className="flex items-end gap-4 mb-3">
                 <h3 className="text-[56px] font-black leading-none text-on-surface tracking-tighter">
-                  {Math.round(weatherData.main.temp)}°
+                  {Math.round(weatherData.main.temp)}\u00b0
                 </h3>
                 <div className="pb-2">
-                  <p className="text-on-surface font-bold text-body-lg capitalize">
-                    {weatherData.weather[0]?.description}
-                  </p>
-                  <p className="text-on-surface-variant text-label-md">
-                    {weatherData.name} • {t.weather.feels_like} {Math.round(weatherData.main.feels_like)}°
-                  </p>
+                  <p className="text-on-surface font-bold text-body-lg capitalize">{weatherData.weather[0]?.description}</p>
+                  <p className="text-on-surface-variant text-label-md">{weatherData.name} \u2022 {t.weather.feels_like} {Math.round(weatherData.main.feels_like)}\u00b0</p>
                 </div>
               </div>
-
-              {/* Weather Stats Table for A11y */}
-              <div className="grid grid-cols-3 gap-3 mb-4 pt-3 border-t border-white/30" role="table" aria-label="Thông tin thời tiết chi tiết">
+              <div className="grid grid-cols-3 gap-3 mb-4 pt-3 border-t border-white/30" role="table" aria-label="Th\u00f4ng tin th\u1eddi ti\u1ebft chi ti\u1ebft">
                 <div className="text-center" role="cell">
                   <span className="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">water_drop</span>
                   <p className="text-label-sm text-on-surface mt-1 font-bold">{weatherData.main.humidity}%</p>
@@ -324,7 +334,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                   <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{t.weather.visibility}</p>
                 </div>
               </div>
-
               <button
                 onClick={() => onWeatherClick?.()}
                 className="flex items-center gap-2 text-primary font-bold text-label-md bg-primary-container/30 px-4 py-2 rounded-full hover:bg-primary-container/50 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -380,7 +389,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
         >
           <h2 style={srOnlyStyle}>{t.ai_combo.create}</h2>
 
-          {/* Budget */}
           <div className="space-y-3">
             <label id="budget-label" className="text-label-md text-on-surface font-semibold flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">payments</span> {t.ai_combo.budget}
@@ -404,7 +412,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             </div>
           </div>
 
-          {/* Companion */}
           <div className="space-y-3">
             <label id="companion-label" className="text-label-md text-on-surface font-semibold flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">favorite</span> {t.ai_combo.partner}
@@ -428,7 +435,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             </div>
           </div>
 
-          {/* Time Slot */}
           <div className="space-y-3">
             <label className="text-label-md text-on-surface font-semibold flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">schedule</span> {t.ai_combo.time_range}
@@ -459,7 +465,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             </div>
           </div>
 
-          {/* Interests */}
           <div className="space-y-3">
             <label id="interests-label" className="text-label-md text-on-surface font-semibold flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">interests</span> {t.ai_combo.interests}
@@ -485,7 +490,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             </div>
           </div>
 
-          {/* Create Combo CTA */}
           <button 
             disabled={isGenerating}
             onClick={onGenerate}
@@ -503,7 +507,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
         )}
         </AnimatePresence>
 
-        {/* Combo List with 4 visual states */}
         {(combos.length > 0 || isGenerating || error) && (
           <ComboList 
             combos={combos}
@@ -515,7 +518,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
             formatVND={formatVND}
           />
         )}
-        </div>{/* end dim wrapper */}
       </main>
     </div>
   );
