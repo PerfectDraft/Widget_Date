@@ -129,7 +129,7 @@ export default function App() {
   const proceedWithCustomize = (combo: Combo) => {
     setActiveCombo(combo); setComboActionModal(null);
     setComboSlots(combo.activities.map(act => ({ id: Math.random().toString(36).substring(7), name: act.name, address: act.address, category: act.category || '', price: act.cost, lat: act.lat, lng: act.lng, imageUrl: act.imageUrl || '' })));
-    showToast(`Đã chọn combo “${combo.theme}” để tùy chỉnh!`);
+    showToast(`Đã chọn combo "${combo.theme}" để tùy chỉnh!`);
   };
   const proceedWithPayNow = (combo: Combo) => { setSelectedCombo(combo); setShowPaymentModal(true); setComboActionModal(null); };
   const handleManualCombo = () => {
@@ -275,7 +275,15 @@ export default function App() {
       </div>
 
       {/* Bottom Nav (mobile only) */}
-      <nav aria-label="Điều hướng chính" className="fixed bottom-0 left-0 right-0 pb-safe z-50 lg:hidden border-t border-white/60 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60">
+      <nav
+        aria-label="Điều hướng chính"
+        className="fixed bottom-0 left-0 right-0 pb-safe z-50 lg:hidden border-t border-primary/10"
+        style={{
+          background: 'rgba(255, 248, 244, 0.85)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+        }}
+      >
         <div className="max-w-md mx-auto px-2 py-2 flex justify-around items-end">
           {NAV_ITEMS.map(item => {
             const isActive = activeTab === item.id;
