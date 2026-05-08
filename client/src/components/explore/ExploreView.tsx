@@ -28,7 +28,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
     { label: t.explore.categories_dinner, icon: 'dinner_dining', gradient: 'from-rose-600 to-orange-500' },
     { label: t.explore.categories_cafe, icon: 'local_cafe', gradient: 'from-amber-700 to-yellow-500' },
     { label: t.explore.categories_walk, icon: 'directions_walk', gradient: 'from-emerald-700 to-teal-500' },
-    { label: 'Activity', icon: 'sports_esports', gradient: 'from-violet-600 to-indigo-500' },
+    { label: 'Activity', icon: 'sports_esports', gradient: 'from-emerald-600 to-cyan-500' },
   ] as const;
 
   const [activeCategory, setActiveCategory] = useState<string>(t.explore.all_category);
@@ -113,7 +113,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   return (
     <motion.div key="explore" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-background min-h-screen pb-24">
       <h1 className="sr-only">{t.explore.title}</h1>
-      <header className="sticky top-0 z-30 glass-card px-6 py-4">
+      <header className="sticky top-0 z-30 px-6 py-4 border-b border-outline-variant/30 bg-surface/85 backdrop-blur-lg supports-[backdrop-filter]:bg-surface/75">
         <div className="flex items-center justify-between mb-4">
           <div className="text-headline-md font-bold text-on-surface" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
             {t.explore.title}
@@ -430,7 +430,7 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
       </AnimatePresence>
 
       {activeCombo && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50">
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50 lg:hidden">
           <div className="glass-card rounded-2xl px-4 py-3 border border-primary/30 shadow-xl flex items-center gap-3">
             <span className="material-symbols-outlined text-primary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">target</span>
             <div className="flex-1 min-w-0">
