@@ -92,8 +92,6 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
 
   const t = vi.dashboard;
   const tc = vi.common;
-  const filledCount = comboSlots.filter((slot) => slot !== null).length;
-  const allFilled = comboSlots.length > 0 && filledCount === comboSlots.length;
   const [showAiPlanner, setShowAiPlanner] = useState(false);
 
   const dateStr = useMemo(() => {
@@ -109,6 +107,9 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
   const COMPANION_OPTIONS = ['Người yêu', 'Bạn bè', 'Crush'];
 
   if (activeCombo) {
+    const filledCount = comboSlots.filter((slot) => slot !== null).length;
+    const allFilled = comboSlots.length > 0 && filledCount === comboSlots.length;
+
     return (
       <motion.div
         key="focus-mode"

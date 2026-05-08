@@ -189,9 +189,12 @@ export default function App() {
   };
 
   /* ── Sidebar (laptop only) ─────────────────────────────── */
-  const SidebarNav = () => (
-    <aside className="hidden lg:flex flex-col w-64 xl:w-72 shrink-0">
-      <div className="sticky top-6 flex flex-col gap-1.5 p-3">
+  const SidebarNav = () => {
+    const filledComboCount = comboSlots.filter(s => s !== null).length;
+
+    return (
+      <aside className="hidden lg:flex flex-col w-64 xl:w-72 shrink-0">
+        <div className="sticky top-6 flex flex-col gap-1.5 p-3">
         {/* Logo */}
         <div className="flex items-center gap-3 px-3 py-3 mb-3">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary to-on-primary-container flex items-center justify-center shadow-lg shadow-primary/30">
@@ -251,28 +254,29 @@ export default function App() {
           <span className="ml-auto text-[10px] bg-white/20 px-2 py-0.5 rounded-full relative z-10">AI</span>
         </button>
 
-        {activeTab === 'explore' && activeCombo && (
-          <div className="mt-3 glass-card rounded-2xl px-4 py-3 border border-primary/30 shadow-lg flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">target</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-label-sm font-bold text-on-surface truncate flex items-center gap-1.5">
-                {activeCombo.theme}
-                {activeCombo.icon && (
-                  <span className="material-symbols-outlined text-[15px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">
-                    {activeCombo.icon}
-                  </span>
-                )}
-              </p>
-              <p className="text-[11px] text-on-surface-variant">Tự tạo combo - Đã chọn {comboSlots.filter(s => s !== null).length}/{comboSlots.length}</p>
+          {activeTab === 'explore' && activeCombo && (
+            <div className="mt-3 glass-card rounded-2xl px-4 py-3 border border-primary/30 shadow-lg flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">target</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-label-sm font-bold text-on-surface truncate flex items-center gap-1.5">
+                  {activeCombo.theme}
+                  {activeCombo.icon && (
+                    <span className="material-symbols-outlined text-[15px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">
+                      {activeCombo.icon}
+                    </span>
+                  )}
+                </p>
+                <p className="text-[11px] text-on-surface-variant">Tự tạo combo - Đã chọn {filledComboCount}/{comboSlots.length}</p>
+              </div>
+              <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
+                <span className="text-primary font-bold text-[11px]">{filledComboCount}/{comboSlots.length}</span>
+              </div>
             </div>
-            <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-primary font-bold text-[11px]">{comboSlots.filter(s => s !== null).length}/{comboSlots.length}</span>
-            </div>
-          </div>
-        )}
-      </div>
-    </aside>
-  );
+          )}
+        </div>
+      </aside>
+    );
+  };
 
   return (
     <div className="min-h-screen text-slate-900 font-sans selection:bg-pink-200">
