@@ -97,13 +97,10 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
     });
   }, []);
 
-  // Budget Options per Stitch UI
   const BUDGET_OPTIONS = ['200K', '500K', '1M', '2M+'];
-  
-  // Companion Options
   const COMPANION_OPTIONS = ['Người yêu', 'Bạn bè', 'Crush'];
 
-  // ===== Combo Focus Mode (inline, fits in main content area) =====
+  // ===== Combo Focus Mode =====
   if (isFocusMode && activeCombo) {
     return (
       <motion.div
@@ -115,8 +112,14 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
         role="dialog"
         aria-labelledby="focus-mode-title"
       >
-        {/* Header with cancel */}
-        <header className="sticky top-0 z-40 glass-card px-6 py-4 flex items-center justify-between border-b border-outline-variant/30">
+        {/* Header gradient — ẩn trên laptop vì sidebar đã hiển thị */}
+        <header
+          className="lg:hidden sticky top-0 z-40 px-6 py-4 flex items-center justify-between"
+          style={{
+            background: 'linear-gradient(135deg, #f43f5e 0%, #ec4899 55%, #a855f7 100%)',
+            boxShadow: '0 4px 24px rgba(244,63,94,0.25)',
+          }}
+        >
           <div className="flex flex-col flex-1 mr-4">
             <input
               type="text"
@@ -124,26 +127,50 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
               aria-label={t.combo_name_label}
               value={activeCombo.theme}
               onChange={(e) => setActiveCombo({ ...activeCombo, theme: e.target.value })}
-              className="text-headline-md font-bold text-on-surface bg-transparent border-none focus:ring-0 p-0 w-full"
+              className="text-headline-md font-bold text-white bg-transparent border-none focus:ring-0 p-0 w-full placeholder-white/60"
             />
-            <p className="text-label-sm text-on-surface-variant">
+            <p className="text-white/80 text-label-sm">
               {filledCount}/{comboSlots.length} {t.selected_places_count}
             </p>
           </div>
           <button
             onClick={onClearCombo}
-            className="p-2 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
+            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors cursor-pointer shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             aria-label={t.cancel_combo}
           >
-            <span className="material-symbols-outlined text-on-surface-variant group-hover:text-error text-[24px]">close</span>
+            <span className="material-symbols-outlined text-white text-[24px]">close</span>
           </button>
         </header>
 
+        {/* Tiêu đề gọn cho laptop (lg+) */}
+        <div className="hidden lg:flex items-center gap-3 px-6 pt-6 pb-2">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: 'linear-gradient(135deg, #f43f5e, #a855f7)' }}
+          >
+            <span className="material-symbols-outlined text-white text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+              {activeCombo.icon || 'edit_calendar'}
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p id="focus-mode-title" className="font-bold text-on-surface truncate">{activeCombo.theme}</p>
+            <p className="text-label-sm text-on-surface-variant">{filledCount}/{comboSlots.length} {t.selected_places_count}</p>
+          </div>
+          <button
+            onClick={onClearCombo}
+            className="p-1.5 rounded-full hover:bg-error-container/40 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
+            aria-label={t.cancel_combo}
+          >
+            <span className="material-symbols-outlined text-on-surface-variant hover:text-error text-[20px]">close</span>
+          </button>
+        </div>
+
         <div className="p-6">
-          {/* Progress bar */}
+          {/* Progress bar gradient */}
           <div className="h-1.5 rounded-full bg-surface-container-high mb-5 overflow-hidden" role="progressbar" aria-valuenow={filledCount} aria-valuemin={0} aria-valuemax={comboSlots.length}>
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-tertiary"
+              className="h-full rounded-full"
+              style={{ background: 'linear-gradient(90deg, #f43f5e, #a855f7)' }}
               initial={{ width: 0 }}
               animate={{ width: comboSlots.length > 0 ? `${(filledCount / comboSlots.length) * 100}%` : '0%' }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
