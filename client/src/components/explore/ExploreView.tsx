@@ -41,7 +41,6 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   const [trends, setTrends] = useState<TrendItem[]>([]);
   const [selectedCategoryGrid, setSelectedCategoryGrid] = useState<typeof CATEGORY_GRID[number] | null>(null);
 
-  // Reset visible items when search or category changes
   useEffect(() => {
     setVisibleItemsCount(5);
   }, [searchQuery, activeCategory]);
@@ -113,7 +112,14 @@ export function ExploreView({ showToast, setRideModalLoc, setRealImageLoc, forma
   return (
     <motion.div key="explore" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-background min-h-screen pb-24">
       <h1 className="sr-only">{t.explore.title}</h1>
-      <header className="sticky top-0 z-30 px-6 py-4 border-b border-white/60 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg supports-[backdrop-filter]:bg-white/60">
+      <header
+        className="sticky top-0 z-30 px-6 py-4 border-b border-primary/10"
+        style={{
+          background: 'rgba(255, 248, 244, 0.88)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+        }}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="text-headline-md font-bold text-on-surface" style={{ fontFamily: 'var(--font-family-headline-md)' }}>
             {t.explore.title}
