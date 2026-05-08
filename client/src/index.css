@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Epilogue:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 body {
@@ -6,7 +6,7 @@ body {
 }
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-primary: #894c5c;
   --color-background: #fff8f4;
   --color-surface: #fff8f4;
@@ -85,12 +85,21 @@ body {
 
 /* ── Utilities ──────────────────────────────────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 4px 24px -1px rgba(137, 76, 92, 0.08),
               0 1px 0 0 rgba(255,255,255,0.6) inset;
+}
+
+/* ── Nav bar blur (mobile bottom nav & sticky headers) ── */
+.nav-blur {
+  background: rgba(255, 248, 244, 0.85);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 -4px 20px rgba(137, 76, 92, 0.06);
 }
 
 .category-card {
@@ -233,10 +242,10 @@ body {
 
   /* ── Glass card đẹp hơn trên nền orb ── */
   .glass-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     box-shadow:
       0 8px 32px -4px rgba(137, 76, 92, 0.12),
       0 2px 0 0 rgba(255,255,255,0.8) inset,

@@ -101,7 +101,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
   const BUDGET_OPTIONS = ['200K', '500K', '1M', '2M+'];
   
   // Companion Options
-  const COMPANION_OPTIONS = ['Ng\u01b0\u1eddi y\u00eau', 'B\u1ea1n b\u00e8', 'Crush'];
+  const COMPANION_OPTIONS = ['Người yêu', 'Bạn bè', 'Crush'];
 
   // ===== Combo Focus Mode (inline, fits in main content area) =====
   if (isFocusMode && activeCombo) {
@@ -212,10 +212,10 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
           <button
             onClick={onNavigateToExplore}
             className="w-full mt-4 py-3 rounded-2xl border-2 border-tertiary/40 text-tertiary font-bold hover:bg-tertiary-container/20 transition-colors flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-tertiary"
-            aria-label="Kh\u00e1m ph\u00e1 \u0111\u1ecba \u0111i\u1ec3m"
+            aria-label="Khám phá địa điểm"
           >
             <span className="material-symbols-outlined text-[20px]">explore</span>
-            Kh\u00e1m ph\u00e1 \u0111\u1ecba \u0111i\u1ec3m
+            Khám phá địa điểm
           </button>
 
           {/* Add Slot Button */}
@@ -231,7 +231,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
           {/* Total & Confirm */}
           <div className="bg-surface-container-low rounded-2xl p-4 mt-5">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-body-md text-on-surface-variant">{t.total_label ?? 'T\u1ed5ng'}</span>
+              <span className="text-body-md text-on-surface-variant">{t.total_label ?? 'Tổng'}</span>
               <span className="text-title-md font-bold text-primary">
                 {formatVND(comboSlots.filter(Boolean).reduce((sum, s) => sum + (s?.price_per_person ?? 0), 0))}
               </span>
@@ -262,7 +262,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
     <div className="bg-background text-on-background font-body-md min-h-screen pb-24 relative">
       <h1 style={srOnlyStyle}>{tc.app_name} - {t.welcome} {userName}</h1>
 
-      {/* Header \u2014 Avatar + Welcome + Date Miles */}
+      {/* Header — Avatar + Welcome + Date Miles */}
       <header className="sticky top-0 z-40 glass-card px-6 py-4 flex items-center justify-between">
         <button 
           onClick={onAvatarClick} 
@@ -295,7 +295,7 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
 
         {/* Weather Card */}
         <section className="glass-card rounded-[32px] p-6 border-none bg-gradient-to-br from-primary/10 via-secondary/10 to-background shadow-xl relative overflow-hidden">
-          <h2 style={srOnlyStyle}>{t.weather.details}</h2>
+          <h2 style={srOnlyStyle}>{t.weather?.details ?? 'Thời tiết'}</h2>
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
           {weatherData ? (
@@ -304,51 +304,64 @@ export function HomeDashboardUI(props: HomeDashboardUIProps) {
                 <p className="text-primary font-bold text-label-sm uppercase tracking-[0.15em]">{dateStr}</p>
                 <div className="bg-white/40 p-3 rounded-2xl backdrop-blur-md shadow-sm border border-white/20">
                   <span className="material-symbols-outlined text-primary text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    {weatherData.weather[0]?.main === 'Rain' ? 'rainy' : weatherData.weather[0]?.main === 'Clouds' ? 'cloud' : 'light_mode'}
+                    {weatherData.weather?.[0]?.main === 'Rain' ? 'rainy' : weatherData.weather?.[0]?.main === 'Clouds' ? 'cloud' : 'light_mode'}
                   </span>
                 </div>
               </div>
               <div className="flex items-end gap-4 mb-3">
                 <h3 className="text-[56px] font-black leading-none text-on-surface tracking-tighter">
-                  {Math.round(weatherData.main.temp)}\u00b0
+                  {Math.round(weatherData.main?.temp ?? 0)}°
                 </h3>
                 <div className="pb-2">
-                  <p className="text-on-surface font-bold text-body-lg capitalize">{weatherData.weather[0]?.description}</p>
-                  <p className="text-on-surface-variant text-label-md">{weatherData.name} \u2022 {t.weather.feels_like} {Math.round(weatherData.main.feels_like)}\u00b0</p>
+                  <p className="text-on-surface font-bold text-body-lg capitalize">{weatherData.weather?.[0]?.description}</p>
+                  <p className="text-on-surface-variant text-label-md">{weatherData.name} • {t.weather?.feels_like ?? 'Cảm giác như'} {Math.round(weatherData.main?.feels_like ?? 0)}°</p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3 mb-4 pt-3 border-t border-white/30" role="table" aria-label="Th\u00f4ng tin th\u1eddi ti\u1ebft chi ti\u1ebft">
+              <div className="grid grid-cols-3 gap-3 mb-4 pt-3 border-t border-white/30" role="table" aria-label="Thông tin thời tiết chi tiết">
                 <div className="text-center" role="cell">
                   <span className="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">water_drop</span>
-                  <p className="text-label-sm text-on-surface mt-1 font-bold">{weatherData.main.humidity}%</p>
-                  <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{t.weather.humidity}</p>
+                  <p className="text-label-sm text-on-surface mt-1 font-bold">{weatherData.main?.humidity ?? '--'}%</p>
+                  <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{t.weather?.humidity ?? 'Độ ẩm'}</p>
                 </div>
                 <div className="text-center" role="cell">
                   <span className="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">air</span>
-                  <p className="text-label-sm text-on-surface mt-1 font-bold">{Math.round(weatherData.wind?.speed || 0)} m/s</p>
-                  <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{t.weather.wind}</p>
+                  <p className="text-label-sm text-on-surface mt-1 font-bold">{Math.round(weatherData.wind?.speed ?? 0)} m/s</p>
+                  <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{t.weather?.wind ?? 'Gió'}</p>
                 </div>
                 <div className="text-center" role="cell">
                   <span className="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">visibility</span>
-                  <p className="text-label-sm text-on-surface mt-1 font-bold">{Math.round((weatherData.visibility || 10000) / 1000)} km</p>
-                  <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{t.weather.visibility}</p>
+                  <p className="text-label-sm text-on-surface mt-1 font-bold">{Math.round((weatherData.visibility ?? 10000) / 1000)} km</p>
+                  <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{t.weather?.visibility ?? 'Tầm nhìn'}</p>
                 </div>
               </div>
               <button
                 onClick={() => onWeatherClick?.()}
                 className="flex items-center gap-2 text-primary font-bold text-label-md bg-primary-container/30 px-4 py-2 rounded-full hover:bg-primary-container/50 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                aria-label={t.weather.details}
+                aria-label={t.weather?.details ?? 'Chi tiết thời tiết'}
               >
-                {t.weather.details}
+                {t.weather?.details ?? 'Chi tiết thời tiết'}
                 <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
               </button>
             </div>
           ) : (
-            <div className="animate-pulse flex items-center gap-6 w-full relative z-10" aria-label={tc.loading}>
-              <div className="h-16 w-28 bg-surface-container-high rounded-3xl" />
+            <div className="flex items-center gap-6 w-full relative z-10" aria-label={tc.loading}>
               <div className="space-y-3 flex-1">
-                <div className="h-5 w-1/2 bg-surface-container-high rounded-full" />
-                <div className="h-4 w-1/3 bg-surface-container-high rounded-full" />
+                <div className="flex items-center gap-3">
+                  <div className="h-14 w-24 bg-surface-container-high/60 rounded-2xl animate-pulse" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 w-32 bg-surface-container-high/60 rounded-full animate-pulse" />
+                    <div className="h-3 w-24 bg-surface-container-high/60 rounded-full animate-pulse" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/20">
+                  {[0,1,2].map(i => (
+                    <div key={i} className="flex flex-col items-center gap-1.5">
+                      <div className="w-5 h-5 bg-surface-container-high/60 rounded-full animate-pulse" />
+                      <div className="w-10 h-3.5 bg-surface-container-high/60 rounded-full animate-pulse" />
+                      <div className="w-8 h-2.5 bg-surface-container-high/60 rounded-full animate-pulse" />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
