@@ -7,9 +7,9 @@
 
 ## 🗓️ Cập nhật lần cuối
 
-| Ngày | 2026-05-08 |
-| Phiên làm việc | #45 — UI Fix: Blur/Nav/Font/Weather/Explore Button |
-| Nhánh Git | `copilot/fix-ui-issues-client-app` |
+| Ngày | 2026-05-13 |
+| Phiên làm việc | #46 — Cleanup: dead code, README NVIDIA, JWT_SECRET enforce |
+| Nhánh Git | `main` |
 
 ---
 
@@ -28,7 +28,7 @@ Data & Database    ████████████████░░░░ 
 
 ### Core Features
 - [x] Tab **Trang chủ** — Form lên lịch hẹn hò (ngân sách, bạn đồng hành, giờ rảnh, sở thích)
-- [x] AI Combo Generator — gọi Gemini 2.5 Flash, fallback sang SAMPLE_COMBOS khi lỗi
+- [x] AI Combo Generator — gọi NVIDIA NIM (Llama 3.3 Nemotron), fallback sang SAMPLE_COMBOS khi lỗi
 - [x] Tab **Khám phá** — Hiển thị danh sách địa điểm từ `REAL_LOCATIONS`
 - [x] Tab **Khám phá** — Sort địa điểm (Best Choice / Rating / Khoảng cách)
 - [x] Tab **Khám phá** — Tinder Swipe UI (vuốt trái/phải chọn địa điểm)
@@ -36,7 +36,7 @@ Data & Database    ████████████████░░░░ 
 - [x] Tab **Khám phá** — Hot Trends (dữ liệu từ crawler `trends.ts`)
 - [x] Tab **Date Miles** — Hiển thị điểm thưởng, huy hiệu, lịch sử
 - [x] **Gamification** — `useReward` hook: `earnMiles`, `incrementDates`, cấp bậc Newbie→Master, logic tính Streak và auto-unlock huy hiệu (Night Owl, Combo King)
-- [x] **AI Chat Panel** — Full-screen chat với Gemini 2.5 Pro (`useChat` hook)
+- [x] **AI Chat Panel** — Full-screen chat với NVIDIA NIM (Llama 3.3 Nemotron) (`useChat` hook)
 - [x] **Backend Trends** — Expose REST endpoint từ `data-service` cho client (W1)
 - [x] **Ride Modal** — Deep link Grab, Be, Xanh SM với toạ độ lat/lng
 - [x] **Weather Banner** — Trang chủ: Weather card lớn + hiển thị ngày tháng (W3)
@@ -53,7 +53,7 @@ Data & Database    ████████████████░░░░ 
 ### Kiến trúc / Refactor (theo PLAN-client-server.md)
 - [x] Tách monorepo npm workspaces: `client/` + `server/`
 - [x] Express server scaffold (`server/src/index.ts`) với CORS, routes, error handler
-- [x] Rate limiter middleware (`chatLimiter` 15 req/min, `geminiLimiter` 10 req/min)
+- [x] Rate limiter middleware (dual-track: guest 3 req/h, auth 20 req/h)
 - [x] Global error handler (không leak stack trace ra client)
 - [x] `server/src/config/env.ts` — validate env vars khi khởi động
 - [x] Routes server: `GET /api/health`, `/api/nearby-places`, `/api/combos`, `/api/chat`, `/api/weather`, `/api/place-image`
@@ -217,3 +217,12 @@ npm run dev
 - **Type/Lint Stability**: Sửa lỗi tổng chi phí slot dùng field không tồn tại (`price_per_person` → `price/cost`).
 - **Verification**: `tsc` client/server pass, `npm run build -w client` pass, `checklist.py` 6/6 PASSED, secret grep 0 matches.
 - **UI Capture**: Ảnh kiểm tra thủ công tại `/tmp/widget-date/home-tab.png` và `/tmp/widget-date/explore-tab.png`.
+
+
+### Session #46 — 2026-05-13
+- **Dead Code Cleanup**: Xoá server/src/middleware/rateLimit.ts — chatLimiter/geminiLimiter không dùng (dual-track rateLimiter.ts là live).
+- **README Fix**: Sửa 4 chỗ đề cập sai "Gemini 2.5 Flash/Pro" → "NVIDIA NIM (Llama 3.3 Nemotron)". Update .env example trong README.
+- **JWT_SECRET Enforce**: Thêm JWT_SECRET vào required env vars, loại bỏ fallback hardcoded.
+- **.env.example Sync**: Sửa từ OPENROUTER_* sang NVIDIA_*, thêm JWT_SECRET.
+- **PROGRESS.md Sync**: Update metadata, sửa Gemini mentions còn sót, update rate limiter description.
+- **Files đã sửa**: `server/src/middleware/rateLimit.ts` (deleted), `server/src/config/env.ts`, `.env.example`, `README.md`, `PROGRESS.md`.
