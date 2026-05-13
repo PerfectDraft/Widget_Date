@@ -27,7 +27,7 @@ interface EnvConfig {
 }
 
 function validateEnv(): EnvConfig {
-  const required = ['NVIDIA_API_KEY', 'OPENWEATHER_API_KEY'];
+  const required = ['NVIDIA_API_KEY', 'OPENWEATHER_API_KEY', 'JWT_SECRET'];
   const missing = required.filter(key => !process.env[key]);
 
   if (missing.length > 0) {
@@ -42,7 +42,7 @@ function validateEnv(): EnvConfig {
     OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY!,
     PORT: parseInt(process.env.PORT || '3001', 10),
     CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
-    JWT_SECRET: process.env.JWT_SECRET || 'widget-date-dev-secret-change-in-production',
+    JWT_SECRET: process.env.JWT_SECRET!,
   };
 }
 
